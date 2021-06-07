@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     var editText: EditText? = null
-    var myTask: c_myTask? = null
+    private var myTask: MyTask? = null
 
     //создание эл для сохранения ника в приложении
     var sPref: SharedPreferences? = null
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //      c_Public._data.f_getTopResultsFromDB();
 //      c_Public._data.f_readLocalDB();
             //endregion
-            myTask = c_myTask()
+            myTask = MyTask()
             myTask!!.execute()
         }
         if (v.id == R.id.mButtonStart) {
@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ed!!.apply()
     }
 
-    inner class c_myTask : AsyncTask<Void?, Void?, Void?>() {
+    inner class MyTask : AsyncTask<Void?, Void?, Void?>() {
         override fun onPreExecute() {
             super.onPreExecute()
             Public.data.tvServData!!.text = ""

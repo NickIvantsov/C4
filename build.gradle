@@ -3,6 +3,7 @@
 buildscript {
 
     ext.kotlin_version = "1.5.10"
+    ext.koin_version = '3.0.2'
     repositories {
         google()
         mavenCentral()
