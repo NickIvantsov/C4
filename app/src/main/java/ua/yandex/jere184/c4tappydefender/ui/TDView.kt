@@ -28,7 +28,7 @@ class TDView(  //endregion
     //    private SharedPreferences prefs;
     //    private SharedPreferences.Editor editor;
     //region Добавление звуков v1
-    private val soundPool: SoundPool
+    private val soundPool: SoundPool = SoundPool(10, AudioManager.STREAM_MUSIC, 0)
     var start = -1
     var bump = -1
     var destroyed = -1
@@ -81,7 +81,7 @@ class TDView(  //endregion
                 hitDetected = false
                 gameEnded = true
                 soundPool.play(destroyed, 1f, 1f, 0, 0, 1f)
-                Public.data.addNewResult(_distance, timeTaken)
+                Public.data.addNewResult(distance, timeTaken)
             }
         }
         for (sd in dustList) {
@@ -92,10 +92,10 @@ class TDView(  //endregion
             enemyList[i].update(player!!.speed())
         }
         if (!gameEnded) {
-            _distance += (player!!.speed() / 1000.0).toFloat()
+            distance += (player!!.speed() / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - timeStarted
         }
-        if (_distance >= _level * 5) {
+        if (distance >= _level * 5) {
             f_startNextLevel()
         }
     }
@@ -168,7 +168,7 @@ class TDView(  //endregion
                     paint
                 )
                 canvas!!.drawText(
-                    "Distance:" + _distance.toInt().toShort() + "KM",
+                    "Distance:" + distance.toInt().toShort() + "KM",
                     (screenX / 3).toFloat(),
                     (screenY - 20).toFloat(),
                     paint
@@ -215,7 +215,7 @@ class TDView(  //endregion
                     paint
                 )
                 canvas!!.drawText(
-                    "Distance remaining:" + _distance.toInt().toShort() + " KM",
+                    "Distance remaining:" + distance.toInt().toShort() + " KM",
                     (screenX / 2).toFloat(),
                     240f,
                     paint
@@ -259,14 +259,14 @@ class TDView(  //endregion
             val spec = SpaceDust(screenX.toShort(), screenY.toShort())
             dustList.add(spec)
         }
-        _distance = 0f
+        distance = 0f
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
         gameEnded = false
     }
 
     private fun reStartGame() {
-        _distance = 0f
+        distance = 0f
         _level = 1
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
@@ -277,13 +277,13 @@ class TDView(  //endregion
     }
 
     fun get_distance(): Float /* ???? */ {
-        return _distance
+        return distance
     }
 
     companion object {
         //endregion
         //region Счетчики
-        var _distance = 0f
+        var distance = 0f
         var timeTaken: Long = 0
     }
 
@@ -291,11 +291,9 @@ class TDView(  //endregion
     //endregion
     init {
         //region v1 добавление звука
-        soundPool = SoundPool(10, AudioManager.STREAM_MUSIC, 0)
         try {
             val assetManager = _context.assets
-            var descriptor: AssetFileDescriptor
-            descriptor = assetManager.openFd("start.ogg")
+            var descriptor: AssetFileDescriptor = assetManager.openFd("start.ogg")
             start = soundPool.load(descriptor, 0)
 
 //      descriptor = assetManager.openFd("win.ogg");
@@ -314,65 +312,27 @@ class TDView(  //endregion
         paint = Paint()
         startGame()
         //region OnTouch
-        _OnTouchSpeed = OnTouchListener { view, motionEvent ->
+        _OnTouchSpeed = OnTouchListener { _, motionEvent ->
             val actionMask = motionEvent.actionMasked
             player!!.touchY = motionEvent.y
-            val t_startSpeedX = screenX - screenX / 8
+            val startSpeedX = screenX - screenX / 8
             if (actionMask == MotionEvent.ACTION_MOVE) {
-                if (motionEvent.x > t_startSpeedX) {
-                    player!!.isTouchSpeed = true
-                } else {
-                    player!!.isTouchSpeed = false
-                }
+                player!!.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
-                if (motionEvent.x > t_startSpeedX) {
-                    player!!.isTouchSpeed = true
-                } else {
-                    player!!.isTouchSpeed = false
-                }
+                player!!.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_DOWN) {
                 if (gameEnded) {
                     reStartGame()
                     return@OnTouchListener false
                 }
-                if (motionEvent.x > t_startSpeedX) {
-                    player!!.isTouchSpeed = true
-                } else {
-                    player!!.isTouchSpeed = false
-                }
+                player!!.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_UP) {
                 player!!.isTouchSpeed = false
             }
             true
-
-            //region Joystick
-            /*
-                    int actionMask = motionEvent.getActionMasked();
-                    player.touchY = motionEvent.getY();
-    
-                    if (actionMask == MotionEvent.ACTION_MOVE) {
-                        if(_joystick.is_activ) {
-                            float t_dist = _joystick._coordDown.f_minus();
-                            if (t_dist < 30) {
-                            } else if (t_dist< 100) {
-                                player.is_touchSpeed = tu;
-                            }
-                        }
-                    }
-                    if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
-                        _joystick.s_newCoordDown( motionEvent.getX(), motionEvent.getY());
-                    }
-                    if (actionMask == MotionEvent.ACTION_DOWN) {
-                        _joystick.s_newCoordDown( motionEvent.getX(), motionEvent.getY());
-                    }
-                    if (actionMask == MotionEvent.ACTION_UP) {
-                        _joystick.is_activ = false;
-                    }
-                    return true;*/
-            //endregion
         }
         setOnTouchListener(_OnTouchSpeed)
         //endregion

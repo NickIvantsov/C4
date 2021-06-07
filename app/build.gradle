@@ -15,9 +15,9 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
     }
-    /*buildFeatures {
+    buildFeatures {
         viewBinding true
-    }*/
+    }
 
     buildTypes {
         release {
@@ -71,12 +71,26 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
 
-    // Koin main features for Android (Scope,ViewModel ...)
+    /*// Koin main features for Android (Scope,ViewModel ...)
     implementation "io.insert-koin:koin-android:$koin_version"
 // Koin Android - experimental builder extensions
     implementation "io.insert-koin:koin-android-ext:$koin_version"
 // Koin for Jetpack WorkManager
-    implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"
+    implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"*/
+
+  /*  implementation 'com.google.dagger:dagger:2.36'
+//    kapt 'com.google.dagger:dagger-compiler:2.x'
+
+    implementation 'com.google.dagger:dagger-android:2.36'
+    implementation 'com.google.dagger:dagger-android-support:2.17'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.17'*/
+
+    def daggerVer = 2.36 // or latest version
+
+    implementation "com.google.dagger:dagger:$daggerVer"
+    implementation "com.google.dagger:dagger-android-support:$daggerVer"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVer"
+    kapt "com.google.dagger:dagger-compiler:$daggerVer"
 
     // Coroutines for asynchronous calls (and Deferred’s adapter)
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-native-mt'

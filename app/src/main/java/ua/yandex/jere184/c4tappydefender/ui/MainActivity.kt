@@ -12,6 +12,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import dagger.android.AndroidInjection
 import ua.yandex.jere184.c4tappydefender.R
 import ua.yandex.jere184.c4tappydefender.logging.logD
 import ua.yandex.jere184.c4tappydefender.logging.logE
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var imgViewShips: ImageView? = null
     var payerShipIndex = 0
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         log("MainActivity . onCreate")
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE

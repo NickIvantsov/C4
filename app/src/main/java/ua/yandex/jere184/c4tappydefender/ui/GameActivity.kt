@@ -9,6 +9,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 
 class GameActivity : AppCompatActivity() {
+
     private var gameView: TDView? = null
     var mIntent: Intent? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,7 @@ class GameActivity : AppCompatActivity() {
         )
         gameView = TDView(this)
         setContentView(gameView)
-        val distance = TDView._distance.toString()
+        val distance = TDView.distance.toString()
         val name = "distance"
         mIntent = intent
         tmpCount = mIntent!!.getIntExtra("c4tappydefender.t_payerShipIndex", 0)
