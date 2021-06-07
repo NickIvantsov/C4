@@ -1,4 +1,6 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.model;
+
+import ua.yandex.jere184.c4tappydefender.util.Public;
 
 public class SpaceDust {
     public short x, y;
@@ -13,18 +15,18 @@ public class SpaceDust {
     private short minY;
 
     public SpaceDust(short screenX, short screenY) {
-        counter = (byte) c_Public._random.nextInt(110);
+        counter = (byte) Public.random.nextInt(110);
         maxX = screenX;
         maxY = screenY;
         minX = 0;
         minY = 0;
 
         //Set a speed between 0 and 9
-        speed = (short) c_Public._random.nextInt(10);
+        speed = (short) Public.random.nextInt(10);
 
         //Set the starting coordinates
-        x = (short) c_Public._random.nextInt(maxX);
-        y = (short) c_Public._random.nextInt(maxY);
+        x = (short) Public.random.nextInt(maxX);
+        y = (short) Public.random.nextInt(maxY);
     }
 
     public void update(float playerSpeed) {
@@ -34,8 +36,8 @@ public class SpaceDust {
         //respawn space dust
         if (x < 0) {
             x = maxX;
-            y = (short) c_Public._random.nextInt(maxY);
-            speed = (short) c_Public._random.nextInt(15);
+            y = (short) Public.random.nextInt(maxY);
+            speed = (short) Public.random.nextInt(15);
         }
     }
 }

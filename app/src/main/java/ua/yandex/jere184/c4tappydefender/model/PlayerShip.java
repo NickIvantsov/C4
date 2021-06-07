@@ -1,8 +1,11 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+
+import ua.yandex.jere184.c4tappydefender.util.Public;
+import ua.yandex.jere184.c4tappydefender.R;
 
 public class PlayerShip {
     //region members
@@ -90,27 +93,27 @@ public class PlayerShip {
         s_speed(1);
         //bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship);
 
-        switch (c_Public.t_playerShipType) {
+        switch (Public.playerShipType) {
             case 0:
-                _shipImg = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship_1);
+                _shipImg = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.spaceship_1);
                 this.MAX_SPEED = 60;
                 this.GRAVITY = 10;
                 break;
             case 1:
-                _shipImg = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship);
+                _shipImg = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.spaceship);
                 this.MAX_SPEED = 30;
                 this.GRAVITY = 40;
                 break;
             case 2:
-                _shipImg = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship_2);
+                _shipImg = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.spaceship_2);
                 this.MAX_SPEED = 45;
                 this.GRAVITY = 20;
                 break;
         }
-        _shipImg = c_Public.f_scaleBitmap(_shipImg, (byte) 3);
+        _shipImg = Public.scaleBitmap(_shipImg, (byte) 3);
         this.isReduceShieldStrength = 0;
 
-        maxY = c_Public._screanSize.y - _shipImg.getHeight();
+        maxY = Public.screanSize.y - _shipImg.getHeight();
         minY = 0;
         hitBox = new Rect((int) x, (int) y, _shipImg.getWidth(), _shipImg.getHeight());
         f_reinitLifes();
@@ -126,29 +129,29 @@ public class PlayerShip {
 
         Bitmap returned;
         if (bitmapIndex % 6 > 5) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire0);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire0);
         } else if (bitmapIndex % 6 > 4) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire1);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire1);
         } else if (bitmapIndex % 6 > 3) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire2);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire2);
         } else if (bitmapIndex % 6 > 2) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire3);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire3);
         } else if (bitmapIndex % 6 > 1) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire4);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire4);
         } else {// if (newSpeed > 10) {
-            returned = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.fire5);
+            returned = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.fire5);
         }
-        float udm = (c_Public._screanSize.x / 70) / 2;
+        float udm = (Public.screanSize.x / 70) / 2;
         if (speed > 30) {
-            _fireImg = c_Public.f_scaleBitmap(returned, (byte) 5);
+            _fireImg = Public.scaleBitmap(returned, (byte) 5);
             fire_x = -(6 * udm) - udm * 4;
             fire_y = udm - udm * 2;// код психапата
         } else if (speed > 15) {
-            _fireImg = c_Public.f_scaleBitmap(returned, (byte) 4);
+            _fireImg = Public.scaleBitmap(returned, (byte) 4);
             fire_x = -(6 * udm) - udm * 2;
             fire_y = udm - udm;
         } else {
-            _fireImg = c_Public.f_scaleBitmap(returned, (byte) 3);
+            _fireImg = Public.scaleBitmap(returned, (byte) 3);
             fire_x = -(6 * udm);
             fire_y = udm;
         }

@@ -1,4 +1,4 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.concurrent.TimeUnit;
 
+import ua.yandex.jere184.c4tappydefender.util.Public;
+import ua.yandex.jere184.c4tappydefender.R;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText editText;
@@ -38,26 +41,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(c_Public._myLogcatTAG, "MainActivity . onCreate");
+        Log.d(Public.myLogcatTAG, "MainActivity . onCreate");
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_main);
         try {
-            new c_Public(this);// инициализируем
+            new Public(this);// инициализируем
             //region сохраняем размер экрана
             Display display = getWindowManager().getDefaultDisplay();
-            c_Public._screanSize = new Point();
-            display.getSize(c_Public._screanSize);
+            Public.screanSize = new Point();
+            display.getSize(Public.screanSize);
             //endregion
         } catch (Exception ex) {
-            Log.e(c_Public._myLogcatTAG, "|||onCreate. new c_Public(this) Exception=" + ex.getMessage() + "|||");
+            Log.e(Public.myLogcatTAG, "|||onCreate. new c_Public(this) Exception=" + ex.getMessage() + "|||");
         }
 
-        c_Public._data.tv_localData = (TextView) findViewById(R.id.tv_my_firstPlace);
-        c_Public._data.tv_servData = (TextView) findViewById(R.id.tv_firstPlace);
+        Public.data.tvLocalData = (TextView) findViewById(R.id.tv_my_firstPlace);
+        Public.data.tvServData = (TextView) findViewById(R.id.tv_firstPlace);
 
         img_view_ships = findViewById(R.id.img_view_ships);
         img_view_ships.setImageBitmap(
-                c_Public.f_scaleBitmap(BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship_1)
+                Public.scaleBitmap(BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.spaceship_1)
                         , (byte) 3));
         img_btn_left = findViewById(R.id.img_btn_left);
         img_btn_right = findViewById(R.id.img_btn_right);
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 t_payerShipID = R.drawable.spaceship_2;
             }
             img_view_ships.setImageBitmap(
-                    c_Public.f_scaleBitmap(BitmapFactory.decodeResource(c_Public._context.getResources(), t_payerShipID)
+                    Public.scaleBitmap(BitmapFactory.decodeResource(Public.context.getResources(), t_payerShipID)
                             , (byte) 3));
         }
 
@@ -117,11 +120,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             _myTask.execute();
         }
         if (v.getId() == R.id.mButtonStart) {
-            c_Public.t_playerShipType = (byte) t_payerShipIndex;
-            c_Public._PlayerName = editText.getText().toString();
+            Public.playerShipType = (byte) t_payerShipIndex;
+            Public.playerName = editText.getText().toString();
             Intent i = new Intent(MainActivity.this, GameActivity.class);
             i.putExtra(EXTRA_COUNT_FOR_SHIP, t_payerShipIndex);
-            Log.d(c_Public._myLogcatTAG, i + "");
+            Log.d(Public.myLogcatTAG, i + "");
             startActivity(i);
         }
 
@@ -139,10 +142,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
         try {
-            c_Public._data.f_readLocalDB();
-            c_Public._data.f_getTopResultsFromDB();
+            Public.data.readLocalDB();
+            Public.data.getTopResultsFromDB();
         } catch (Exception ex) {
-            Log.e(c_Public._myLogcatTAG, "|||onResume. c_Public._data.f_getTopResultsFromDB() Exception=" + ex.getMessage() + "|||");
+            Log.e(Public.myLogcatTAG, "|||onResume. c_Public._data.f_getTopResultsFromDB() Exception=" + ex.getMessage() + "|||");
         }
         if (editText.length() > 5) {
             sPref = getSharedPreferences(SAVED_TEXT, MODE_PRIVATE);
@@ -178,13 +181,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            c_Public._data.tv_servData.setText("");
-            c_Public._data.tv_servData.setText("Processing request ...");
+            Public.data.tvServData.setText("");
+            Public.data.tvServData.setText("Processing request ...");
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            c_Public._data.f_getTopResultsFromDB();
+            Public.data.getTopResultsFromDB();
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
@@ -197,8 +200,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            c_Public._data.tv_servData.setText("");
-            c_Public._data.f_readLocalDB();
+            Public.data.tvServData.setText("");
+            Public.data.readLocalDB();
         }
     }
 

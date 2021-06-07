@@ -1,10 +1,13 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
+
+import ua.yandex.jere184.c4tappydefender.util.Public;
+import ua.yandex.jere184.c4tappydefender.R;
 
 public class EnemyShip {
     public Bitmap bitmap;
@@ -27,11 +30,11 @@ public class EnemyShip {
     }
 
     public void f_reInit() {
-        int whichBitmap = c_Public._random.nextInt(6);
+        int whichBitmap = Public.random.nextInt(6);
         size = (byte) (whichBitmap + 1);
         speed = 24 - (size * 3);
 
-        bitmap = c_Public.f_scaleBitmap(animateImgArray.get(0), (byte) (size * 2));
+        bitmap = Public.scaleBitmap(animateImgArray.get(0), (byte) (size * 2));
         //bitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.asteroid_01);
 //    switch (whichBitmap) {
 //      case 0:
@@ -68,7 +71,7 @@ public class EnemyShip {
         //bitmap = c_Public.f_scaleBitmap(bitmap, (byte) (size * 2));
         hitBox = new Rect(x + 10, y + 10, bitmap.getWidth() - 10, bitmap.getHeight() - 10);
 
-        y = c_Public._random.nextInt(maxY) - bitmap.getHeight();
+        y = Public.random.nextInt(maxY) - bitmap.getHeight();
         x = maxX + 100;
     }
 
@@ -93,7 +96,7 @@ public class EnemyShip {
 
     //region animations
     public static void f_initBitmap() {
-        _bigBitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.asteroid_big);
+        _bigBitmap = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.asteroid_big);
         int partImgSizeX = _bigBitmap.getHeight() / 8;// 192;
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -115,7 +118,7 @@ public class EnemyShip {
 
             if (bitmapIndex2 % 3 == 0) {
                 bitmapIndex++;
-                bitmap = c_Public.f_scaleBitmap(animateImgArray.get(bitmapIndex % animateImgArray.size())/*returned*/, (byte) (size * 2));
+                bitmap = Public.scaleBitmap(animateImgArray.get(bitmapIndex % animateImgArray.size())/*returned*/, (byte) (size * 2));
             }
         }
 //

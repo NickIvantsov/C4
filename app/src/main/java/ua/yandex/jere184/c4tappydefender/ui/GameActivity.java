@@ -1,4 +1,4 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.ui;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;

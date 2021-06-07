@@ -1,4 +1,4 @@
-package ua.yandex.jere184.c4tappydefender;
+package ua.yandex.jere184.c4tappydefender.ui;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -17,6 +17,11 @@ import android.view.View;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import ua.yandex.jere184.c4tappydefender.util.Public;
+import ua.yandex.jere184.c4tappydefender.model.SpaceDust;
+import ua.yandex.jere184.c4tappydefender.model.EnemyShip;
+import ua.yandex.jere184.c4tappydefender.model.PlayerShip;
 
 public class TDView extends SurfaceView implements Runnable {
     //region объявления
@@ -78,11 +83,11 @@ public class TDView extends SurfaceView implements Runnable {
             descriptor = assetManager.openFd("destroyed.ogg");
             destroyed = soundPool.load(descriptor, 0);
         } catch (IOException e) {
-            Log.d(c_Public._myLogcatTAG, "||| TDView||| error failed to load sound files");
+            Log.d(Public.myLogcatTAG, "||| TDView||| error failed to load sound files");
         }
         //_joystick = new c_joystick();
-        screenX = c_Public._screanSize.x;
-        screenY = c_Public._screanSize.y;
+        screenX = Public.screanSize.x;
+        screenY = Public.screanSize.y;
         ourHolder = getHolder();
         paint = new Paint();
         startGame();
@@ -182,7 +187,7 @@ public class TDView extends SurfaceView implements Runnable {
                 gameEnded = true;
                 soundPool.play(destroyed, 1, 1, 0, 0, 1);
 
-                c_Public._data.f_addNewResult(_distance, timeTaken);
+                Public.data.addNewResult(_distance, timeTaken);
             }
         }
         for (SpaceDust sd : dustList) {
