@@ -1,44 +1,50 @@
-package ua.yandex.jere184.c4tappydefender.model;
+package ua.yandex.jere184.c4tappydefender.model
 
-import ua.yandex.jere184.c4tappydefender.util.Public;
+import ua.yandex.jere184.c4tappydefender.util.Public
 
-public class SpaceDust {
-    public short x, y;
-    private short speed;
-    public byte counter = 0;
-    public boolean downLight = true;
+class SpaceDust(screenX: Short, screenY: Short) {
+    @JvmField
+    var x: Short
+
+    @JvmField
+    var y: Short
+    private var speed: Short
+
+    @JvmField
+    var counter: Byte = 0
+
+    @JvmField
+    var downLight = true
 
     //Detect dust leaving the screen
-    private short maxX;
-    private short maxY;
-    private short minX;
-    private short minY;
-
-    public SpaceDust(short screenX, short screenY) {
-        counter = (byte) Public.random.nextInt(110);
-        maxX = screenX;
-        maxY = screenY;
-        minX = 0;
-        minY = 0;
-
-        //Set a speed between 0 and 9
-        speed = (short) Public.random.nextInt(10);
-
-        //Set the starting coordinates
-        x = (short) Public.random.nextInt(maxX);
-        y = (short) Public.random.nextInt(maxY);
-    }
-
-    public void update(float playerSpeed) {
+    private val maxX: Short
+    private val maxY: Short
+    private val minX: Short
+    private val minY: Short
+    fun update(playerSpeed: Float) {
         //Speed up when the player does
-        x -= playerSpeed;
-        x -= speed;
+        x = (x - playerSpeed.toInt().toShort()).toShort()
+        x = (x - speed).toShort()
         //respawn space dust
         if (x < 0) {
-            x = maxX;
-            y = (short) Public.random.nextInt(maxY);
-            speed = (short) Public.random.nextInt(15);
+            x = maxX
+            y = Public.random.nextInt(maxY.toInt()).toShort()
+            speed = Public.random.nextInt(15).toShort()
         }
     }
-}
 
+    init {
+        counter = Public.random.nextInt(110).toByte()
+        maxX = screenX
+        maxY = screenY
+        minX = 0
+        minY = 0
+
+        //Set a speed between 0 and 9
+        speed = Public.random.nextInt(10).toShort()
+
+        //Set the starting coordinates
+        x = Public.random.nextInt(maxX.toInt()).toShort()
+        y = Public.random.nextInt(maxY.toInt()).toShort()
+    }
+}

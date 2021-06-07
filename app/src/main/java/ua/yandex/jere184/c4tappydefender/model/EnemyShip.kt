@@ -1,40 +1,33 @@
-package ua.yandex.jere184.c4tappydefender.model;
+package ua.yandex.jere184.c4tappydefender.model
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Rect
+import ua.yandex.jere184.c4tappydefender.R
+import ua.yandex.jere184.c4tappydefender.util.Public
+import java.util.*
 
-import java.util.ArrayList;
+class EnemyShip(private val maxX: Int, private val maxY: Int) {
+    @JvmField
+    var bitmap: Bitmap? = null
+    @JvmField
+    var x = 0
+    @JvmField
+    var y = 0
+    private var speed = 1
+    private var size: Byte = 2
+    private val minX = 0
+    private val minY = 0
 
-import ua.yandex.jere184.c4tappydefender.util.Public;
-import ua.yandex.jere184.c4tappydefender.R;
+    //endregion
+    var hitBox: Rect? = null
+        private set
 
-public class EnemyShip {
-    public Bitmap bitmap;
-    public int x, y;
-    private int speed = 1;
-    private byte size = 2;
-    private int maxX;
-    private int minX;
-    private int maxY;
-    private int minY;
-    private Rect hitBox;
-
-    public EnemyShip(int screenX, int screenY) {
-        maxX = screenX;
-        maxY = screenY;
-        minX = 0;
-        minY = 0;
-        f_reInit();
-
-    }
-
-    public void f_reInit() {
-        int whichBitmap = Public.random.nextInt(6);
-        size = (byte) (whichBitmap + 1);
-        speed = 24 - (size * 3);
-
-        bitmap = Public.scaleBitmap(animateImgArray.get(0), (byte) (size * 2));
+    fun reInit() {
+        val whichBitmap = Public.random.nextInt(6)
+        size = (whichBitmap + 1).toByte()
+        speed = 24 - size * 3
+        bitmap = Public.scaleBitmap(animateImgArray[0], (size * 2).toByte())
         //bitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.asteroid_01);
 //    switch (whichBitmap) {
 //      case 0:
@@ -69,59 +62,45 @@ public class EnemyShip {
 //        break;
 //    }
         //bitmap = c_Public.f_scaleBitmap(bitmap, (byte) (size * 2));
-        hitBox = new Rect(x + 10, y + 10, bitmap.getWidth() - 10, bitmap.getHeight() - 10);
-
-        y = Public.random.nextInt(maxY) - bitmap.getHeight();
-        x = maxX + 100;
+        hitBox = Rect(x + 10, y + 10, bitmap!!.getWidth() - 10, bitmap!!.getHeight() - 10)
+        y = Public.random.nextInt(maxY) - bitmap!!.getHeight()
+        x = maxX + 100
     }
 
-    public void update(float playerSpeed) {
-        nextBitmapStep();
-        x -= playerSpeed;
-        x -= speed;
-        if (x < minX - bitmap.getWidth()) {
-            f_reInit();
-//      speed = c_Public._random.nextInt(10) + 10;
+    fun update(playerSpeed: Float) {
+        nextBitmapStep()
+        x -= playerSpeed.toInt()
+        x -= speed
+        if (x < minX - bitmap!!.width) {
+            reInit()
+            //      speed = c_Public._random.nextInt(10) + 10;
 //      x = maxX;
 //      y = c_Public._random.nextInt(maxY) - bitmap.getHeight();
         }
 
         //region прямоугольник столкновений
-        hitBox.left = x + bitmap.getWidth() / 2; // = x; // тестовый вариант
-        hitBox.top = y;
-        hitBox.right = x + bitmap.getWidth();
-        hitBox.bottom = y + bitmap.getHeight();
+        hitBox!!.left = x + bitmap!!.width / 2 // = x; // тестовый вариант
+        hitBox!!.top = y
+        hitBox!!.right = x + bitmap!!.width
+        hitBox!!.bottom = y + bitmap!!.height
         //endregion
     }
 
-    //region animations
-    public static void f_initBitmap() {
-        _bigBitmap = BitmapFactory.decodeResource(Public.context.getResources(), R.drawable.asteroid_big);
-        int partImgSizeX = _bigBitmap.getHeight() / 8;// 192;
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                animateImgArray.add(Bitmap.createBitmap(_bigBitmap, c * partImgSizeX, r * partImgSizeX, partImgSizeX, partImgSizeX));
-            }
-        }
-    }
-
-    public static ArrayList<Bitmap> animateImgArray = new ArrayList<>();
-    public static Bitmap _bigBitmap;
-    private byte bitmapIndex = 0;
-    private byte bitmapIndex2 = 0;
-
-    private void nextBitmapStep() {
-        bitmapIndex2++;
-        if ((bitmapIndex) == 127)//animateImgArray.size()-1)
-            bitmapIndex = 0;
-        else {
-
+    private var bitmapIndex: Byte = 0
+    private var bitmapIndex2: Byte = 0
+    private fun nextBitmapStep() {
+        bitmapIndex2++
+        if (bitmapIndex.toInt() == 127) //animateImgArray.size()-1)
+            bitmapIndex = 0 else {
             if (bitmapIndex2 % 3 == 0) {
-                bitmapIndex++;
-                bitmap = Public.scaleBitmap(animateImgArray.get(bitmapIndex % animateImgArray.size())/*returned*/, (byte) (size * 2));
+                bitmapIndex++
+                bitmap = Public.scaleBitmap(
+                    animateImgArray[bitmapIndex % animateImgArray.size] /*returned*/,
+                    (size * 2).toByte()
+                )
             }
         }
-//
+        //
 //    byte pos_r = (byte) (bitmapIndex / 8);
 //    byte pos_c = (byte) (bitmapIndex - (pos_r * 8));
 //    int partImgSize = 192;
@@ -129,13 +108,38 @@ public class EnemyShip {
 //    Bitmap returned /*bitmap*/ = Bitmap.createBitmap(_bigBitmap, pos_c * partImgSize, pos_r * partImgSize, partImgSize, partImgSize);
 //    //bitmap= Bitmap.createBitmap(_bigBitmap, 128*0, 128*0, 128, 128);
     }
-    //endregion
 
-    public Rect getHitBox() {
-        return hitBox;
+    fun setX(x: Int) {
+        this.x = x
     }
 
-    public void setX(int x) {
-        this.x = x;
+    companion object {
+        //region animations
+        @JvmStatic
+        fun initBitmap() {
+            bigBitmap =
+                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.asteroid_big)
+            val partImgSizeX = bigBitmap!!.height / 8 // 192;
+            for (r in 0..7) {
+                for (c in 0..7) {
+                    animateImgArray.add(
+                        Bitmap.createBitmap(
+                            bigBitmap!!,
+                            c * partImgSizeX,
+                            r * partImgSizeX,
+                            partImgSizeX,
+                            partImgSizeX
+                        )
+                    )
+                }
+            }
+        }
+
+        var animateImgArray = ArrayList<Bitmap>()
+        var bigBitmap: Bitmap? = null
+    }
+
+    init {
+        reInit()
     }
 }
