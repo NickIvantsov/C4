@@ -9,6 +9,7 @@ import timber.log.Timber.DebugTree
 import ua.yandex.jere184.c4tappydefender.BuildConfig
 import ua.yandex.jere184.c4tappydefender.di.DaggerAppComponent
 import ua.yandex.jere184.c4tappydefender.logging.CrashReportingTree
+import ua.yandex.jere184.c4tappydefender.util.Public
 import javax.inject.Inject
 
 
@@ -24,6 +25,8 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
             .application(this)
             .build()
             .inject(this)
+
+        Public(this) // инициализируем
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
