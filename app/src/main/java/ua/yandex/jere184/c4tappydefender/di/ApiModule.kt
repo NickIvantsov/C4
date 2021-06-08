@@ -23,7 +23,7 @@ class ApiModule {
      * */
     @Provides
     @Singleton
-    fun provideGson(): Gson? {
+    fun provideGson(): Gson {
         val gsonBuilder = GsonBuilder()
         return gsonBuilder.create()
     }
@@ -33,7 +33,7 @@ class ApiModule {
      * */
     @Provides
     @Singleton
-    fun provideCache(application: Application): Cache? {
+    fun provideCache(application: Application): Cache {
         val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB
         val httpCacheDirectory = File(application.cacheDir, "http-cache")
         return Cache(httpCacheDirectory, cacheSize)
@@ -43,7 +43,7 @@ class ApiModule {
      * */
     @Provides
     @Singleton
-    fun provideOkhttpClient(cache: Cache?): OkHttpClient? {
+    fun provideOkhttpClient(cache: Cache?): OkHttpClient {
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         val httpClient = OkHttpClient.Builder()
@@ -60,7 +60,7 @@ class ApiModule {
      * */
     @Provides
     @Singleton
-    fun provideRetrofit(gson: Gson?, okHttpClient: OkHttpClient?): Retrofit? {
+    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit? {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

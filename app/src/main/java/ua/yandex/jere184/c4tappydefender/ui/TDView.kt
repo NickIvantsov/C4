@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.media.AudioManager
 import android.media.SoundPool
+import android.os.Build
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -28,35 +29,41 @@ class TDView(  //endregion
     //    private SharedPreferences prefs;
     //    private SharedPreferences.Editor editor;
     //region Добавление звуков v1
-    private val soundPool: SoundPool = SoundPool(10, AudioManager.STREAM_MUSIC, 0)
-    var start = -1
-    var bump = -1
-    var destroyed = -1
+    private val soundPool: SoundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        SoundPool.Builder()
+            .setMaxStreams(10)
+            .build();
+    } else {
+        SoundPool(10, AudioManager.STREAM_MUSIC, 0)
+    }
+    private var start = -1
+    private var bump = -1
+    private var destroyed = -1
     var win = -1
 
     //endregion
     //region flags
     private var gameEnded = false
-    private var _level: Byte = 1
+    private var level: Byte = 1
 
     @Volatile
     var playing = false
 
     //endregion
     //region objects
-    private var player: PlayerShip? = null
-    var dustList = ArrayList<SpaceDust>()
-    var enemyList = ArrayList<EnemyShip>()
+    private lateinit var player: PlayerShip
+    private var dustList = ArrayList<SpaceDust>()
+    private var enemyList = ArrayList<EnemyShip>()
     private var timeStarted: Long = 0
     private val screenX: Int
     private val screenY: Int
     private val paint: Paint
-    private var canvas: Canvas? = null
+    private lateinit var canvas: Canvas
     private val ourHolder: SurfaceHolder
-    var gameThread: Thread? = null
+    private var gameThread: Thread? = null
 
     //region OnTouch
-    var _OnTouchSpeed: OnTouchListener
+    private var onTouchSpeed: OnTouchListener
     override fun run() {
         while (playing) {
             update()
@@ -69,15 +76,15 @@ class TDView(  //endregion
         if (gameEnded) return
         var hitDetected = false
         for (i in enemyList.indices) {
-            if (Rect.intersects(player!!.hitBox!!, enemyList[i].hitBox!!)) {
+            if (Rect.intersects(player.hitBox, enemyList[i].hitBox!!)) {
                 hitDetected = true
                 enemyList[i].setX(-350)
             }
         }
         if (hitDetected) {
             soundPool.play(bump, 1f, 1f, 0, 0, 1f)
-            player!!.minusLifes()
-            if (player!!.lifes <= 0) /*количество жизней меньше либо равно нулю */ {
+            player.minusLives()
+            if (player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
                 hitDetected = false
                 gameEnded = true
                 soundPool.play(destroyed, 1f, 1f, 0, 0, 1f)
@@ -85,30 +92,30 @@ class TDView(  //endregion
             }
         }
         for (sd in dustList) {
-            sd.update(player!!.speed())
+            sd.update(player.speed())
         }
-        player!!.update()
+        player.update()
         for (i in enemyList.indices) {
-            enemyList[i].update(player!!.speed())
+            enemyList[i].update(player.speed())
         }
         if (!gameEnded) {
-            distance += (player!!.speed() / 1000.0).toFloat()
+            distance += (player.speed() / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - timeStarted
         }
-        if (distance >= _level * 5) {
-            f_startNextLevel()
+        if (distance >= level * 5) {
+            startNextLevel()
         }
     }
 
-    private fun f_startNextLevel() {
-        _level++
+    private fun startNextLevel() {
+        level++
         enemyList.add(EnemyShip(screenX, screenY))
     }
 
     private fun draw() {
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
-            canvas!!.drawColor(Color.argb(255, 0, 0, 0))
+            canvas.drawColor(Color.argb(255, 0, 0, 0))
             paint.color = Color.argb(255, 255, 255, 255)
             //region draw objects
             if (!gameEnded) {
@@ -121,13 +128,13 @@ class TDView(  //endregion
                     } else if (dustList[i].counter >= 125) {
                         dustList[i].downLight = false
                     }
-                    var t_opacity = (dustList[i].counter * 5).toShort()
-                    if (t_opacity > 255) t_opacity = 255 else if (t_opacity < 50) t_opacity = 50
+                    var opacity = (dustList[i].counter * 5).toShort()
+                    if (opacity > 255) opacity = 255 else if (opacity < 50) opacity = 50
 
                     //region мигание синим и ораньжевым цветом
                     if (dustList[i].counter % 30 > 6) // всего 30 кадров с 6 по 30 работает обычное затухание прозрачности белой звезды
                         paint.color = Color.argb(
-                            t_opacity.toInt(),
+                            opacity.toInt(),
                             255,
                             255,
                             255
@@ -140,19 +147,24 @@ class TDView(  //endregion
                         ) else  // с 0 по 3 ярко светится (типо ораньжевым)
                         paint.color = Color.argb(255, 200, 100, 0)
                     //endregion
-                    canvas!!.drawPoint(dustList[i].x.toFloat(), dustList[i].y.toFloat(), paint)
+                    canvas.drawPoint(dustList[i].x.toFloat(), dustList[i].y.toFloat(), paint)
                 }
                 //endregion
                 paint.color = Color.argb(255, 255, 255, 255)
-                canvas!!.drawBitmap(player!!.bitmap()!!, player!!.x, player!!.y, paint)
-                if (player!!.isTouchSpeed) canvas!!.drawBitmap(
-                    player!!.fireImg!!,
-                    player!!.x + player!!.fireX,
-                    player!!.y + player!!.fireY,
+                canvas.drawBitmap(player.bitmap()!!, player.x, player.y, paint)
+                if (player.isTouchSpeed) canvas.drawBitmap(
+                    player.fireImg!!,
+                    player.x + player.fireX,
+                    player.y + player.fireY,
                     paint
                 )
                 for (i in enemyList.indices) {
-                    canvas!!.drawBitmap(enemyList[i].bitmap!!, enemyList[i].x.toFloat(), enemyList[i].y.toFloat(), paint)
+                    canvas.drawBitmap(
+                        enemyList[i].bitmap!!,
+                        enemyList[i].x.toFloat(),
+                        enemyList[i].y.toFloat(),
+                        paint
+                    )
                 }
             }
             //endregion
@@ -160,43 +172,43 @@ class TDView(  //endregion
                 paint.textAlign = Paint.Align.LEFT
                 paint.color = Color.argb(255, 255, 255, 255)
                 paint.textSize = 25f
-                canvas!!.drawText("Level$_level", 10f, 20f, paint)
-                canvas!!.drawText(
+                canvas.drawText("Level$level", 10f, 20f, paint)
+                canvas.drawText(
                     "Time:" + timeTaken / 1000 + "s",
                     (screenX / 2).toFloat(),
                     20f,
                     paint
                 )
-                canvas!!.drawText(
+                canvas.drawText(
                     "Distance:" + distance.toInt().toShort() + "KM",
                     (screenX / 3).toFloat(),
                     (screenY - 20).toFloat(),
                     paint
                 )
-                canvas!!.drawText(
-                    "Speed:" + (player!!.speed() * 60).toInt().toShort() + " KMh",
+                canvas.drawText(
+                    "Speed:" + (player.speed() * 60).toInt().toShort() + " KMh",
                     (screenX / 3 * 2).toFloat(),
                     (screenY - 20).toFloat(),
                     paint
                 )
-                if (player!!.isReduceShieldStrength <= 0) {
+                if (player.isReduceShieldStrength <= 0) {
                     paint.textSize = 25f
                 } else {
-                    if (player!!.isReduceShieldStrength % 10 > 5) {
+                    if (player.isReduceShieldStrength % 10 > 5) {
                         paint.color = Color.argb(255, 255, 0, 0)
                     } else {
                         paint.color = Color.argb(255, 255, 255, 255)
                     }
-                    paint.textSize = (25 + player!!.isReduceShieldStrength).toFloat()
-                    player!!.isReduceShieldStrength--
+                    paint.textSize = (25 + player.isReduceShieldStrength).toFloat()
+                    player.isReduceShieldStrength--
                 }
-                canvas!!.drawText("Shield:" + player!!.lifes, 10f, (screenY - 20).toFloat(), paint)
-                if (player!!.isTouchSpeed) {
+                canvas.drawText("Shield:" + player.lives, 10f, (screenY - 20).toFloat(), paint)
+                if (player.isTouchSpeed) {
                     if (dustList[0].counter % 14 >= 7) paint.color =
                         Color.argb(255, 0, 255, 0) else paint.color = Color.argb(255, 255, 255, 255)
                 } else paint.color = Color.argb(100, 255, 255, 255)
                 paint.textSize = 60f
-                for (i in 1 until screenY / 100) canvas!!.drawText(
+                for (i in 1 until screenY / 100) canvas.drawText(
                     ">>>",
                     (screenX - screenX / 8).toFloat(),
                     (i * 100).toFloat(),
@@ -205,23 +217,23 @@ class TDView(  //endregion
             } else {
                 paint.textSize = 80f
                 paint.textAlign = Paint.Align.CENTER
-                canvas!!.drawText("Game Over", (screenX / 2).toFloat(), 100f, paint)
+                canvas.drawText("Game Over", (screenX / 2).toFloat(), 100f, paint)
                 paint.textSize = 25f
                 //canvas.drawText("Level" + fastestTime + "s", screenX / 2, 160, paint);
-                canvas!!.drawText(
+                canvas.drawText(
                     "Time:" + timeTaken / 1000 + "s",
                     (screenX / 2).toFloat(),
                     200f,
                     paint
                 )
-                canvas!!.drawText(
+                canvas.drawText(
                     "Distance remaining:" + distance.toInt().toShort() + " KM",
                     (screenX / 2).toFloat(),
                     240f,
                     paint
                 )
                 paint.textSize = 80f
-                canvas!!.drawText("Tap to replay!", (screenX / 2).toFloat(), 350f, paint)
+                canvas.drawText("Tap to replay!", (screenX / 2).toFloat(), 350f, paint)
             }
             ourHolder.unlockCanvasAndPost(canvas)
         }
@@ -267,16 +279,16 @@ class TDView(  //endregion
 
     private fun reStartGame() {
         distance = 0f
-        _level = 1
+        level = 1
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
         gameEnded = false
-        player!!.reInit()
+        player.reInit()
         enemyList.clear()
         enemyList.add(EnemyShip(screenX, screenY))
     }
 
-    fun get_distance(): Float /* ???? */ {
+    fun getDistance(): Float /* ???? */ {
         return distance
     }
 
@@ -312,29 +324,29 @@ class TDView(  //endregion
         paint = Paint()
         startGame()
         //region OnTouch
-        _OnTouchSpeed = OnTouchListener { _, motionEvent ->
+        onTouchSpeed = OnTouchListener { _, motionEvent ->
             val actionMask = motionEvent.actionMasked
-            player!!.touchY = motionEvent.y
+            player.touchY = motionEvent.y
             val startSpeedX = screenX - screenX / 8
             if (actionMask == MotionEvent.ACTION_MOVE) {
-                player!!.isTouchSpeed = motionEvent.x > startSpeedX
+                player.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
-                player!!.isTouchSpeed = motionEvent.x > startSpeedX
+                player.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_DOWN) {
                 if (gameEnded) {
                     reStartGame()
                     return@OnTouchListener false
                 }
-                player!!.isTouchSpeed = motionEvent.x > startSpeedX
+                player.isTouchSpeed = motionEvent.x > startSpeedX
             }
             if (actionMask == MotionEvent.ACTION_UP) {
-                player!!.isTouchSpeed = false
+                player.isTouchSpeed = false
             }
             true
         }
-        setOnTouchListener(_OnTouchSpeed)
+        setOnTouchListener(onTouchSpeed)
         //endregion
     }
 }

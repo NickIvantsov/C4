@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tv_nameGlobalRecord"
+                android:id="@+id/tv_name_global_record"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
@@ -37,7 +37,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_firstPlace"
+                android:id="@+id/tv_first_place"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:alpha="1"
@@ -82,21 +82,21 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/img_btn_left"
+                    android:id="@+id/btn_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:srcCompat="@android:drawable/arrow_up_float" />
 
                 <ImageView
-                    android:id="@+id/img_view_ships"
+                    android:id="@+id/iv_ship"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/spaceship_1" />
 
                 <ImageButton
-                    android:id="@+id/img_btn_right"
+                    android:id="@+id/btn_right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -104,7 +104,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/mButtonStart"
+                android:id="@+id/btn_start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:alpha="0.80"
@@ -140,7 +140,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tv_MyBestRecord"
+                android:id="@+id/tv_my_best_record"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
@@ -160,7 +160,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tv_my_firstPlace"
+                        android:id="@+id/tv_my_first_place"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:alpha="1"

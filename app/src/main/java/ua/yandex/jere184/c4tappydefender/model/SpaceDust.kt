@@ -3,17 +3,10 @@ package ua.yandex.jere184.c4tappydefender.model
 import ua.yandex.jere184.c4tappydefender.util.Public
 
 class SpaceDust(screenX: Short, screenY: Short) {
-    @JvmField
     var x: Short
-
-    @JvmField
     var y: Short
     private var speed: Short
-
-    @JvmField
     var counter: Byte = 0
-
-    @JvmField
     var downLight = true
 
     //Detect dust leaving the screen

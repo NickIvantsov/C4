@@ -29,7 +29,6 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
-
     /*
      * This is our custom Application class
      * */

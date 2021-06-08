@@ -17,8 +17,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    //= SAVED_TEXT
-    override suspend fun read(key: String): Deferred<User> {
+    override suspend fun readAsync(key: String): Deferred<User> {
         return CoroutineScope(Dispatchers.IO).async {
             val result = sharedPreferences.getString(key, "")
             User(result)

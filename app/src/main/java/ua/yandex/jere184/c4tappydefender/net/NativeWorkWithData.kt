@@ -15,10 +15,6 @@ import java.util.*
  */
 class NativeWorkWithData : MyCallback {
     //region members
-    @JvmField
-    var tvLocalData: TextView? = null
-    @JvmField
-    var tvServData: TextView? = null
 
     //endregion
     fun addNewResult(dist: Float, time: Long) {
@@ -28,33 +24,17 @@ class NativeWorkWithData : MyCallback {
 
     //region SQLite
     fun readLocalDB() {
+
         localDB = LocalDB(Public.context!!) //инициализируем и подгружаем таблици из файла
 
         //region добавляем таблици если их еще нет (предположительно только первый запуск)
         localDB!!.addNewTable(localResultsTable, 3.toByte()) //datetime,dist,time
         localDB!!.addNewTable(servCopyResultsTable, 4.toByte()) //pos,dist,time,name
-        //endregion
-
-        //region get local
-        var result = localDB!!.selectAll(localResultsTable)
-        var str = "\t|\tDate\t|\tDistance\t|\tTime\n"
-        tvLocalData!!.text = str
-        for (row in result) {
-            for (item in row) {
-                str = "$str\t| $item "
-            }
-            str = """
-                $str
-                
-                """.trimIndent()
-        }
-        tvLocalData!!.text = str
-        //endregion
 
         //region get serv copy
-        result = localDB!!.selectAll(servCopyResultsTable)
-        str = "|\tPos\t|\tDist\t|\tTime\t|\tName\t|\n"
-        tvServData!!.text = str
+        val result = localDB!!.selectAll(servCopyResultsTable)
+        var str = "|\tPos\t|\tDist\t|\tTime\t|\tName\t|\n"
+
         for (row in result) {
             var id = row[0]
             if (id.length == 1) id = id + "\t"
@@ -64,13 +44,31 @@ class NativeWorkWithData : MyCallback {
             var name = row[3]
             if (name.length > 15) name = name.substring(0, 14)
             str = "$str|\t$id\t|\t$dist\t|\t$time\t|\t$name\t|\n"
-            //      for (String item : row) {
-//        str = str + "|\t" + item + "\t";
-//      }
-//      str = str + "\n";
         }
-        tvServData!!.text = str
         //endregion
+    }
+
+    fun readLocalRecord(): String {
+        localDB = LocalDB(Public.context!!) //инициализируем и подгружаем таблици из файла
+
+        //region добавляем таблици если их еще нет (предположительно только первый запуск)
+        localDB!!.addNewTable(localResultsTable, 3.toByte()) //datetime,dist,time
+        localDB!!.addNewTable(servCopyResultsTable, 4.toByte()) //pos,dist,time,name
+        //endregion
+
+        //region get local
+        val result = localDB!!.selectAll(localResultsTable)
+        var str = "\t|\tDate\t|\tDistance\t|\tTime\n"
+        for (row in result) {
+            for (item in row) {
+                str = "$str\t| $item "
+            }
+            str = """
+                    $str
+                    
+                    """.trimIndent()
+        }
+        return str
     }
 
     fun insertLocalDB(dist: Float, time: Long) {

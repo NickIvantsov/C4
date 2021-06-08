@@ -1,16 +1,25 @@
 package ua.yandex.jere184.c4tappydefender.ui.fragments.main
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import dagger.android.AndroidInjection
+import androidx.lifecycle.lifecycleScope
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import ua.yandex.jere184.c4tappydefender.R
 import ua.yandex.jere184.c4tappydefender.databinding.MainFragmentBinding
 import ua.yandex.jere184.c4tappydefender.di.SAVED_TEXT
+import ua.yandex.jere184.c4tappydefender.logging.logD
 import ua.yandex.jere184.c4tappydefender.model.User
+import ua.yandex.jere184.c4tappydefender.ui.GameActivity
+import ua.yandex.jere184.c4tappydefender.util.NICK_NAME_KEY
 import ua.yandex.jere184.c4tappydefender.util.Public
 import ua.yandex.jere184.c4tappydefender.util.toEditable
 import javax.inject.Inject
@@ -22,6 +31,7 @@ class MainFragment : Fragment() {
 
     @Inject
     lateinit var viewModel: MainViewModel
+
     private val userDataObserver = Observer<User> { userData ->
         userData.nickName?.let {
             Public.playerName = it
@@ -44,50 +54,98 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        init()
+        pressedLeftBtn()
+        pressedRightBtn()
+        pressedShipIcon()
+        pressedStartBtn()
+    }
+
+    private fun init() {
         viewModel.getUserDataLiveData().observe(viewLifecycleOwner, userDataObserver)
         viewModel.readUserData(SAVED_TEXT)
-        /*try {
-
-            //region сохраняем размер экрана
-
-            Public.screanSize = Point()
-            val display = windowManager.defaultDisplay
-            display.getSize(Public.screanSize)
-            //endregion
-        } catch (ex: Exception) {
-            Log.e(
-                Public.myLogcatTAG,
-                "|||onCreate. new c_Public(this) Exception=" + ex.message + "|||"
-            )
-        }
-        Public.data.tvLocalData = findViewById<View>(R.id.tv_my_firstPlace) as TextView
-        Public.data.tvServData = findViewById<View>(R.id.tv_firstPlace) as TextView
-        imgViewShips = findViewById(R.id.img_view_ships)
-        imgViewShips!!.setImageBitmap(
-            Public.scaleBitmap(
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship_1),
-                3.toByte()
-            )
-        )
-        imgBtnLeft = findViewById(R.id.img_btn_left)
-        imgBtnRight = findViewById(R.id.img_btn_right)
-        editText = findViewById<View>(R.id.editText) as EditText
-        //editText.setText(c_Public._PlayerName);
-        sPref = getSharedPreferences(SAVED_TEXT, MODE_PRIVATE)
-        val savedText = sPref!!.getString(SAVED_TEXT, "")
-        editText!!.setText(savedText)
-        val buttonPlay = findViewById<View>(R.id.mButtonStart) as Button
-        buttonPlay.setOnClickListener(this)
-        imgBtnLeft!!.setOnClickListener(this)
-        imgBtnRight!!.setOnClickListener(this)*/
+        setShipIcon(getShipBitmap(R.drawable.spaceship_1))
+        loadLocalRecord()
     }
+
+    private fun loadLocalRecord() {
+        lifecycleScope.launchWhenResumed {
+            withContext(Dispatchers.IO) {
+                val records = Public.data.readLocalRecord()
+                withContext(Dispatchers.Main) {
+                    setMyRecord(records)
+                }
+            }
+        }
+    }
+
+    private fun pressedStartBtn() {
+        binding.btnStart.setOnClickListener {
+            Public.playerShipType = viewModel.currentPayerShipIndex.toByte()
+            val intent = Intent(requireContext(), GameActivity::class.java)
+            intent.putExtra(EXTRA_COUNT_FOR_SHIP, viewModel.currentPayerShipIndex)
+            startActivity(intent)
+        }
+    }
+
+    private fun pressedShipIcon() {
+        binding.ivShip.setOnClickListener {
+            setShipIcon(getShipBitmap(viewModel.nextShipIcon()))
+        }
+    }
+
+    private fun pressedRightBtn() {
+        binding.btnRight.setOnClickListener {
+            setShipIcon(getShipBitmap(viewModel.nextShipIcon()))
+        }
+    }
+
+    private fun pressedLeftBtn() {
+        binding.btnLeft.setOnClickListener {
+            setShipIcon(getShipBitmap(viewModel.nextShipIcon()))
+        }
+    }
+
+    private fun setMyRecord(record: String) {
+        binding.tvMyFirstPlace.text = record
+    }
+
+    private fun getShipBitmap(iconId: Int): Bitmap {
+        return Public.scaleBitmap(
+            BitmapFactory.decodeResource(requireContext().resources, iconId),
+            3.toByte()
+        )
+    }
+
 
     private fun setUserNickName(name: String) {
         binding.etNickName.text = name.toEditable()
     }
 
+    private fun setShipIcon(icon: Bitmap) {
+        binding.ivShip.setImageBitmap(icon)
+    }
+
+    override fun onPause() {
+        saveNickname()
+        super.onPause()
+    }
+
+    private fun saveNickname() {
+        viewModel.saveUserData(NICK_NAME_KEY, User(getNickName()))
+    }
+
+    private fun getNickName(): String {
+        return binding.etNickName.text.toString()
+    }
+
+    private fun log(msg: String = "") {
+        logD(msg)
+    }
+
     companion object {
         fun newInstance() = MainFragment()
+        private const val EXTRA_COUNT_FOR_SHIP = "c4tappydefender.t_payerShipIndex"
     }
 
 }

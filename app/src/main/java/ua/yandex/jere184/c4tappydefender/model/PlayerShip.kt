@@ -7,50 +7,36 @@ import ua.yandex.jere184.c4tappydefender.R
 import ua.yandex.jere184.c4tappydefender.util.Public
 
 class PlayerShip {
-    private var shipImg //_shipImg1,_shipImg2,_shipImg3;
-            : Bitmap? = null
-    @JvmField
+    private var shipImg: Bitmap? = null
+
     var fireImg: Bitmap? = null
-    @JvmField
     var x = 0f
-    @JvmField
     var y = 0f
-    @JvmField
     var fireX = 0f
-    @JvmField
     var fireY = 0f
-    @JvmField
     var touchY = 50f
     private var speed = 0f
-    private var GRAVITY = 25
+    private var gravity = 25
     private var maxY = 0
     private var minY = 0
-    private val MIN_SPEED = 2
-    private var MAX_SPEED = 45
-    var hitBox: Rect? = null
+    private val minSpeed = 2
+    private var maxSpeed = 45
+    lateinit var hitBox: Rect
         private set
-    var lifes = 0
+    var lives = 0
         private set
 
-    //public  List<Bitmap> _shipImgList = new ArrayList<Bitmap>();
-    //region flags
-    @JvmField
     var isReduceShieldStrength: Byte = 0
-    @JvmField
     var isTouchSpeed = false
-    var isTouchMove = false
-    var isTouchUP = false
 
-    //endregion
     fun update() {
         nextBitmapStep()
         if (isTouchSpeed) speed(speed + 0.4.toFloat()) else speed(speed - 0.6.toFloat())
 
-        //y = touchY;//не плавное ))
         //region плавное перемещение к пальцу по У
         val dist = touchY - y
-        if (dist > GRAVITY || dist < 0 - GRAVITY) {
-            if (dist > 0) y += GRAVITY.toFloat() else y -= GRAVITY.toFloat()
+        if (dist > gravity || dist < 0 - gravity) {
+            if (dist > 0) y += gravity.toFloat() else y -= gravity.toFloat()
         } else y += dist
         //endregion
 
@@ -63,20 +49,20 @@ class PlayerShip {
         }
         //endregion
         //region прямоугольник столкновений
-        hitBox!!.left = x.toInt()
-        hitBox!!.top = y.toInt()
-        hitBox!!.right = x.toInt() + shipImg!!.width
-        hitBox!!.bottom = y.toInt() + shipImg!!.height
+        hitBox.left = x.toInt()
+        hitBox.top = y.toInt()
+        hitBox.right = x.toInt() + shipImg!!.width
+        hitBox.bottom = y.toInt() + shipImg!!.height
         //endregion
     }
 
-    fun minusLifes() {
+    fun minusLives() {
         isReduceShieldStrength = 25
-        lifes--
+        lives--
     }
 
-    private fun reinitLifes() {
-        lifes = 10
+    private fun reInitLives() {
+        lives = 10
     }
 
     fun reInit() {
@@ -87,20 +73,20 @@ class PlayerShip {
             0.toByte() -> {
                 shipImg =
                     BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship_1)
-                MAX_SPEED = 60
-                GRAVITY = 10
+                maxSpeed = 60
+                gravity = 10
             }
             1.toByte() -> {
                 shipImg =
                     BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship)
-                MAX_SPEED = 30
-                GRAVITY = 40
+                maxSpeed = 30
+                gravity = 40
             }
             2.toByte() -> {
                 shipImg =
                     BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship_2)
-                MAX_SPEED = 45
-                GRAVITY = 20
+                maxSpeed = 45
+                gravity = 20
             }
         }
         shipImg = Public.scaleBitmap(shipImg!!, 3.toByte())
@@ -108,10 +94,11 @@ class PlayerShip {
         maxY = Public.screanSize!!.y - shipImg!!.height
         minY = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg!!.width, shipImg!!.height)
-        reinitLifes()
+        reInitLives()
     }
 
     private var bitmapIndex: Byte = 0
+
     private fun nextBitmapStep() {
         if (bitmapIndex.toInt() == 120) bitmapIndex = 0 else bitmapIndex++
         val returned: Bitmap = when {
@@ -158,34 +145,18 @@ class PlayerShip {
         return speed
     }
 
-    fun speed(newSpeed: Float) {
+    private fun speed(newSpeed: Float) {
         var newSpeed = newSpeed
-        if (newSpeed > MAX_SPEED) {
-            newSpeed = MAX_SPEED.toFloat()
+        if (newSpeed > maxSpeed) {
+            newSpeed = maxSpeed.toFloat()
         }
-        if (newSpeed < MIN_SPEED) {
-            newSpeed = MIN_SPEED.toFloat()
+        if (newSpeed < minSpeed) {
+            newSpeed = minSpeed.toFloat()
         }
 
-//    if (newSpeed > 20) {
-//      bitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship__1);
-//    } else if (newSpeed > 10) {
-//      bitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship__2);
-//    } else {
-//      bitmap = BitmapFactory.decodeResource(c_Public._context.getResources(), R.drawable.spaceship__0);
-//    }
         speed = newSpeed
     }
 
-    companion object {
-        //region members
-        var _userName // = "User" + c_Public._random.nextInt();
-                : String? = null
-    }
-
-    //endregion
-    //endregion
-    //region constructors
     init {
         reInit()
     }
