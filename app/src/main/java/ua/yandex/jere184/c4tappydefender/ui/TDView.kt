@@ -9,20 +9,24 @@ import android.graphics.Rect
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
+import ua.yandex.jere184.c4tappydefender.db.userRecords.UserRecordEntity
 import ua.yandex.jere184.c4tappydefender.model.EnemyShip
 import ua.yandex.jere184.c4tappydefender.model.PlayerShip
 import ua.yandex.jere184.c4tappydefender.model.SpaceDust
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import ua.yandex.jere184.c4tappydefender.util.Public
 import java.io.IOException
 import java.util.*
 
 class TDView(  //endregion
-    private val _context: Context
+    private val _context: Context,
+    private val userRecordRepository: IUserRecordRepository
 ) : SurfaceView(_context), Runnable {
     //region объявления
     //c_joystick _joystick;
@@ -88,7 +92,15 @@ class TDView(  //endregion
                 hitDetected = false
                 gameEnded = true
                 soundPool.play(destroyed, 1f, 1f, 0, 0, 1f)
-                Public.data.addNewResult(distance, timeTaken)
+                val currentTimeStr =
+                    DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
+                userRecordRepository.insert(
+                    UserRecordEntity(
+                        currentTimeStr.toString(),
+                        distance,
+                        timeTaken
+                    )
+                )
             }
         }
         for (sd in dustList) {
@@ -160,7 +172,7 @@ class TDView(  //endregion
                 )
                 for (i in enemyList.indices) {
                     canvas.drawBitmap(
-                        enemyList[i].bitmap!!,
+                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception
                         enemyList[i].x.toFloat(),
                         enemyList[i].y.toFloat(),
                         paint

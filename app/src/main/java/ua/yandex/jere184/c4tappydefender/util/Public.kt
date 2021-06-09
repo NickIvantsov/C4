@@ -5,13 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.net.wifi.WifiManager
 import ua.yandex.jere184.c4tappydefender.model.EnemyShip.Companion.initBitmap
-import ua.yandex.jere184.c4tappydefender.net.NativeWorkWithData
-import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import java.util.*
 
 class Public /*публичный класс со статическими свойствами (которые понадобятся почти по всех проэктах)*/(
-    context: Context?,
-    userRecordRepository: IUserRecordRepository
+    context: Context?
 ) {
     companion object {
         //endregion
@@ -21,7 +18,6 @@ class Public /*публичный класс со статическими св�
         var context: Context? = null
         lateinit var random: Random
         var screanSize: Point? = null
-        lateinit var data: NativeWorkWithData
         var playerShipType: Byte = 0
 
         //уменьшаем изображение по размеру
@@ -45,7 +41,6 @@ class Public /*публичный класс со статическими св�
         //endregion
         playerName = "name"
         random = Random()
-        data = NativeWorkWithData(userRecordRepository)
         initBitmap()
     }
 }

@@ -19,9 +19,6 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    @Inject
-    lateinit var userRecordRepository: IUserRecordRepository
-
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate() {
@@ -31,7 +28,7 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
             .build()
             .inject(this)
 
-        Public(this, userRecordRepository) // инициализируем
+        Public(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())

@@ -1,34 +1,29 @@
 package ua.yandex.jere184.c4tappydefender.ui
 
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import dagger.android.AndroidInjection
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
+import ua.yandex.jere184.c4tappydefender.util.hideSystemUI
+import javax.inject.Inject
 
 class GameActivity : AppCompatActivity() {
 
     private var gameView: TDView? = null
     var mIntent: Intent? = null
+
+    @Inject
+    lateinit var userRecordRepository: IUserRecordRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-        gameView = TDView(this)
+        gameView = TDView(this, userRecordRepository)
         setContentView(gameView)
-        val distance = TDView.distance.toString()
-        val name = "distance"
         mIntent = intent
         tmpCount = mIntent!!.getIntExtra("c4tappydefender.t_payerShipIndex", 0)
-
-        /*ContentValues contentValues = new ContentValues();
-        contentValues.put(DBHelper.KEY_NAME, name);
-        contentValues.put(DBHelper.KEY_DISTANCE, distance);*/
     }
 
     public override fun onPause() {
@@ -37,6 +32,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     public override fun onResume() {
+        hideSystemUI(window, gameView!!)
         super.onResume()
         gameView!!.resume()
     }
@@ -48,12 +44,6 @@ class GameActivity : AppCompatActivity() {
         }
         return false
     }
-
-    public override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    fun onClickEditText(view: View?) {}
 
     companion object {
         var tmpCount = 0
