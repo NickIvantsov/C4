@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bindingImpl = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        hideSystemUI()
+
         try {
             //region сохраняем размер экрана
             Public.screanSize = Point()
@@ -58,6 +58,11 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         return false
+    }
+
+    override fun onResume() {
+        hideSystemUI()
+        super.onResume()
     }
 
     private fun log(throwable: Throwable, msg: String = "") {

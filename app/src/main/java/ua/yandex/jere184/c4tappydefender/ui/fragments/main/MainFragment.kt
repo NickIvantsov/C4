@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ua.yandex.jere184.c4tappydefender.R
 import ua.yandex.jere184.c4tappydefender.databinding.MainFragmentBinding
+import ua.yandex.jere184.c4tappydefender.db.userRecords.UserRecordEntity
 import ua.yandex.jere184.c4tappydefender.di.SAVED_TEXT
 import ua.yandex.jere184.c4tappydefender.logging.logD
 import ua.yandex.jere184.c4tappydefender.model.User
@@ -37,6 +38,15 @@ class MainFragment : Fragment() {
             Public.playerName = it
             setUserNickName(it)
         }
+    }
+    private val userRecordsObserver = Observer<List<UserRecordEntity>> { userRecords ->
+        val strBuilder = StringBuilder("time | dist | time (sec) \n")
+        userRecords.forEach {
+            strBuilder.append("${it.currentTime} | ${it.dist} | ${it.time/1000}")
+            strBuilder.append("\n")
+
+        }
+        setMyRecord(strBuilder.toString())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,22 +71,15 @@ class MainFragment : Fragment() {
         pressedStartBtn()
     }
 
+    private fun subscribeUserRecords() {
+        viewModel.userRecordsFlow.observe(viewLifecycleOwner, userRecordsObserver)
+    }
+
     private fun init() {
         viewModel.getUserDataLiveData().observe(viewLifecycleOwner, userDataObserver)
         viewModel.readUserData(SAVED_TEXT)
         setShipIcon(getShipBitmap(R.drawable.spaceship_1))
-        loadLocalRecord()
-    }
-
-    private fun loadLocalRecord() {
-        lifecycleScope.launchWhenResumed {
-            withContext(Dispatchers.IO) {
-                val records = Public.data.readLocalRecord()
-                withContext(Dispatchers.Main) {
-                    setMyRecord(records)
-                }
-            }
-        }
+        subscribeUserRecords()
     }
 
     private fun pressedStartBtn() {

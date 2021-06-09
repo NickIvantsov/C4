@@ -6,10 +6,12 @@ import android.graphics.Point
 import android.net.wifi.WifiManager
 import ua.yandex.jere184.c4tappydefender.model.EnemyShip.Companion.initBitmap
 import ua.yandex.jere184.c4tappydefender.net.NativeWorkWithData
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import java.util.*
 
 class Public /*публичный класс со статическими свойствами (которые понадобятся почти по всех проэктах)*/(
-    context: Context?
+    context: Context?,
+    userRecordRepository: IUserRecordRepository
 ) {
     companion object {
         //endregion
@@ -43,7 +45,7 @@ class Public /*публичный класс со статическими св�
         //endregion
         playerName = "name"
         random = Random()
-        data = NativeWorkWithData()
+        data = NativeWorkWithData(userRecordRepository)
         initBitmap()
     }
 }

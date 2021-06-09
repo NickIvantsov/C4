@@ -9,6 +9,7 @@ import timber.log.Timber.DebugTree
 import ua.yandex.jere184.c4tappydefender.BuildConfig
 import ua.yandex.jere184.c4tappydefender.di.DaggerAppComponent
 import ua.yandex.jere184.c4tappydefender.logging.CrashReportingTree
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import ua.yandex.jere184.c4tappydefender.util.Public
 import javax.inject.Inject
 
@@ -17,6 +18,10 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
 
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
+    @Inject
+    lateinit var userRecordRepository: IUserRecordRepository
+
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate() {
@@ -26,7 +31,7 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
             .build()
             .inject(this)
 
-        Public(this) // инициализируем
+        Public(this, userRecordRepository) // инициализируем
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
@@ -35,4 +40,4 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
         }
     }
 
-  }
+}

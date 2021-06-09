@@ -52,7 +52,7 @@ abstract class ViewModelBuilderModule {
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)
-    protected abstract fun mainViewModel(moviesListViewModel: MainViewModel?): ViewModel?
+    protected abstract fun mainViewModel(mainViewModel: MainViewModel): ViewModel
 }
 
 @Target(

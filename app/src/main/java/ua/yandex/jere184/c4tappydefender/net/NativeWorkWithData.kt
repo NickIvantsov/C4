@@ -3,7 +3,9 @@ package ua.yandex.jere184.c4tappydefender.net
 import android.text.format.DateFormat
 import android.widget.TextView
 import ua.yandex.jere184.c4tappydefender.db.LocalDB
+import ua.yandex.jere184.c4tappydefender.db.userRecords.UserRecordEntity
 import ua.yandex.jere184.c4tappydefender.net.QueryHTTP.MyCallback
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import ua.yandex.jere184.c4tappydefender.util.GlobalSettings
 import ua.yandex.jere184.c4tappydefender.util.MyLog
 import ua.yandex.jere184.c4tappydefender.util.Public
@@ -13,7 +15,9 @@ import java.util.*
  * нативный класс работы с данными использует класы lib адаптируя их функции под контекст этого проэкта
  * (для каждого проэкта заново переписывается)
  */
-class NativeWorkWithData : MyCallback {
+class NativeWorkWithData(
+    private val userRecordRepository: IUserRecordRepository
+) : MyCallback {
     //region members
 
     //endregion
@@ -71,10 +75,11 @@ class NativeWorkWithData : MyCallback {
         return str
     }
 
-    fun insertLocalDB(dist: Float, time: Long) {
+    private fun insertLocalDB(dist: Float, time: Long) {
         val currentTimeStr = DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
             .toString()
-        localDB!!.f_insert(localResultsTable, currentTimeStr, dist.toString(), time.toString())
+        userRecordRepository.insert(UserRecordEntity(currentTimeStr,dist,time))
+//        localDB!!.f_insert(localResultsTable, currentTimeStr, dist.toString(), time.toString())
     }
 
     //endregion

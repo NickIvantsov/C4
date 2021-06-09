@@ -1,23 +1,26 @@
 package ua.yandex.jere184.c4tappydefender.ui.fragments.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.yandex.jere184.c4tappydefender.R
+import ua.yandex.jere184.c4tappydefender.db.userRecords.UserRecordEntity
 import ua.yandex.jere184.c4tappydefender.model.User
+import ua.yandex.jere184.c4tappydefender.repository.IUserRecordRepository
 import ua.yandex.jere184.c4tappydefender.repository.IUserRepository
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val userRepository: IUserRepository
+    private val userRepository: IUserRepository,
+    userRecordRepository: IUserRecordRepository,
 ) : ViewModel() {
 
     var currentPayerShipIndex = 0
         private set
+
+    val userRecordsFlow: LiveData<List<UserRecordEntity>> =
+        userRecordRepository.plantsFlow.asLiveData()
 
     private fun incrementIconPosition() {
         currentPayerShipIndex++
