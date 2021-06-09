@@ -9,10 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ua.yandex.jere184.c4tappydefender.R
 import ua.yandex.jere184.c4tappydefender.databinding.MainFragmentBinding
 import ua.yandex.jere184.c4tappydefender.db.userRecords.UserRecordEntity
@@ -20,6 +18,7 @@ import ua.yandex.jere184.c4tappydefender.di.SAVED_TEXT
 import ua.yandex.jere184.c4tappydefender.logging.logD
 import ua.yandex.jere184.c4tappydefender.model.User
 import ua.yandex.jere184.c4tappydefender.ui.GameActivity
+import ua.yandex.jere184.c4tappydefender.ui.adapters.UserRecordsAdapter
 import ua.yandex.jere184.c4tappydefender.util.NICK_NAME_KEY
 import ua.yandex.jere184.c4tappydefender.util.Public
 import ua.yandex.jere184.c4tappydefender.util.toEditable
@@ -33,6 +32,9 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var viewModel: MainViewModel
 
+    @Inject
+    lateinit var userRecordsAdapter: UserRecordsAdapter
+
     private val userDataObserver = Observer<User> { userData ->
         userData.nickName?.let {
             Public.playerName = it
@@ -40,13 +42,7 @@ class MainFragment : Fragment() {
         }
     }
     private val userRecordsObserver = Observer<List<UserRecordEntity>> { userRecords ->
-        val strBuilder = StringBuilder("time | dist | time (sec) \n")
-        userRecords.forEach {
-            strBuilder.append("${it.currentTime} | ${it.dist} | ${it.time/1000}")
-            strBuilder.append("\n")
-
-        }
-        setMyRecord(strBuilder.toString())
+        userRecordsAdapter.addRecords(userRecords)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +76,8 @@ class MainFragment : Fragment() {
         viewModel.readUserData(SAVED_TEXT)
         setShipIcon(getShipBitmap(R.drawable.spaceship_1))
         subscribeUserRecords()
+        binding.rvUserRecords.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvUserRecords.adapter = userRecordsAdapter
     }
 
     private fun pressedStartBtn() {
@@ -107,10 +105,6 @@ class MainFragment : Fragment() {
         binding.btnLeft.setOnClickListener {
             setShipIcon(getShipBitmap(viewModel.nextShipIcon()))
         }
-    }
-
-    private fun setMyRecord(record: String) {
-        binding.tvMyFirstPlace.text = record
     }
 
     private fun getShipBitmap(iconId: Int): Bitmap {

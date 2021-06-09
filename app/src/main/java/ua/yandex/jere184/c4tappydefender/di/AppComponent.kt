@@ -3,7 +3,6 @@ package ua.yandex.jere184.c4tappydefender.di
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
-import dagger.Provides
 import dagger.android.support.AndroidSupportInjectionModule
 import ua.yandex.jere184.c4tappydefender.core.TappyCosmicEvasionApplication
 import javax.inject.Singleton
