@@ -1,4 +1,4 @@
-package ua.yandex.jere184.c4tappydefender.ui
+package ua.yandex.jere184.c4tappydefender.ui.customView
 
 import android.content.Context
 import android.content.res.AssetFileDescriptor

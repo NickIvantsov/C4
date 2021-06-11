@@ -37,13 +37,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+   /* override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish()
             return true
         }
         return false
-    }
+    }*/
 
     override fun onResume() {
         hideSystemUI(window, binding.mainConteiner)

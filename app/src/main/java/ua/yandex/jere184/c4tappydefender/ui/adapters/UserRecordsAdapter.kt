@@ -52,7 +52,7 @@ class UserRecordsAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerVi
         if (holder is UserRecordsViewHolder) {
             holder.binding.tvCurentTime.text = record.currentTime
             holder.binding.tvDistance.text = record.dist.toString()
-            holder.binding.tvTime.text = record.time.toString()
+            holder.binding.tvTime.text = (record.time / 1000).toString()
         }
 
     }

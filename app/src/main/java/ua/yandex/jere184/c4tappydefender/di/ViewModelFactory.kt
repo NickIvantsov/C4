@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
+import ua.yandex.jere184.c4tappydefender.ui.fragments.game.GameViewModel
 import ua.yandex.jere184.c4tappydefender.ui.fragments.main.MainViewModel
 import javax.inject.Inject
 import javax.inject.Provider
@@ -53,6 +54,11 @@ abstract class ViewModelBuilderModule {
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     protected abstract fun mainViewModel(mainViewModel: MainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GameViewModel::class)
+    protected abstract fun gameViewModel(mainViewModel: GameViewModel): ViewModel
 }
 
 @Target(
