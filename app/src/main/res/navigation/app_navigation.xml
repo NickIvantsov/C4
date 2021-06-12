@@ -6,7 +6,7 @@
     app:startDestination="@id/mainFragment">
     <fragment
         android:id="@+id/mainFragment"
-        android:name="ua.yandex.jere184.c4tappydefender.ui.fragments.main.MainFragment"
+        android:name="rewheeldev.tappycosmicevasion.ui.fragments.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/gameFragment"
-        android:name="ua.yandex.jere184.c4tappydefender.ui.fragments.game.GameFragment"
+        android:name="rewheeldev.tappycosmicevasion.ui.fragments.game.GameFragment"
         android:label="game_fragment"
         tools:layout="@layout/game_fragment" >
         <argument
