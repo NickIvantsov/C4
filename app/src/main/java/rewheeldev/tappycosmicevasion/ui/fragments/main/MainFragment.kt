@@ -121,8 +121,8 @@ class MainFragment : Fragment() {
         )
         return scaleBitmap(
             BitmapFactory.decodeResource(requireContext().resources, iconId),
-            3.toByte(),
-            point
+            3,
+            point.x
         )
     }
 

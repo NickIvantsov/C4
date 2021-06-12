@@ -8,7 +8,11 @@ import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.util.scaleBitmap
 
-class PlayerShip(private val context: Context,private val screenSize: Point,private val playerShipType:Int) {
+class PlayerShip(
+    private val context: Context,
+    private val screenSize: Point,
+    private val playerShipType: Int
+) {
     private var shipImg: Bitmap? = null
 
     var fireImg: Bitmap? = null
@@ -71,32 +75,70 @@ class PlayerShip(private val context: Context,private val screenSize: Point,priv
         x = 70f //!!! 50;
         y = 250f
         speed(1f)
-        when (playerShipType) {
-            0 -> {
-                shipImg =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_1)
-                maxSpeed = 60
-                gravity = 10
-            }
-            1 -> {
-                shipImg =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship)
-                maxSpeed = 30
-                gravity = 40
-            }
-            2 -> {
-                shipImg =
-                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_2)
-                maxSpeed = 45
-                gravity = 20
-            }
-        }
-        shipImg = scaleBitmap(shipImg!!, 3.toByte(),screenSize)
+        shipInitialization()
+        shipImg = scaleBitmap(shipImg!!, 3, screenSize.x)
         isReduceShieldStrength = 0
         maxY = screenSize.y - shipImg!!.height
         minY = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg!!.width, shipImg!!.height)
         reInitLives()
+    }
+
+    private fun shipInitialization() {
+        shipImg = getShipBitmap(playerShipType)
+        maxSpeed = getShipMaxSpeed(playerShipType)
+        gravity = getShipGravity(playerShipType)
+    }
+
+    private fun getShipBitmap(playerShipType: Int): Bitmap {
+        return when (playerShipType) {
+            0 -> {
+                BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_1)
+            }
+            1 -> {
+                BitmapFactory.decodeResource(context.resources, R.drawable.spaceship)
+            }
+            2 -> {
+                BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_2)
+            }
+            else -> {
+                throw Exception("Unknown ship type")
+            }
+        }
+    }
+
+    private fun getShipMaxSpeed(playerShipType: Int): Int {
+        return when (playerShipType) {
+            0 -> {
+                60
+            }
+            1 -> {
+                30
+            }
+            2 -> {
+                45
+            }
+            else -> {
+                throw Exception("Unknown ship type")
+            }
+        }
+    }
+
+    private fun getShipGravity(playerShipType: Int): Int {
+        return when (playerShipType) {
+            0 -> {
+                10
+            }
+            1 -> {
+                40
+            }
+            2 -> {
+                20
+            }
+            else -> {
+                throw Exception("Unknown ship type")
+            }
+        }
     }
 
     private var bitmapIndex: Byte = 0
@@ -125,15 +167,15 @@ class PlayerShip(private val context: Context,private val screenSize: Point,priv
         }
         val udm = (screenSize.x / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = scaleBitmap(returned, 5.toByte(),screenSize)
+            fireImg = scaleBitmap(returned, 5, screenSize.x)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = scaleBitmap(returned, 4.toByte(),screenSize)
+            fireImg = scaleBitmap(returned, 4, screenSize.x)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = scaleBitmap(returned, 3.toByte(),screenSize)
+            fireImg = scaleBitmap(returned, 3, screenSize.x)
             fireX = -(6 * udm)
             fireY = udm
         }
@@ -148,15 +190,15 @@ class PlayerShip(private val context: Context,private val screenSize: Point,priv
     }
 
     private fun speed(newSpeed: Float) {
-        var newSpeed = newSpeed
+        var newSpeedTmp = newSpeed
         if (newSpeed > maxSpeed) {
-            newSpeed = maxSpeed.toFloat()
+            newSpeedTmp = maxSpeed.toFloat()
         }
         if (newSpeed < minSpeed) {
-            newSpeed = minSpeed.toFloat()
+            newSpeedTmp = minSpeed.toFloat()
         }
 
-        speed = newSpeed
+        speed = newSpeedTmp
     }
 
     init {

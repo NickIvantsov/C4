@@ -14,21 +14,24 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
 import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
-import rewheeldev.tappycosmicevasion.model.EnemyShip
+import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.model.PlayerShip
 import rewheeldev.tappycosmicevasion.model.SpaceDust
+import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import java.io.IOException
 import java.util.*
 
-class SpaceView(  //endregion
+class SpaceView(
+    //endregion
     context: Context,
     private val userRecordRepository: IUserRecordRepository,
     private val random: Random,
     private val screenSize: Point,
-    private val playerShipType:Int,
+    private val playerShipType: Int,
+    private val meteoriteRepository: IMeteoriteRepository,
     attrs: AttributeSet? = null,
-) : SurfaceView(context,attrs), Runnable {
+) : SurfaceView(context, attrs), Runnable {
     //region объявления
     //c_joystick _joystick;
     //    private SharedPreferences prefs;
@@ -58,7 +61,7 @@ class SpaceView(  //endregion
     //region objects
     private lateinit var player: PlayerShip
     private var dustList = ArrayList<SpaceDust>()
-    private var enemyList = ArrayList<EnemyShip>()
+    private var enemyList = ArrayList<Meteorite>()
     private var timeStarted: Long = 0
     private val screenX: Int
     private val screenY: Int
@@ -81,9 +84,9 @@ class SpaceView(  //endregion
         if (gameEnded) return
         var hitDetected = false
         for (i in enemyList.indices) {
-            if (Rect.intersects(player.hitBox, enemyList[i].hitBox!!)) {
+            if (Rect.intersects(player.hitBox, enemyList[i].hitBox)) {
                 hitDetected = true
-                enemyList[i].setX(-350)
+                enemyList[i].x = -350
             }
         }
         if (hitDetected) {
@@ -122,7 +125,15 @@ class SpaceView(  //endregion
 
     private fun startNextLevel() {
         level++
-        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
+        enemyList.add(
+            createNewMeteorite(
+                screenX,
+                screenY,
+                random,
+                screenSize,
+                meteoriteRepository
+            )
+        )
     }
 
     private fun draw() {
@@ -177,7 +188,7 @@ class SpaceView(  //endregion
                 )
                 for (i in enemyList.indices) {
                     canvas.drawBitmap(
-                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception (2 times)
+                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception (3 times)
                         enemyList[i].x.toFloat(),
                         enemyList[i].y.toFloat(),
                         paint
@@ -279,14 +290,22 @@ class SpaceView(  //endregion
 
     private fun startGame() {
 
-        player = PlayerShip(context.applicationContext,screenSize,playerShipType)
+        player = PlayerShip(context.applicationContext, screenSize, playerShipType)
         enemyList.clear()
-        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
+        enemyList.add(
+            createNewMeteorite(
+                screenX,
+                screenY,
+                random,
+                screenSize,
+                meteoriteRepository
+            )
+        )
         //soundPool.play(start,1,1,0,10,1);
         val numSpecs: Short = 100
         dustList.clear()
         for (i in 0 until numSpecs) {
-            val spec = SpaceDust(screenX.toShort(), screenY.toShort(),random)
+            val spec = SpaceDust(screenX.toShort(), screenY.toShort(), random)
             dustList.add(spec)
         }
         distance = 0f
@@ -303,8 +322,33 @@ class SpaceView(  //endregion
         gameEnded = false
         player.reInit()
         enemyList.clear()
-        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
+        enemyList.add(
+            createNewMeteorite(
+                screenX,
+                screenY,
+                random,
+                screenSize,
+                meteoriteRepository
+            )
+        )
     }
+
+    private fun createNewMeteorite(
+        maxX: Int,
+        maxY: Int,
+        random: Random,
+        screenSize: Point,
+        meteoriteRepository: IMeteoriteRepository
+    ): Meteorite {
+        return Meteorite.createNewMeteorite(
+            maxX,
+            maxY,
+            random,
+            screenSize,
+            meteoriteRepository
+        )
+    }
+
     //endregion
     //endregion
     init {
@@ -355,6 +399,7 @@ class SpaceView(  //endregion
         setOnTouchListener(onTouchSpeed)
         //endregion
     }
+
     private fun log(msg: String) {
         Log.d(TAG, msg)
     }

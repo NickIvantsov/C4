@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.android.support.AndroidSupportInjection
+import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.util.hideSystemUI
@@ -26,6 +27,9 @@ class GameFragment : Fragment() {
 
     @Inject
     lateinit var viewModel: GameViewModel
+
+    @Inject
+    lateinit var meteoriteRepository: IMeteoriteRepository
 
     private val random = Random()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +49,14 @@ class GameFragment : Fragment() {
         )
 
         val args: GameFragmentArgs by navArgs()
-        gameView = SpaceView(requireContext(), userRecordRepository, random, point, args.typeShip)
+        gameView = SpaceView(
+            requireContext(),
+            userRecordRepository,
+            random,
+            point,
+            args.typeShip,
+            meteoriteRepository
+        )
     }
 
     override fun onCreateView(
