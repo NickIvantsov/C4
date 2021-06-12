@@ -2,14 +2,12 @@ package rewheeldev.tappycosmicevasion.ui.customView
 
 import android.content.Context
 import android.content.res.AssetFileDescriptor
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
 import android.text.format.DateFormat
+import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -20,14 +18,17 @@ import rewheeldev.tappycosmicevasion.model.EnemyShip
 import rewheeldev.tappycosmicevasion.model.PlayerShip
 import rewheeldev.tappycosmicevasion.model.SpaceDust
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.util.Public
 import java.io.IOException
 import java.util.*
 
-class TDView(  //endregion
-    private val _context: Context,
-    private val userRecordRepository: IUserRecordRepository
-) : SurfaceView(_context), Runnable {
+class SpaceView(  //endregion
+    context: Context,
+    private val userRecordRepository: IUserRecordRepository,
+    private val random: Random,
+    private val screenSize: Point,
+    private val playerShipType:Int,
+    attrs: AttributeSet? = null,
+) : SurfaceView(context,attrs), Runnable {
     //region объявления
     //c_joystick _joystick;
     //    private SharedPreferences prefs;
@@ -121,7 +122,7 @@ class TDView(  //endregion
 
     private fun startNextLevel() {
         level++
-        enemyList.add(EnemyShip(screenX, screenY))
+        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
     }
 
     private fun draw() {
@@ -144,20 +145,24 @@ class TDView(  //endregion
                     if (opacity > 255) opacity = 255 else if (opacity < 50) opacity = 50
 
                     //region мигание синим и ораньжевым цветом
-                    if (dustList[i].counter % 30 > 6) // всего 30 кадров с 6 по 30 работает обычное затухание прозрачности белой звезды
-                        paint.color = Color.argb(
+                    when {
+                        dustList[i].counter % 30 > 6 // всего 30 кадров с 6 по 30 работает обычное затухание прозрачности белой звезды
+                        -> paint.color = Color.argb(
                             opacity.toInt(),
                             255,
                             255,
                             255
-                        ) else if (dustList[i].counter % 30 > 3) // с 3 по 6 ярко светится синим
-                        paint.color = Color.argb(
+                        )
+                        dustList[i].counter % 30 > 3 // с 3 по 6 ярко светится синим
+                        -> paint.color = Color.argb(
                             255,
                             0,
                             0,
                             255
-                        ) else  // с 0 по 3 ярко светится (типо ораньжевым)
-                        paint.color = Color.argb(255, 200, 100, 0)
+                        )
+                        else  // с 0 по 3 ярко светится (типо ораньжевым)
+                        -> paint.color = Color.argb(255, 200, 100, 0)
+                    }
                     //endregion
                     canvas.drawPoint(dustList[i].x.toFloat(), dustList[i].y.toFloat(), paint)
                 }
@@ -172,7 +177,7 @@ class TDView(  //endregion
                 )
                 for (i in enemyList.indices) {
                     canvas.drawBitmap(
-                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception
+                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception (2 times)
                         enemyList[i].x.toFloat(),
                         enemyList[i].y.toFloat(),
                         paint
@@ -184,7 +189,7 @@ class TDView(  //endregion
                 paint.textAlign = Paint.Align.LEFT
                 paint.color = Color.argb(255, 255, 255, 255)
                 paint.textSize = 25f
-                canvas.drawText("Level$level", 10f, 20f, paint)
+                canvas.drawText("Level$level", 20f, 30f, paint)
                 canvas.drawText(
                     "Time:" + timeTaken / 1000 + "s",
                     (screenX / 2).toFloat(),
@@ -273,14 +278,15 @@ class TDView(  //endregion
     }
 
     private fun startGame() {
-        player = PlayerShip()
+
+        player = PlayerShip(context.applicationContext,screenSize,playerShipType)
         enemyList.clear()
-        enemyList.add(EnemyShip(screenX, screenY))
+        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
         //soundPool.play(start,1,1,0,10,1);
         val numSpecs: Short = 100
         dustList.clear()
         for (i in 0 until numSpecs) {
-            val spec = SpaceDust(screenX.toShort(), screenY.toShort())
+            val spec = SpaceDust(screenX.toShort(), screenY.toShort(),random)
             dustList.add(spec)
         }
         distance = 0f
@@ -297,26 +303,14 @@ class TDView(  //endregion
         gameEnded = false
         player.reInit()
         enemyList.clear()
-        enemyList.add(EnemyShip(screenX, screenY))
+        enemyList.add(EnemyShip(screenX, screenY,random,screenSize))
     }
-
-    fun getDistance(): Float /* ???? */ {
-        return distance
-    }
-
-    companion object {
-        //endregion
-        //region Счетчики
-        var distance = 0f
-        var timeTaken: Long = 0
-    }
-
     //endregion
     //endregion
     init {
         //region v1 добавление звука
         try {
-            val assetManager = _context.assets
+            val assetManager = context.assets
             var descriptor: AssetFileDescriptor = assetManager.openFd("start.ogg")
             start = soundPool.load(descriptor, 0)
 
@@ -327,11 +321,11 @@ class TDView(  //endregion
             descriptor = assetManager.openFd("destroyed.ogg")
             destroyed = soundPool.load(descriptor, 0)
         } catch (e: IOException) {
-            Log.d(Public.myLogcatTAG, "||| TDView||| error failed to load sound files")
+            log("||| TDView||| error failed to load sound files")
         }
         //_joystick = new c_joystick();
-        screenX = Public.screanSize!!.x
-        screenY = Public.screanSize!!.y
+        screenX = screenSize.x
+        screenY = screenSize.y
         ourHolder = holder
         paint = Paint()
         startGame()
@@ -360,5 +354,16 @@ class TDView(  //endregion
         }
         setOnTouchListener(onTouchSpeed)
         //endregion
+    }
+    private fun log(msg: String) {
+        Log.d(TAG, msg)
+    }
+
+    companion object {
+        //endregion
+        //region Счетчики
+        var distance = 0f
+        var timeTaken: Long = 0
+        private const val TAG = "TDView"
     }
 }

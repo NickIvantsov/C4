@@ -1,7 +1,7 @@
 package rewheeldev.tappycosmicevasion.ui.fragments.game
 
+import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +11,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.ui.customView.TDView
+import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.util.hideSystemUI
+import java.util.*
 import javax.inject.Inject
 
 class GameFragment : Fragment() {
 
 
-    private var gameView: TDView? = null
+    private var gameView: SpaceView? = null
 
     @Inject
     lateinit var userRecordRepository: IUserRecordRepository
@@ -26,11 +27,25 @@ class GameFragment : Fragment() {
     @Inject
     lateinit var viewModel: GameViewModel
 
-
+    private val random = Random()
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
-        gameView = TDView(requireContext(), userRecordRepository)
+        val point = Point()
+        val display =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                requireActivity().display
+            } else {
+                requireActivity().windowManager.defaultDisplay
+            }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            requireActivity().windowManager.currentWindowMetrics
+        } else display?.getSize(
+            point
+        )
+
+        val args: GameFragmentArgs by navArgs()
+        gameView = SpaceView(requireContext(), userRecordRepository, random, point, args.typeShip)
     }
 
     override fun onCreateView(
@@ -42,18 +57,10 @@ class GameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val args: GameFragmentArgs by navArgs()
-        Log.d(TAG, "shipType = ${args.typeShip2}")
-        tmpCount = 1//args.typeShip2
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
             OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Log.d(TAG, "Fragment back pressed invoked")
                 findNavController().popBackStack()
-                /*if (isEnabled) {
-                    isEnabled = false
-                    requireActivity().onBackPressed()
-                }*/
             }
         })
     }
@@ -72,7 +79,5 @@ class GameFragment : Fragment() {
 
     companion object {
         private const val TAG = "GameFragment"
-        var tmpCount = 0
-
     }
 }

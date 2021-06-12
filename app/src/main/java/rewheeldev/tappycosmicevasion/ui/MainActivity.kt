@@ -1,13 +1,11 @@
 package rewheeldev.tappycosmicevasion.ui
 
-import android.graphics.Point
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dagger.android.AndroidInjection
 import rewheeldev.tappycosmicevasion.databinding.ActivityMainBinding
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.logging.logE
-import rewheeldev.tappycosmicevasion.util.Public
 import rewheeldev.tappycosmicevasion.util.hideSystemUI
 
 class MainActivity : AppCompatActivity() {
@@ -20,19 +18,19 @@ class MainActivity : AppCompatActivity() {
         bindingImpl = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        try {
-            //region сохраняем размер экрана
-            Public.screanSize = Point()
-            val display =
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) display else windowManager.defaultDisplay
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) windowManager.currentWindowMetrics else display?.getSize(
-                Public.screanSize
-            )
-
-            //endregion
-        } catch (ex: Exception) {
-            log(ex, "|||onCreate. new c_Public(this) Exception=" + ex.message + "|||")
-        }
+//        try {
+//            //region сохраняем размер экрана
+////            Public.screanSize = Point()
+//            val display =
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) display else windowManager.defaultDisplay
+//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) windowManager.currentWindowMetrics else display?.getSize(
+//                Public.screanSize
+//            )
+//
+//            //endregion
+//        } catch (ex: Exception) {
+//            log(ex, "|||onCreate. new c_Public(this) Exception=" + ex.message + "|||")
+//        }
     }
 
 

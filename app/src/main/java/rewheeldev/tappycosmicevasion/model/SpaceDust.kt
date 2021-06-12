@@ -1,8 +1,12 @@
 package rewheeldev.tappycosmicevasion.model
 
-import rewheeldev.tappycosmicevasion.util.Public
+import java.util.*
 
-class SpaceDust(screenX: Short, screenY: Short) {
+class SpaceDust(
+    screenX: Short,
+    screenY: Short,
+    private val random: Random
+) {
     var x: Short
     var y: Short
     private var speed: Short
@@ -21,23 +25,23 @@ class SpaceDust(screenX: Short, screenY: Short) {
         //respawn space dust
         if (x < 0) {
             x = maxX
-            y = Public.random.nextInt(maxY.toInt()).toShort()
-            speed = Public.random.nextInt(15).toShort()
+            y = random.nextInt(maxY.toInt()).toShort()
+            speed = random.nextInt(15).toShort()
         }
     }
 
     init {
-        counter = Public.random.nextInt(110).toByte()
+        counter = random.nextInt(110).toByte()
         maxX = screenX
         maxY = screenY
         minX = 0
         minY = 0
 
         //Set a speed between 0 and 9
-        speed = Public.random.nextInt(10).toShort()
+        speed = random.nextInt(10).toShort()
 
         //Set the starting coordinates
-        x = Public.random.nextInt(maxX.toInt()).toShort()
-        y = Public.random.nextInt(maxY.toInt()).toShort()
+        x = random.nextInt(maxX.toInt()).toShort()
+        y = random.nextInt(maxY.toInt()).toShort()
     }
 }

@@ -1,14 +1,20 @@
 package rewheeldev.tappycosmicevasion.model
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
-import rewheeldev.tappycosmicevasion.util.Public
+import rewheeldev.tappycosmicevasion.util.scaleBitmap
 import java.util.*
 
-class EnemyShip(private val maxX: Int, private val maxY: Int) {
-    @JvmField
+class EnemyShip(
+    private val maxX: Int,
+    private val maxY: Int,
+    private val random: Random,
+    private val screenSize: Point
+) {
     var bitmap: Bitmap? = null
 
     @JvmField
@@ -26,12 +32,12 @@ class EnemyShip(private val maxX: Int, private val maxY: Int) {
         private set
 
     private fun reInit() {
-        val whichBitmap = Public.random.nextInt(6)
+        val whichBitmap = random.nextInt(6)
         size = (whichBitmap + 1).toByte()
         speed = 24 - size * 3
-        bitmap = Public.scaleBitmap(animateImgArray[0], (size * 2).toByte())
+        bitmap = scaleBitmap(animateImgArray[0], (size * 2).toByte(), screenSize)
         hitBox = Rect(x + 10, y + 10, bitmap!!.width - 10, bitmap!!.height - 10)
-        y = Public.random.nextInt(maxY) - bitmap!!.height
+        y = random.nextInt(maxY) - bitmap!!.height
         x = maxX + 100
     }
 
@@ -59,9 +65,10 @@ class EnemyShip(private val maxX: Int, private val maxY: Int) {
             bitmapIndex = 0 else {
             if (bitmapIndex2 % 3 == 0) {
                 bitmapIndex++
-                bitmap = Public.scaleBitmap(
+                bitmap = scaleBitmap(
                     animateImgArray[bitmapIndex % animateImgArray.size],
-                    (size * 2).toByte()
+                    (size * 2).toByte(),
+                    screenSize
                 )
             }
         }
@@ -73,9 +80,9 @@ class EnemyShip(private val maxX: Int, private val maxY: Int) {
 
     companion object {
         //region animations
-        fun initBitmap() {
+        fun initBitmap(context: Context) {
             bigBitmap =
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.asteroid_big)
+                BitmapFactory.decodeResource(context.resources, R.drawable.asteroid_big)
             val partImgSizeX = bigBitmap!!.height / 8 // 192;
             for (r in 0..7) {
                 for (c in 0..7) {

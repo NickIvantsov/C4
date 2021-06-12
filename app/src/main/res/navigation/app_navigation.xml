@@ -19,7 +19,7 @@
         android:label="game_fragment"
         tools:layout="@layout/game_fragment" >
         <argument
-            android:name="type_ship2"
+            android:name="type_ship"
             app:argType="integer"
             android:defaultValue="0" />
     </fragment>

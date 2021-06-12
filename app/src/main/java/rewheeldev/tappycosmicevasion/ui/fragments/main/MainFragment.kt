@@ -2,6 +2,7 @@ package rewheeldev.tappycosmicevasion.ui.fragments.main
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,7 @@ import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.User
 import rewheeldev.tappycosmicevasion.ui.adapters.UserRecordsAdapter
 import rewheeldev.tappycosmicevasion.util.NICK_NAME_KEY
-import rewheeldev.tappycosmicevasion.util.Public
+import rewheeldev.tappycosmicevasion.util.scaleBitmap
 import rewheeldev.tappycosmicevasion.util.toEditable
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ class MainFragment : Fragment() {
 
     private var bindingImpl: MainFragmentBinding? = null
     private val binding get() = bindingImpl!!
-
+    private val point = Point()
     @Inject
     lateinit var viewModel: MainViewModel
 
@@ -36,8 +37,8 @@ class MainFragment : Fragment() {
 
     private val userDataObserver = Observer<User> { userData ->
         userData.nickName?.let {
-            Public.playerName = it
-            setUserNickName(it)
+            val name = if (it.isEmpty()) "name" else it
+            setUserNickName(name)
         }
     }
     private val userRecordsObserver = Observer<List<UserRecordEntity>> { userRecords ->
@@ -81,7 +82,6 @@ class MainFragment : Fragment() {
 
     private fun pressedStartBtn() {
         binding.btnStart.setOnClickListener {
-            Public.playerShipType = viewModel.currentPayerShipIndex.toByte()
             val action =
                 MainFragmentDirections.actionMainFragmentToGameFragment(viewModel.currentPayerShipIndex)
             findNavController().navigate(action)
@@ -107,9 +107,22 @@ class MainFragment : Fragment() {
     }
 
     private fun getShipBitmap(iconId: Int): Bitmap {
-        return Public.scaleBitmap(
+
+        val display =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                requireActivity().display
+            } else {
+                requireActivity().windowManager.defaultDisplay
+            }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            requireActivity().windowManager.currentWindowMetrics
+        } else display?.getSize(
+            point
+        )
+        return scaleBitmap(
             BitmapFactory.decodeResource(requireContext().resources, iconId),
-            3.toByte()
+            3.toByte(),
+            point
         )
     }
 

@@ -1,12 +1,14 @@
 package rewheeldev.tappycosmicevasion.model
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
-import rewheeldev.tappycosmicevasion.util.Public
+import rewheeldev.tappycosmicevasion.util.scaleBitmap
 
-class PlayerShip {
+class PlayerShip(private val context: Context,private val screenSize: Point,private val playerShipType:Int) {
     private var shipImg: Bitmap? = null
 
     var fireImg: Bitmap? = null
@@ -69,29 +71,29 @@ class PlayerShip {
         x = 70f //!!! 50;
         y = 250f
         speed(1f)
-        when (Public.playerShipType) {
-            0.toByte() -> {
+        when (playerShipType) {
+            0 -> {
                 shipImg =
-                    BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship_1)
+                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_1)
                 maxSpeed = 60
                 gravity = 10
             }
-            1.toByte() -> {
+            1 -> {
                 shipImg =
-                    BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship)
+                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship)
                 maxSpeed = 30
                 gravity = 40
             }
-            2.toByte() -> {
+            2 -> {
                 shipImg =
-                    BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.spaceship_2)
+                    BitmapFactory.decodeResource(context.resources, R.drawable.spaceship_2)
                 maxSpeed = 45
                 gravity = 20
             }
         }
-        shipImg = Public.scaleBitmap(shipImg!!, 3.toByte())
+        shipImg = scaleBitmap(shipImg!!, 3.toByte(),screenSize)
         isReduceShieldStrength = 0
-        maxY = Public.screanSize!!.y - shipImg!!.height
+        maxY = screenSize.y - shipImg!!.height
         minY = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg!!.width, shipImg!!.height)
         reInitLives()
@@ -103,35 +105,35 @@ class PlayerShip {
         if (bitmapIndex.toInt() == 120) bitmapIndex = 0 else bitmapIndex++
         val returned: Bitmap = when {
             bitmapIndex % 6 > 5 -> {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire0)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire0)
             }
             bitmapIndex % 6 > 4 -> {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire1)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire1)
             }
             bitmapIndex % 6 > 3 -> {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire2)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire2)
             }
             bitmapIndex % 6 > 2 -> {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire3)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire3)
             }
             bitmapIndex % 6 > 1 -> {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire4)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire4)
             }
             else -> { // if (newSpeed > 10) {
-                BitmapFactory.decodeResource(Public.context!!.resources, R.drawable.fire5)
+                BitmapFactory.decodeResource(context.resources, R.drawable.fire5)
             }
         }
-        val udm = (Public.screanSize!!.x / 70 / 2).toFloat()
+        val udm = (screenSize.x / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = Public.scaleBitmap(returned, 5.toByte())
+            fireImg = scaleBitmap(returned, 5.toByte(),screenSize)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = Public.scaleBitmap(returned, 4.toByte())
+            fireImg = scaleBitmap(returned, 4.toByte(),screenSize)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = Public.scaleBitmap(returned, 3.toByte())
+            fireImg = scaleBitmap(returned, 3.toByte(),screenSize)
             fireX = -(6 * udm)
             fireY = udm
         }
