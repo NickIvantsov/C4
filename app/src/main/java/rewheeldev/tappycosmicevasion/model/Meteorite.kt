@@ -33,7 +33,7 @@ class Meteorite(
         val whichBitmap = random.nextInt(6)
         size = whichBitmap + 1
         speed = 24 - size * 3
-        bitmap = scaleBitmap(meteoriteRepository.get(0), size * 2, screenSize.x)
+        bitmap = scaleBitmap(meteoriteRepository.getMeteoriteBitmap(0), size * 2, screenSize.x)
         hitBox = Rect(x + 10, y + 10, bitmap.width - 10, bitmap.height - 10)
         y = random.nextInt(maxY) - bitmap.height
         x = maxX + 100
@@ -63,9 +63,9 @@ class Meteorite(
             bitmapIndex = 0 else {
             if (bitmapIndex2 % 3 == 0) {
                 bitmapIndex++
-                val index = bitmapIndex % meteoriteRepository.getSize()
+                val index = bitmapIndex % meteoriteRepository.getSizeOfMeteoriteBitmaps()
                 bitmap = scaleBitmap(
-                    meteoriteRepository.get(index),
+                    meteoriteRepository.getMeteoriteBitmap(index),
                     size * 2,
                     screenSize.x
                 )
@@ -83,7 +83,7 @@ class Meteorite(
             val partImgSizeX = bigBitmap.height / 8 // 192;
             for (r in 0..7) {
                 for (c in 0..7) {
-                    meteoriteRepository.add(
+                    meteoriteRepository.addMeteoriteBitmap(
                         Bitmap.createBitmap(
                             bigBitmap,
                             c * partImgSizeX,
@@ -95,6 +95,7 @@ class Meteorite(
                 }
             }
         }
+
         fun createNewMeteorite(
             maxX: Int,
             maxY: Int,

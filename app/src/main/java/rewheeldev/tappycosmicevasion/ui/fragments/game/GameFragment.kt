@@ -1,6 +1,7 @@
 package rewheeldev.tappycosmicevasion.ui.fragments.game
 
 import android.graphics.Point
+import android.media.SoundPool
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
+import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.util.hideSystemUI
@@ -30,6 +32,12 @@ class GameFragment : Fragment() {
 
     @Inject
     lateinit var meteoriteRepository: IMeteoriteRepository
+
+    @Inject
+    lateinit var spaceDustRepository: ISpaceDustRepository
+
+    @Inject
+    lateinit var soundPool: SoundPool
 
     private val random = Random()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +63,9 @@ class GameFragment : Fragment() {
             random,
             point,
             args.typeShip,
-            meteoriteRepository
+            meteoriteRepository,
+            soundPool,
+            spaceDustRepository
         )
     }
 

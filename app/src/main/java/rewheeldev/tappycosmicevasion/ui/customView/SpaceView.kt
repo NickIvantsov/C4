@@ -3,21 +3,21 @@ package rewheeldev.tappycosmicevasion.ui.customView
 import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.graphics.*
-import android.media.AudioManager
 import android.media.SoundPool
-import android.os.Build
 import android.text.format.DateFormat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
+import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
+import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.model.PlayerShip
 import rewheeldev.tappycosmicevasion.model.SpaceDust
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
+import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import java.io.IOException
 import java.util.*
@@ -30,20 +30,11 @@ class SpaceView(
     private val screenSize: Point,
     private val playerShipType: Int,
     private val meteoriteRepository: IMeteoriteRepository,
+    private val soundPool: SoundPool,
+    private val spaceDustRepository: ISpaceDustRepository,
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
-    //region объявления
-    //c_joystick _joystick;
-    //    private SharedPreferences prefs;
-    //    private SharedPreferences.Editor editor;
-    //region Добавление звуков v1
-    private val soundPool: SoundPool = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        SoundPool.Builder()
-            .setMaxStreams(10)
-            .build();
-    } else {
-        SoundPool(10, AudioManager.STREAM_MUSIC, 0)
-    }
+
     private var start = -1
     private var bump = -1
     private var destroyed = -1
@@ -60,8 +51,6 @@ class SpaceView(
     //endregion
     //region objects
     private lateinit var player: PlayerShip
-    private var dustList = ArrayList<SpaceDust>()
-    private var enemyList = ArrayList<Meteorite>()
     private var timeStarted: Long = 0
     private val screenX: Int
     private val screenY: Int
@@ -82,11 +71,14 @@ class SpaceView(
 
     private fun update() {
         if (gameEnded) return
+
         var hitDetected = false
-        for (i in enemyList.indices) {
-            if (Rect.intersects(player.hitBox, enemyList[i].hitBox)) {
+
+        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
+            val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
+            if (Rect.intersects(player.hitBox, meteorite.hitBox)) {
                 hitDetected = true
-                enemyList[i].x = -350
+                meteorite.x = -350
             }
         }
         if (hitDetected) {
@@ -107,15 +99,16 @@ class SpaceView(
                 )
             }
         }
-        for (sd in dustList) {
-            sd.update(player.speed())
+        for (spaceDust in spaceDustRepository.getAll()) {
+            spaceDust.update(player.speed)
         }
         player.update()
-        for (i in enemyList.indices) {
-            enemyList[i].update(player.speed())
+        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
+            meteoriteRepository.getMeteoriteByIndex(i)
+                .update(player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
         }
         if (!gameEnded) {
-            distance += (player.speed() / 1000.0).toFloat()
+            distance += (player.speed / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - timeStarted
         }
         if (distance >= level * 5) {
@@ -125,7 +118,7 @@ class SpaceView(
 
     private fun startNextLevel() {
         level++
-        enemyList.add(
+        meteoriteRepository.addMeteorite(
             createNewMeteorite(
                 screenX,
                 screenY,
@@ -139,131 +132,193 @@ class SpaceView(
     private fun draw() {
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
-            canvas.drawColor(Color.argb(255, 0, 0, 0))
+
+            val backgroundColor = Color.argb(255, 0, 0, 0)
+            canvas.drawColor(backgroundColor)
+
             paint.color = Color.argb(255, 255, 255, 255)
-            //region draw objects
             if (!gameEnded) {
-
-                //region римуем звезды )
-                for (i in dustList.indices) {
-                    if (dustList[i].downLight) dustList[i].counter++ else dustList[i].counter--
-                    if (dustList[i].counter < 10) {
-                        dustList[i].downLight = true
-                    } else if (dustList[i].counter >= 125) {
-                        dustList[i].downLight = false
-                    }
-                    var opacity = (dustList[i].counter * 5).toShort()
-                    if (opacity > 255) opacity = 255 else if (opacity < 50) opacity = 50
-
-                    //region мигание синим и ораньжевым цветом
-                    when {
-                        dustList[i].counter % 30 > 6 // всего 30 кадров с 6 по 30 работает обычное затухание прозрачности белой звезды
-                        -> paint.color = Color.argb(
-                            opacity.toInt(),
-                            255,
-                            255,
-                            255
-                        )
-                        dustList[i].counter % 30 > 3 // с 3 по 6 ярко светится синим
-                        -> paint.color = Color.argb(
-                            255,
-                            0,
-                            0,
-                            255
-                        )
-                        else  // с 0 по 3 ярко светится (типо ораньжевым)
-                        -> paint.color = Color.argb(255, 200, 100, 0)
-                    }
-                    //endregion
-                    canvas.drawPoint(dustList[i].x.toFloat(), dustList[i].y.toFloat(), paint)
-                }
-                //endregion
-                paint.color = Color.argb(255, 255, 255, 255)
-                canvas.drawBitmap(player.bitmap()!!, player.x, player.y, paint)
-                if (player.isTouchSpeed) canvas.drawBitmap(
-                    player.fireImg!!,
-                    player.x + player.fireX,
-                    player.y + player.fireY,
-                    paint
-                )
-                for (i in enemyList.indices) {
-                    canvas.drawBitmap(
-                        enemyList[i].bitmap!!, //todo occasionally get IndexOfBounds Exception (3 times)
-                        enemyList[i].x.toFloat(),
-                        enemyList[i].y.toFloat(),
-                        paint
-                    )
-                }
-            }
-            //endregion
-            if (!gameEnded) {
-                paint.textAlign = Paint.Align.LEFT
-                paint.color = Color.argb(255, 255, 255, 255)
-                paint.textSize = 25f
-                canvas.drawText("Level$level", 20f, 30f, paint)
-                canvas.drawText(
-                    "Time:" + timeTaken / 1000 + "s",
-                    (screenX / 2).toFloat(),
-                    20f,
-                    paint
-                )
-                canvas.drawText(
-                    "Distance:" + distance.toInt().toShort() + "KM",
-                    (screenX / 3).toFloat(),
-                    (screenY - 20).toFloat(),
-                    paint
-                )
-                canvas.drawText(
-                    "Speed:" + (player.speed() * 60).toInt().toShort() + " KMh",
-                    (screenX / 3 * 2).toFloat(),
-                    (screenY - 20).toFloat(),
-                    paint
-                )
-                if (player.isReduceShieldStrength <= 0) {
-                    paint.textSize = 25f
-                } else {
-                    if (player.isReduceShieldStrength % 10 > 5) {
-                        paint.color = Color.argb(255, 255, 0, 0)
-                    } else {
-                        paint.color = Color.argb(255, 255, 255, 255)
-                    }
-                    paint.textSize = (25 + player.isReduceShieldStrength).toFloat()
-                    player.isReduceShieldStrength--
-                }
-                canvas.drawText("Shield:" + player.lives, 10f, (screenY - 20).toFloat(), paint)
-                if (player.isTouchSpeed) {
-                    if (dustList[0].counter % 14 >= 7) paint.color =
-                        Color.argb(255, 0, 255, 0) else paint.color = Color.argb(255, 255, 255, 255)
-                } else paint.color = Color.argb(100, 255, 255, 255)
-                paint.textSize = 60f
-                for (i in 1 until screenY / 100) canvas.drawText(
-                    ">>>",
-                    (screenX - screenX / 8).toFloat(),
-                    (i * 100).toFloat(),
-                    paint
-                )
+                gameProcess()
             } else {
-                paint.textSize = 80f
-                paint.textAlign = Paint.Align.CENTER
-                canvas.drawText("Game Over", (screenX / 2).toFloat(), 100f, paint)
-                paint.textSize = 25f
-                //canvas.drawText("Level" + fastestTime + "s", screenX / 2, 160, paint);
-                canvas.drawText(
-                    "Time:" + timeTaken / 1000 + "s",
-                    (screenX / 2).toFloat(),
-                    200f,
-                    paint
-                )
-                canvas.drawText(
-                    "Distance remaining:" + distance.toInt().toShort() + " KM",
-                    (screenX / 2).toFloat(),
-                    240f,
-                    paint
-                )
-                paint.textSize = 80f
-                canvas.drawText("Tap to replay!", (screenX / 2).toFloat(), 350f, paint)
+                gameOverProcess()
             }
             ourHolder.unlockCanvasAndPost(canvas)
+        }
+    }
+
+    private fun gameOverProcess() {
+        paint.textSize = 80f
+        paint.textAlign = Paint.Align.CENTER
+        val gameOverStr = getResString(R.string.game_ower)
+
+        canvas.drawText(gameOverStr, (screenX / 2).toFloat(), 100f, paint)
+
+        paint.textSize = 25f
+        //canvas.drawText("Level" + fastestTime + "s", screenX / 2, 160, paint);
+        val timeStr = getResString(R.string.time) + timeTaken / 1000 + "s"
+        canvas.drawText(
+            timeStr,
+            (screenX / 2).toFloat(),
+            200f,
+            paint
+        )
+        val result =
+            "${getResString(R.string.distance_remaining_msg)}  ${distance.toInt()} ${
+                getResString(R.string.km)
+            }"
+        canvas.drawText(
+            result,
+            (screenX / 2).toFloat(),
+            240f,
+            paint
+        )
+        paint.textSize = 80f
+
+        canvas.drawText(
+            context.getString(R.string.tap_to_replay_msg),
+            (screenX / 2).toFloat(),
+            350f,
+            paint
+        )
+    }
+
+    private fun gameProcess() {
+        drawSpaceDust()
+        paint.color = Color.argb(255, 255, 255, 255)
+        canvas.drawBitmap(player.shipImg, player.x, player.y, paint)
+        if (player.isTouchSpeed) canvas.drawBitmap(
+            player.fireImg,
+            player.x + player.fireX,
+            player.y + player.fireY,
+            paint
+        )
+        drawMeteorites()
+
+        paint.textAlign = Paint.Align.LEFT
+        paint.color = Color.argb(255, 255, 255, 255)
+        paint.textSize = 25f
+        canvas.drawText("Level$level", 20f, 30f, paint)
+        canvas.drawText(
+            "Time:" + timeTaken / 1000 + "s",
+            (screenX / 2).toFloat(),
+            20f,
+            paint
+        )
+        canvas.drawText(
+            "Distance:" + distance.toInt().toShort() + "KM",
+            (screenX / 3).toFloat(),
+            (screenY - 20).toFloat(),
+            paint
+        )
+        canvas.drawText(
+            "Speed:" + (player.speed * 60).toInt().toShort() + " KMh",
+            (screenX / 3 * 2).toFloat(),
+            (screenY - 20).toFloat(),
+            paint
+        )
+        if (player.isReduceShieldStrength <= 0) {
+            paint.textSize = 25f
+        } else {
+            if (player.isReduceShieldStrength % 10 > 5) {
+                paint.color = Color.argb(255, 255, 0, 0)
+            } else {
+                paint.color = Color.argb(255, 255, 255, 255)
+            }
+            paint.textSize = (25 + player.isReduceShieldStrength).toFloat()
+            player.isReduceShieldStrength--
+        }
+        canvas.drawText("Shield:" + player.lives, 10f, (screenY - 20).toFloat(), paint)
+        if (player.isTouchSpeed) {
+            if (spaceDustRepository.getByIndex(0).counter % 14 >= 7) paint.color =
+                Color.argb(255, 0, 255, 0) else paint.color = Color.argb(255, 255, 255, 255)
+        } else paint.color = Color.argb(100, 255, 255, 255)
+        paint.textSize = 60f
+        for (i in 1 until screenY / 100) canvas.drawText(
+            ">>>",
+            (screenX - screenX / 8).toFloat(),
+            (i * 100).toFloat(),
+            paint
+        )
+    }
+
+    private fun getResString(id: Int): String {
+        return context.getString(id)
+    }
+
+    private fun drawMeteorites() {
+        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
+            val meteorite =
+                meteoriteRepository.getMeteoriteByIndex(i) //IndexOutOfBoundsException при рестарте игры (1 раз)
+            canvas.drawBitmap(
+                meteorite.bitmap, //todo occasionally get IndexOfBounds Exception (3 times)
+                meteorite.x.toFloat(),
+                meteorite.y.toFloat(),
+                paint
+            )
+        }
+    }
+
+    private fun drawSpaceDust() {
+        for (spaceDustElementIndex in 0 until spaceDustRepository.getSize()) {
+
+            val currentSpaceDustElement = spaceDustRepository.getByIndex(spaceDustElementIndex)
+
+            if (currentSpaceDustElement.downLight) currentSpaceDustElement.counter++ else currentSpaceDustElement.counter--
+
+            if (currentSpaceDustElement.counter < 10) {
+                currentSpaceDustElement.downLight = true
+            } else if (currentSpaceDustElement.counter >= 125) {
+                currentSpaceDustElement.downLight = false
+            }
+
+            val opacity = getSpaceDustOpacity(currentSpaceDustElement.counter)
+            //region мигание синим и ораньжевым цветом
+            paint.color = getCurrentSpaceDustColor(
+                opacity,
+                currentSpaceDustElement.counter
+            )
+            //endregion
+            canvas.drawPoint(
+                currentSpaceDustElement.x.toFloat(),
+                currentSpaceDustElement.y.toFloat(),
+                paint
+            )
+        }
+    }
+
+    private fun getSpaceDustOpacity(counter: Int): Int {
+        var opacity = counter * 5
+        when {
+            opacity > 255 -> opacity = 255
+            opacity < 50 -> opacity = 50
+        }
+        return opacity
+    }
+
+    private fun getCurrentSpaceDustColor(opacity: Int, counter: Int): Int {
+        return when {
+            counter % NUMBER_OF_FRAMES > 6 -> {
+                // всего 30 кадров с 6 по 30 работает обычное затухание прозрачности белой звезды
+                Color.argb(
+                    opacity,
+                    255,
+                    255,
+                    255
+                )
+            }
+            counter % NUMBER_OF_FRAMES > 3 -> {
+                // с 3 по 6 ярко светится синим
+                Color.argb(
+                    255,
+                    0,
+                    0,
+                    255
+                )
+            }
+            else -> {
+                // с 0 по 3 ярко светится (типо ораньжевым)
+                Color.argb(255, 200, 100, 0)
+            }
         }
     }
 
@@ -271,6 +326,7 @@ class SpaceView(
         try {
             Thread.sleep(20)
         } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
     }
 
@@ -279,6 +335,7 @@ class SpaceView(
         try {
             gameThread!!.join()
         } catch (ex: InterruptedException) {
+            ex.printStackTrace()
         }
     }
 
@@ -291,22 +348,21 @@ class SpaceView(
     private fun startGame() {
 
         player = PlayerShip(context.applicationContext, screenSize, playerShipType)
-        enemyList.clear()
-        enemyList.add(
-            createNewMeteorite(
-                screenX,
-                screenY,
-                random,
-                screenSize,
-                meteoriteRepository
-            )
+        meteoriteRepository.deleteAllMeteorite()
+        val meteorite = createNewMeteorite(
+            screenX,
+            screenY,
+            random,
+            screenSize,
+            meteoriteRepository
         )
+        meteoriteRepository.addMeteorite(meteorite)
         //soundPool.play(start,1,1,0,10,1);
         val numSpecs: Short = 100
-        dustList.clear()
+        spaceDustRepository.deleteAll()
         for (i in 0 until numSpecs) {
-            val spec = SpaceDust(screenX.toShort(), screenY.toShort(), random)
-            dustList.add(spec)
+            val spec = SpaceDust(screenX, screenY, random)
+            spaceDustRepository.add(spec)
         }
         distance = 0f
         timeTaken = 0
@@ -321,16 +377,15 @@ class SpaceView(
         timeStarted = System.currentTimeMillis()
         gameEnded = false
         player.reInit()
-        enemyList.clear()
-        enemyList.add(
-            createNewMeteorite(
-                screenX,
-                screenY,
-                random,
-                screenSize,
-                meteoriteRepository
-            )
+        meteoriteRepository.deleteAllMeteorite()
+        val meteorite = createNewMeteorite(
+            screenX,
+            screenY,
+            random,
+            screenSize,
+            meteoriteRepository
         )
+        meteoriteRepository.addMeteorite(meteorite)
     }
 
     private fun createNewMeteorite(
@@ -374,7 +429,7 @@ class SpaceView(
         paint = Paint()
         startGame()
         //region OnTouch
-        onTouchSpeed = OnTouchListener { _, motionEvent ->
+        onTouchSpeed = OnTouchListener { view, motionEvent ->
             val actionMask = motionEvent.actionMasked
             player.touchY = motionEvent.y
             val startSpeedX = screenX - screenX / 8
@@ -393,6 +448,7 @@ class SpaceView(
             }
             if (actionMask == MotionEvent.ACTION_UP) {
                 player.isTouchSpeed = false
+                view.performClick()
             }
             true
         }
@@ -401,7 +457,7 @@ class SpaceView(
     }
 
     private fun log(msg: String) {
-        Log.d(TAG, msg)
+        logD(msg)
     }
 
     companion object {
@@ -410,5 +466,6 @@ class SpaceView(
         var distance = 0f
         var timeTaken: Long = 0
         private const val TAG = "TDView"
+        private const val NUMBER_OF_FRAMES = 30
     }
 }

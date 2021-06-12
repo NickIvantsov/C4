@@ -18,7 +18,8 @@ import javax.inject.Singleton
         SharedPreferencesModule::class,
         RepositoryModule::class,
         FragmentModule::class,
-        RoomModule::class
+        RoomModule::class,
+        SoundPoolModule::class
     ]
 )
 interface AppComponent {

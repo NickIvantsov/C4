@@ -1,6 +1,7 @@
 package rewheeldev.tappycosmicevasion.repository.impl
 
 import android.graphics.Bitmap
+import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import java.util.*
 import javax.inject.Inject
@@ -8,16 +9,37 @@ import javax.inject.Inject
 class MeteoriteRepositoryInMemoryImpl @Inject constructor() : IMeteoriteRepository {
 
     private val animateImgArray = ArrayList<Bitmap>()
+    private var meteoriteList = ArrayList<Meteorite>()
 
-    override fun add(meteoriteImg: Bitmap) {
+    override fun addMeteoriteBitmap(meteoriteImg: Bitmap) {
         animateImgArray.add(meteoriteImg)
     }
 
-    override fun get(index: Int): Bitmap {
+    override fun getMeteoriteBitmap(index: Int): Bitmap {
         return animateImgArray[index]
     }
 
-    override fun getSize(): Int {
+    override fun getSizeOfMeteoriteBitmaps(): Int {
         return animateImgArray.size
+    }
+
+    override fun addMeteorite(meteorite: Meteorite) {
+        meteoriteList.add(meteorite)
+    }
+
+    override fun getMeteoriteByIndex(index: Int): Meteorite {
+        return meteoriteList[index]
+    }
+
+    override fun getSizeMeteoriteList(): Int {
+        return meteoriteList.size
+    }
+
+    override fun getAllMeteorite(): List<Meteorite> {
+        return meteoriteList
+    }
+
+    override fun deleteAllMeteorite() {
+        meteoriteList.clear()
     }
 }

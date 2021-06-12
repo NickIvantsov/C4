@@ -3,45 +3,47 @@ package rewheeldev.tappycosmicevasion.model
 import java.util.*
 
 class SpaceDust(
-    screenX: Short,
-    screenY: Short,
+    screenX: Int,
+    screenY: Int,
     private val random: Random
 ) {
-    var x: Short
-    var y: Short
-    private var speed: Short
-    var counter: Byte = 0
+    var x: Int
+    var y: Int
+    private var speed = 0
+    var counter = 0
     var downLight = true
 
     //Detect dust leaving the screen
-    private val maxX: Short
-    private val maxY: Short
-    private val minX: Short
-    private val minY: Short
+    private val maxX: Int
+    private val maxY: Int
+    private val minX: Int
+    private val minY: Int
+
     fun update(playerSpeed: Float) {
         //Speed up when the player does
-        x = (x - playerSpeed.toInt().toShort()).toShort()
-        x = (x - speed).toShort()
+        x = (x - playerSpeed.toInt().toShort())
+        x = (x - speed)
         //respawn space dust
         if (x < 0) {
             x = maxX
-            y = random.nextInt(maxY.toInt()).toShort()
-            speed = random.nextInt(15).toShort()
+            y = random.nextInt(maxY)
+            speed = random.nextInt(15)
         }
     }
 
     init {
-        counter = random.nextInt(110).toByte()
+        counter = random.nextInt(110)
         maxX = screenX
         maxY = screenY
         minX = 0
         minY = 0
 
         //Set a speed between 0 and 9
-        speed = random.nextInt(10).toShort()
+        val randomSpeed = random.nextInt(10)
+        speed = if (randomSpeed == 0) 1 else randomSpeed
 
         //Set the starting coordinates
-        x = random.nextInt(maxX.toInt()).toShort()
-        y = random.nextInt(maxY.toInt()).toShort()
+        x = random.nextInt(maxX)
+        y = random.nextInt(maxY)
     }
 }

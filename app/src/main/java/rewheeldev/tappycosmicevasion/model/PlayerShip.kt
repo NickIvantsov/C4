@@ -13,15 +13,16 @@ class PlayerShip(
     private val screenSize: Point,
     private val playerShipType: Int
 ) {
-    private var shipImg: Bitmap? = null
+    lateinit var shipImg: Bitmap
 
-    var fireImg: Bitmap? = null
+    lateinit var fireImg: Bitmap
     var x = 0f
     var y = 0f
     var fireX = 0f
     var fireY = 0f
     var touchY = 50f
-    private var speed = 0f
+    var speed = 0f
+        private set
     private var gravity = 25
     private var maxY = 0
     private var minY = 0
@@ -55,11 +56,15 @@ class PlayerShip(
         }
         //endregion
         //region прямоугольник столкновений
+        initHitBox()
+        //endregion
+    }
+
+    private fun initHitBox() {
         hitBox.left = x.toInt()
         hitBox.top = y.toInt()
-        hitBox.right = x.toInt() + shipImg!!.width
-        hitBox.bottom = y.toInt() + shipImg!!.height
-        //endregion
+        hitBox.right = x.toInt() + shipImg.width
+        hitBox.bottom = y.toInt() + shipImg.height
     }
 
     fun minusLives() {
@@ -76,11 +81,11 @@ class PlayerShip(
         y = 250f
         speed(1f)
         shipInitialization()
-        shipImg = scaleBitmap(shipImg!!, 3, screenSize.x)
+        shipImg = scaleBitmap(shipImg, 3, screenSize.x)
         isReduceShieldStrength = 0
-        maxY = screenSize.y - shipImg!!.height
+        maxY = screenSize.y - shipImg.height
         minY = 0
-        hitBox = Rect(x.toInt(), y.toInt(), shipImg!!.width, shipImg!!.height)
+        hitBox = Rect(x.toInt(), y.toInt(), shipImg.width, shipImg.height)
         reInitLives()
     }
 
@@ -179,14 +184,6 @@ class PlayerShip(
             fireX = -(6 * udm)
             fireY = udm
         }
-    }
-
-    fun bitmap(): Bitmap? {
-        return shipImg
-    }
-
-    fun speed(): Float {
-        return speed
     }
 
     private fun speed(newSpeed: Float) {
