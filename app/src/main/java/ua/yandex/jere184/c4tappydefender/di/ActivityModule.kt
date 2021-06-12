@@ -9,7 +9,4 @@ abstract class ActivityModule {
 
     @ContributesAndroidInjector()
     abstract fun contributeMainActivity(): MainActivity
-
-    @ContributesAndroidInjector()
-    abstract fun contributeGameActivity(): GameActivity
 }
