@@ -2,14 +2,8 @@ package rewheeldev.tappycosmicevasion.di
 
 import dagger.Binds
 import dagger.Module
-import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRepository
-import rewheeldev.tappycosmicevasion.repository.impl.MeteoriteRepositoryInMemoryImpl
-import rewheeldev.tappycosmicevasion.repository.impl.SpaceDustRepositoryInMemoryImpl
-import rewheeldev.tappycosmicevasion.repository.impl.UserRecordRepositoryImpl
-import rewheeldev.tappycosmicevasion.repository.impl.UserRepositoryImpl
+import rewheeldev.tappycosmicevasion.repository.*
+import rewheeldev.tappycosmicevasion.repository.impl.*
 import javax.inject.Singleton
 
 @Module
@@ -29,4 +23,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun spaceDustRepositoryInMemoryRepository(repo: SpaceDustRepositoryInMemoryImpl): ISpaceDustRepository
+
+    @Binds
+    @Singleton
+    abstract fun soundRepositoryRepository(repo: SoundRepositoryImpl): ISoundRepository
 }

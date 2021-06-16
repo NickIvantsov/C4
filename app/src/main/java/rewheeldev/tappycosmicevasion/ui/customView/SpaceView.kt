@@ -1,15 +1,16 @@
 package rewheeldev.tappycosmicevasion.ui.customView
 
 import android.content.Context
-import android.content.res.AssetFileDescriptor
 import android.graphics.*
-import android.media.SoundPool
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
 import rewheeldev.tappycosmicevasion.logging.logD
@@ -19,7 +20,8 @@ import rewheeldev.tappycosmicevasion.model.SpaceDust
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import java.io.IOException
+import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
+import rewheeldev.tappycosmicevasion.util.SoundName
 import java.util.*
 
 class SpaceView(
@@ -30,8 +32,8 @@ class SpaceView(
     private val screenSize: Point,
     private val playerShipType: Int,
     private val meteoriteRepository: IMeteoriteRepository,
-    private val soundPool: SoundPool,
     private val spaceDustRepository: ISpaceDustRepository,
+    private val playSoundManager: IPlaySoundManager,
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
 
@@ -82,12 +84,12 @@ class SpaceView(
             }
         }
         if (hitDetected) {
-            soundPool.play(bump, 1f, 1f, 0, 0, 1f)
+            playSound(SoundName.BUMP)
             player.minusLives()
             if (player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
                 hitDetected = false
                 gameEnded = true
-                soundPool.play(destroyed, 1f, 1f, 0, 0, 1f)
+                playSound(SoundName.DESTROYED)
                 val currentTimeStr =
                     DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
                 userRecordRepository.insert(
@@ -113,6 +115,12 @@ class SpaceView(
         }
         if (distance >= level * 5) {
             startNextLevel()
+        }
+    }
+
+    private fun playSound(soundName: SoundName) {
+        CoroutineScope(Dispatchers.IO).launch {
+            playSoundManager.play(soundName)
         }
     }
 
@@ -407,22 +415,6 @@ class SpaceView(
     //endregion
     //endregion
     init {
-        //region v1 добавление звука
-        try {
-            val assetManager = context.assets
-            var descriptor: AssetFileDescriptor = assetManager.openFd("start.ogg")
-            start = soundPool.load(descriptor, 0)
-
-//      descriptor = assetManager.openFd("win.ogg");
-//      win = soundPool.load(descriptor,0);
-            descriptor = assetManager.openFd("bump.ogg")
-            bump = soundPool.load(descriptor, 0)
-            descriptor = assetManager.openFd("destroyed.ogg")
-            destroyed = soundPool.load(descriptor, 0)
-        } catch (e: IOException) {
-            log("||| TDView||| error failed to load sound files")
-        }
-        //_joystick = new c_joystick();
         screenX = screenSize.x
         screenY = screenSize.y
         ourHolder = holder

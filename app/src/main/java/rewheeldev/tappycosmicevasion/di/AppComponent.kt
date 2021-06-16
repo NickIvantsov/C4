@@ -19,7 +19,10 @@ import javax.inject.Singleton
         RepositoryModule::class,
         FragmentModule::class,
         RoomModule::class,
-        SoundPoolModule::class
+        SoundPoolModule::class,
+        SoundManagerModule::class,
+        ContextModule::class,
+        AssetManagerModule::class,
     ]
 )
 interface AppComponent {
