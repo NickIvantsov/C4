@@ -37,15 +37,10 @@ class SpaceView(
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
 
-    private var start = -1
-    private var bump = -1
-    private var destroyed = -1
-    var win = -1
-
     //endregion
     //region flags
     private var gameEnded = false
-    private var level: Byte = 1
+    private var level: Int = 1
 
     @Volatile
     var playing = false
@@ -54,15 +49,44 @@ class SpaceView(
     //region objects
     private lateinit var player: PlayerShip
     private var timeStarted: Long = 0
-    private val screenX: Int
-    private val screenY: Int
-    private val paint: Paint
+    private val screenX: Int = screenSize.x
+    private val screenY: Int = screenSize.y
+    private val paint: Paint = Paint()
     private lateinit var canvas: Canvas
-    private val ourHolder: SurfaceHolder
+    private val ourHolder: SurfaceHolder = holder
     private var gameThread: Thread? = null
 
     //region OnTouch
-    private var onTouchSpeed: OnTouchListener
+    private var onTouchSpeed: OnTouchListener  = OnTouchListener { view, motionEvent ->
+
+        val actionMask = motionEvent.actionMasked
+
+        player.touchY = motionEvent.y
+
+        val startSpeedX = screenX - screenX / 8
+
+        if (actionMask == MotionEvent.ACTION_MOVE) {
+            player.isTouchSpeed = motionEvent.x > startSpeedX
+        }
+
+        if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
+            player.isTouchSpeed = motionEvent.x > startSpeedX
+        }
+
+        if (actionMask == MotionEvent.ACTION_DOWN) {
+            if (gameEnded) {
+                reStartGame()
+                return@OnTouchListener false
+            }
+            player.isTouchSpeed = motionEvent.x > startSpeedX
+        }
+
+        if (actionMask == MotionEvent.ACTION_UP) {
+            player.isTouchSpeed = false
+            view.performClick()
+        }
+        true
+    }
     override fun run() {
         while (playing) {
             update()
@@ -415,37 +439,8 @@ class SpaceView(
     //endregion
     //endregion
     init {
-        screenX = screenSize.x
-        screenY = screenSize.y
-        ourHolder = holder
-        paint = Paint()
         startGame()
-        //region OnTouch
-        onTouchSpeed = OnTouchListener { view, motionEvent ->
-            val actionMask = motionEvent.actionMasked
-            player.touchY = motionEvent.y
-            val startSpeedX = screenX - screenX / 8
-            if (actionMask == MotionEvent.ACTION_MOVE) {
-                player.isTouchSpeed = motionEvent.x > startSpeedX
-            }
-            if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
-                player.isTouchSpeed = motionEvent.x > startSpeedX
-            }
-            if (actionMask == MotionEvent.ACTION_DOWN) {
-                if (gameEnded) {
-                    reStartGame()
-                    return@OnTouchListener false
-                }
-                player.isTouchSpeed = motionEvent.x > startSpeedX
-            }
-            if (actionMask == MotionEvent.ACTION_UP) {
-                player.isTouchSpeed = false
-                view.performClick()
-            }
-            true
-        }
         setOnTouchListener(onTouchSpeed)
-        //endregion
     }
 
     private fun log(msg: String) {
