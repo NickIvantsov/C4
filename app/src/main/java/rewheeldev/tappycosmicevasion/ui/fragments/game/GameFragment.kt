@@ -15,6 +15,7 @@ import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
+import rewheeldev.tappycosmicevasion.ui.customView.SpaceViewModel
 import rewheeldev.tappycosmicevasion.util.hideSystemUI
 import java.util.*
 import javax.inject.Inject
@@ -38,6 +39,9 @@ class GameFragment : Fragment() {
 
     @Inject
     lateinit var playSoundManager: IPlaySoundManager
+
+    @Inject
+    lateinit var spaceViewModel: SpaceViewModel
 
     private val random = Random()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +69,8 @@ class GameFragment : Fragment() {
             args.typeShip,
             meteoriteRepository,
             spaceDustRepository,
-            playSoundManager
+            playSoundManager,
+            spaceViewModel
         )
     }
 

@@ -21,6 +21,7 @@ import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
+import rewheeldev.tappycosmicevasion.util.GameStatus
 import rewheeldev.tappycosmicevasion.util.SoundName
 import java.util.*
 
@@ -34,12 +35,12 @@ class SpaceView(
     private val meteoriteRepository: IMeteoriteRepository,
     private val spaceDustRepository: ISpaceDustRepository,
     private val playSoundManager: IPlaySoundManager,
+    private val spaceViewModel: SpaceViewModel,
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
 
     //endregion
     //region flags
-    private var gameEnded = false
     private var level: Int = 1
 
     @Volatile
@@ -57,7 +58,7 @@ class SpaceView(
     private var gameThread: Thread? = null
 
     //region OnTouch
-    private var onTouchSpeed: OnTouchListener  = OnTouchListener { view, motionEvent ->
+    private var onTouchSpeed: OnTouchListener = OnTouchListener { view, motionEvent ->
 
         val actionMask = motionEvent.actionMasked
 
@@ -74,7 +75,7 @@ class SpaceView(
         }
 
         if (actionMask == MotionEvent.ACTION_DOWN) {
-            if (gameEnded) {
+            if (getGameStatus() == GameStatus.ENDED) {
                 reStartGame()
                 return@OnTouchListener false
             }
@@ -87,6 +88,7 @@ class SpaceView(
         }
         true
     }
+
     override fun run() {
         while (playing) {
             update()
@@ -96,7 +98,7 @@ class SpaceView(
     }
 
     private fun update() {
-        if (gameEnded) return
+        if (getGameStatus() == GameStatus.ENDED) return
 
         var hitDetected = false
 
@@ -112,7 +114,7 @@ class SpaceView(
             player.minusLives()
             if (player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
                 hitDetected = false
-                gameEnded = true
+                setNewGameStatus(GameStatus.ENDED)
                 playSound(SoundName.DESTROYED)
                 val currentTimeStr =
                     DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
@@ -133,7 +135,7 @@ class SpaceView(
             meteoriteRepository.getMeteoriteByIndex(i)
                 .update(player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
         }
-        if (!gameEnded) {
+        if (getGameStatus() == GameStatus.PLAYING) {
             distance += (player.speed / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - timeStarted
         }
@@ -169,7 +171,7 @@ class SpaceView(
             canvas.drawColor(backgroundColor)
 
             paint.color = Color.argb(255, 255, 255, 255)
-            if (!gameEnded) {
+            if (getGameStatus() == GameStatus.PLAYING) {
                 gameProcess()
             } else {
                 gameOverProcess()
@@ -399,7 +401,7 @@ class SpaceView(
         distance = 0f
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
-        gameEnded = false
+        setNewGameStatus(GameStatus.PLAYING)
     }
 
     private fun reStartGame() {
@@ -407,7 +409,7 @@ class SpaceView(
         level = 1
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
-        gameEnded = false
+        setNewGameStatus(GameStatus.PLAYING)
         player.reInit()
         meteoriteRepository.deleteAllMeteorite()
         val meteorite = createNewMeteorite(
@@ -439,8 +441,17 @@ class SpaceView(
     //endregion
     //endregion
     init {
+        setNewGameStatus(GameStatus.NOT_START)
         startGame()
         setOnTouchListener(onTouchSpeed)
+    }
+
+    private fun setNewGameStatus(status: GameStatus) {
+        spaceViewModel.gameStatus = status
+    }
+
+    private fun getGameStatus(): GameStatus {
+        return spaceViewModel.gameStatus
     }
 
     private fun log(msg: String) {
