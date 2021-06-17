@@ -38,9 +38,6 @@ class GameFragment : Fragment() {
     lateinit var spaceDustRepository: ISpaceDustRepository
 
     @Inject
-    lateinit var playSoundManager: IPlaySoundManager
-
-    @Inject
     lateinit var spaceViewModel: SpaceViewModel
 
     private val random = Random()
@@ -69,7 +66,6 @@ class GameFragment : Fragment() {
             args.typeShip,
             meteoriteRepository,
             spaceDustRepository,
-            playSoundManager,
             spaceViewModel
         )
     }
