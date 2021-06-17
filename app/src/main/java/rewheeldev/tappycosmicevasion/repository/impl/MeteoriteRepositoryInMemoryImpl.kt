@@ -1,6 +1,7 @@
 package rewheeldev.tappycosmicevasion.repository.impl
 
 import android.graphics.Bitmap
+import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import java.util.*
@@ -41,5 +42,8 @@ class MeteoriteRepositoryInMemoryImpl @Inject constructor() : IMeteoriteReposito
 
     override fun deleteAllMeteorite() {
         meteoriteList.clear()
+    }
+    private fun log(msg:String){
+        logD(msg)
     }
 }

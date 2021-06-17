@@ -21,6 +21,7 @@ import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
+import rewheeldev.tappycosmicevasion.util.FIRST_LEVEL
 import rewheeldev.tappycosmicevasion.util.GameStatus
 import rewheeldev.tappycosmicevasion.util.SoundName
 import java.util.*
@@ -41,7 +42,6 @@ class SpaceView(
 
     //endregion
     //region flags
-    private var level: Int = 1
 
     @Volatile
     var playing = false
@@ -139,7 +139,7 @@ class SpaceView(
             distance += (player.speed / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - timeStarted
         }
-        if (distance >= level * 5) {
+        if (distance >= getLevel() * 5) {
             startNextLevel()
         }
     }
@@ -151,7 +151,9 @@ class SpaceView(
     }
 
     private fun startNextLevel() {
-        level++
+
+        spaceViewModel.upNewLevel()
+
         meteoriteRepository.addMeteorite(
             createNewMeteorite(
                 screenX,
@@ -231,7 +233,7 @@ class SpaceView(
         paint.textAlign = Paint.Align.LEFT
         paint.color = Color.argb(255, 255, 255, 255)
         paint.textSize = 25f
-        canvas.drawText("Level$level", 20f, 30f, paint)
+        canvas.drawText("Level${getLevel()}", 20f, 30f, paint)
         canvas.drawText(
             "Time:" + timeTaken / 1000 + "s",
             (screenX / 2).toFloat(),
@@ -406,7 +408,7 @@ class SpaceView(
 
     private fun reStartGame() {
         distance = 0f
-        level = 1
+        setLevel(FIRST_LEVEL)
         timeTaken = 0
         timeStarted = System.currentTimeMillis()
         setNewGameStatus(GameStatus.PLAYING)
@@ -452,6 +454,14 @@ class SpaceView(
 
     private fun getGameStatus(): GameStatus {
         return spaceViewModel.gameStatus
+    }
+
+    private fun getLevel(): Int {
+        return spaceViewModel.level
+    }
+
+    private fun setLevel(level: Int) {
+        spaceViewModel.level = level
     }
 
     private fun log(msg: String) {
