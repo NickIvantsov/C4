@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.di
+package rewheeldev.tappycosmicevasion.di.modules
 
 import dagger.Binds
 import dagger.Module
