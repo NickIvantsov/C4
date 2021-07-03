@@ -15,7 +15,7 @@ import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.databinding.MainFragmentBinding
 import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
-import rewheeldev.tappycosmicevasion.di.SAVED_TEXT
+import rewheeldev.tappycosmicevasion.di.modules.SAVED_TEXT
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.User
 import rewheeldev.tappycosmicevasion.ui.adapters.UserRecordsAdapter

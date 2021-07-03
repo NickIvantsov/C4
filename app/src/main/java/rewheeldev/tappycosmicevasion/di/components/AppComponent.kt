@@ -1,10 +1,12 @@
-package rewheeldev.tappycosmicevasion.di
+package rewheeldev.tappycosmicevasion.di.components
 
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
 import rewheeldev.tappycosmicevasion.core.TappyCosmicEvasionApplication
+import rewheeldev.tappycosmicevasion.di.*
+import rewheeldev.tappycosmicevasion.di.modules.*
 import javax.inject.Singleton
 
 

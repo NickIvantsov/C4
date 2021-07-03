@@ -7,7 +7,7 @@ import dagger.android.HasAndroidInjector
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 import rewheeldev.tappycosmicevasion.BuildConfig
-import rewheeldev.tappycosmicevasion.di.DaggerAppComponent
+import rewheeldev.tappycosmicevasion.di.components.DaggerAppComponent
 import rewheeldev.tappycosmicevasion.logging.CrashReportingTree
 import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
