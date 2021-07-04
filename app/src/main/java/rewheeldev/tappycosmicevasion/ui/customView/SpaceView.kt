@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.format.DateFormat
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
+import rewheeldev.tappycosmicevasion.joyStick.Joystick
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
@@ -49,8 +51,22 @@ class SpaceView(
     private val ourHolder: SurfaceHolder = holder
     private var gameThread: Thread? = null
 
+    var centerX = 100F
+    var centerY = 100F
+    var baseRadius = 200F
+    var hatRadius = 100F
+    private var newX: Float = 0F
+    private var newY: Float = 0F
+    var upPI = 0
+    var downPI = 0
+
+    val joystick = Joystick(175,650,70,40)
     //region OnTouch
     private var onTouchSpeed: OnTouchListener = OnTouchListener { view, motionEvent ->
+
+
+        val pointerIndex: Int = motionEvent.actionIndex
+        val pointerCount: Int = motionEvent.pointerCount
 
         val actionMask = motionEvent.actionMasked
 
@@ -59,14 +75,36 @@ class SpaceView(
         val startSpeedX = screenX - screenX / 8
 
         if (actionMask == MotionEvent.ACTION_MOVE) {
+            if(joystick.isPressed){
+                joystick.setActuator(motionEvent.x.toDouble(),motionEvent.y.toDouble())
+            }
+            val displacement:Float = (motionEvent.x - centerX)  +(motionEvent.y - centerY)
+            if (displacement < baseRadius) {
+                newX = motionEvent.x
+                newY = motionEvent.y
+            }
+
             spaceViewModel.player.isTouchSpeed = motionEvent.x > startSpeedX
         }
-
         if (actionMask == MotionEvent.ACTION_POINTER_DOWN) {
-            spaceViewModel.player.isTouchSpeed = motionEvent.x > startSpeedX
+            downPI = pointerIndex
         }
-
+        if (actionMask == MotionEvent.ACTION_POINTER_UP) {
+            upPI = pointerIndex
+        }
+        spaceViewModel.player.isTouchSpeed = pointerCount > 1
         if (actionMask == MotionEvent.ACTION_DOWN) {
+            joystick.outerCircleCenterPositionX = motionEvent.x.toInt()
+            joystick.outerCircleCenterPositionY = motionEvent.y.toInt()
+            if(joystick.isPressed(motionEvent.x.toDouble(),motionEvent.y.toDouble())){
+                joystick.isPressed = true
+            }
+            spaceViewModel.player.isTouch = true
+            centerX = motionEvent.x
+            centerY = motionEvent.y
+            baseRadius = (Math.min(width, height) / 6).toFloat()
+            hatRadius = (Math.min(width, height) / 10).toFloat()
+
             if (getGameStatus() == GameStatus.ENDED) {
                 spaceViewModel.reStartGame(screenX, screenY, random, screenSize)
                 return@OnTouchListener false
@@ -75,7 +113,10 @@ class SpaceView(
         }
 
         if (actionMask == MotionEvent.ACTION_UP) {
-            spaceViewModel.player.isTouchSpeed = false
+            joystick.isPressed = false
+            joystick.resetActuator()
+//            spaceViewModel.player.isTouchSpeed = false
+            spaceViewModel.player.isTouch = false
             view.performClick()
         }
         true
@@ -91,7 +132,7 @@ class SpaceView(
 
     private fun update() {
         if (getGameStatus() == GameStatus.ENDED) return
-
+        joystick.update()
         var hitDetected = false
 
         for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
@@ -127,7 +168,7 @@ class SpaceView(
         for (spaceDust in spaceDustRepository.getAll()) {
             spaceDust.update(spaceViewModel.player.speed)
         }
-        spaceViewModel.player.update()
+        spaceViewModel.player.update(joystick)
         for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
             meteoriteRepository.getMeteoriteByIndex(i)
                 .update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
@@ -140,7 +181,6 @@ class SpaceView(
             spaceViewModel.startNextLevel(screenX, screenY, random, screenSize)
         }
     }
-
     private fun draw() {
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
@@ -197,7 +237,6 @@ class SpaceView(
     private fun gameProcess() {
         drawSpaceDust()
         paint.color = Color.argb(255, 255, 255, 255)
-
         val playerShipDrawInfo = spaceViewModel.getPlayerShipDrawInfo()
 
         canvas.drawBitmap(
@@ -214,6 +253,11 @@ class SpaceView(
             paint
         )
         drawMeteorites()
+
+        if(spaceViewModel.player.isTouch){
+           joystick.draw(canvas)
+        }
+
 
         paint.textAlign = Paint.Align.LEFT
         paint.color = Color.argb(255, 255, 255, 255)
@@ -254,7 +298,7 @@ class SpaceView(
             (screenY - 20).toFloat(),
             paint
         )
-        if (spaceViewModel.player.isTouchSpeed) {
+        /*if (spaceViewModel.player.isTouchSpeed) {
             if (spaceDustRepository.getByIndex(0).counter % 14 >= 7) paint.color =
                 Color.argb(255, 0, 255, 0) else paint.color = Color.argb(255, 255, 255, 255)
         } else paint.color = Color.argb(100, 255, 255, 255)
@@ -264,7 +308,7 @@ class SpaceView(
             (screenX - screenX / 8).toFloat(),
             (i * 100).toFloat(),
             paint
-        )
+        )*/
     }
 
     private fun getResString(id: Int): String {

@@ -13,7 +13,6 @@ import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceViewModel
 import rewheeldev.tappycosmicevasion.util.hideSystemUI

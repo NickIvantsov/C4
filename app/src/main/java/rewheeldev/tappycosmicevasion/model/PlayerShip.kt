@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
+import rewheeldev.tappycosmicevasion.joyStick.Joystick
 import rewheeldev.tappycosmicevasion.util.scaleBitmap
 
 class PlayerShip(
@@ -26,6 +27,8 @@ class PlayerShip(
     private var gravity = 25
     private var maxY = 0
     private var minY = 0
+    private var maxX = 0
+    private var minX = 0
     private val minSpeed = 2
     private var maxSpeed = 45
     lateinit var hitBox: Rect
@@ -35,24 +38,34 @@ class PlayerShip(
 
     var isReduceShieldStrength: Byte = 0
     var isTouchSpeed = false
+    var isTouch = false
 
-    fun update() {
+    fun update(joystick: Joystick) {
         nextBitmapStep()
         if (isTouchSpeed) speed(speed + 0.4.toFloat()) else speed(speed - 0.6.toFloat())
 
         //region плавное перемещение к пальцу по У
-        val dist = touchY - y
-        if (dist > gravity || dist < 0 - gravity) {
-            if (dist > 0) y += gravity.toFloat() else y -= gravity.toFloat()
-        } else y += dist
+        /* val dist = touchY - y
+         if (dist > gravity || dist < 0 - gravity) {
+             if (dist > 0) y += gravity.toFloat() else y -= gravity.toFloat()
+         } else y += dist*/
         //endregion
-
+        val velocityY = joystick.actuatorY.toFloat() * 20
+        val velocityX= joystick.actuatorX.toFloat()* 20
+        y += velocityY
+        x += velocityX
         //region проверка макс и мин
         if (y < minY) {
             y = minY.toFloat()
         }
         if (y > maxY) {
             y = maxY.toFloat()
+        }
+        if (x < minX) {
+            x = minX.toFloat()
+        }
+        if (x > maxX) {
+            x = maxX.toFloat()
         }
         //endregion
         //region прямоугольник столкновений
@@ -85,6 +98,8 @@ class PlayerShip(
         isReduceShieldStrength = 0
         maxY = screenSize.y - shipImg.height
         minY = 0
+        maxX = screenSize.x - shipImg.width
+        minX = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg.width, shipImg.height)
         reInitLives()
     }
