@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.text.format.DateFormat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -51,17 +50,6 @@ class SpaceView(
     private val ourHolder: SurfaceHolder = holder
     private var gameThread: Thread? = null
 
-    var centerX = 100F
-    var centerY = 100F
-    var baseRadius = 200F
-    var hatRadius = 100F
-    private var newX: Float = 0F
-    private var newY: Float = 0F
-    var upPI = 0
-    var downPI = 0
-
-    val joystick = Joystick(175,650,70,40)
-    //region OnTouch
     private var onTouchSpeed: OnTouchListener = OnTouchListener { view, motionEvent ->
 
 
@@ -75,10 +63,10 @@ class SpaceView(
         val startSpeedX = screenX - screenX / 8
 
         if (actionMask == MotionEvent.ACTION_MOVE) {
-            if(joystick.isPressed){
-                joystick.setActuator(motionEvent.x.toDouble(),motionEvent.y.toDouble())
+            if (joystick.isPressed) {
+                joystick.setActuator(motionEvent.x.toDouble(), motionEvent.y.toDouble())
             }
-            val displacement:Float = (motionEvent.x - centerX)  +(motionEvent.y - centerY)
+            val displacement: Float = (motionEvent.x - centerX) + (motionEvent.y - centerY)
             if (displacement < baseRadius) {
                 newX = motionEvent.x
                 newY = motionEvent.y
@@ -96,7 +84,7 @@ class SpaceView(
         if (actionMask == MotionEvent.ACTION_DOWN) {
             joystick.outerCircleCenterPositionX = motionEvent.x.toInt()
             joystick.outerCircleCenterPositionY = motionEvent.y.toInt()
-            if(joystick.isPressed(motionEvent.x.toDouble(),motionEvent.y.toDouble())){
+            if (joystick.isPressed(motionEvent.x.toDouble(), motionEvent.y.toDouble())) {
                 joystick.isPressed = true
             }
             spaceViewModel.player.isTouch = true
@@ -121,6 +109,37 @@ class SpaceView(
         }
         true
     }
+
+    init {
+        setNewGameStatus(GameStatus.NOT_START)
+        spaceViewModel.startGame(
+            context.applicationContext,
+            screenX,
+            screenY,
+            playerShipType,
+            random,
+            screenSize
+        )
+        setOnTouchListener(onTouchSpeed)
+    }
+
+    var centerX = 100F
+    var centerY = 100F
+    var baseRadius = 200F
+    var hatRadius = 100F
+    private var newX: Float = 0F
+    private var newY: Float = 0F
+    var upPI = 0
+    var downPI = 0
+
+    val joystick = Joystick(175, 650, 70, 40)
+
+    private val background: Background = Background()
+    private val shipManager: ShipManager = ShipManager(spaceViewModel)
+    private val meteoritesManager: MeteoritesManager = MeteoritesManager(meteoriteRepository)
+    private val spaceDustManager: SpaceDustManager =
+        SpaceDustManager(spaceDustRepository, spaceViewModel)
+
 
     override fun run() {
         while (playing) {
@@ -181,12 +200,12 @@ class SpaceView(
             spaceViewModel.startNextLevel(screenX, screenY, random, screenSize)
         }
     }
+
     private fun draw() {
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
 
-            val backgroundColor = Color.argb(255, 0, 0, 0)
-            canvas.drawColor(backgroundColor)
+            background.draw(canvas)
 
             paint.color = Color.WHITE
             if (getGameStatus() == GameStatus.PLAYING) {
@@ -235,27 +254,12 @@ class SpaceView(
     }
 
     private fun gameProcess() {
-        drawSpaceDust()
-        paint.color = Color.argb(255, 255, 255, 255)
-        val playerShipDrawInfo = spaceViewModel.getPlayerShipDrawInfo()
+        spaceDustManager.drawSpaceDust(canvas)
+        shipManager.draw(canvas)
+        meteoritesManager.draw(canvas)
 
-        canvas.drawBitmap(
-            playerShipDrawInfo.ship,
-            playerShipDrawInfo.shipX,
-            playerShipDrawInfo.shipY,
-            paint
-        )
-
-        if (spaceViewModel.player.isTouchSpeed) canvas.drawBitmap(
-            playerShipDrawInfo.fire,
-            playerShipDrawInfo.shipX + playerShipDrawInfo.fireX,
-            playerShipDrawInfo.shipY + playerShipDrawInfo.fireY,
-            paint
-        )
-        drawMeteorites()
-
-        if(spaceViewModel.player.isTouch){
-           joystick.draw(canvas)
+        if (spaceViewModel.player.isTouch) {
+            joystick.draw(canvas)
         }
 
 
@@ -315,7 +319,11 @@ class SpaceView(
         return context.getString(id)
     }
 
-    private fun drawMeteorites() {
+    private fun drawMeteorites(
+        meteoriteRepository: IMeteoriteRepository,
+        canvas: Canvas,
+        paint: Paint
+    ) {
         for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
             val meteorite =
                 meteoriteRepository.getMeteoriteByIndex(i) //IndexOutOfBoundsException при рестарте игры (1 раз)
@@ -323,34 +331,6 @@ class SpaceView(
                 meteorite.bitmap, //todo occasionally get IndexOfBounds Exception (3 times)
                 meteorite.x.toFloat(),
                 meteorite.y.toFloat(),
-                paint
-            )
-        }
-    }
-
-    private fun drawSpaceDust() {
-        for (spaceDustElementIndex in 0 until spaceDustRepository.getSize()) {
-
-            val currentSpaceDustElement = spaceDustRepository.getByIndex(spaceDustElementIndex)
-
-            if (currentSpaceDustElement.downLight) currentSpaceDustElement.counter++ else currentSpaceDustElement.counter--
-
-            if (currentSpaceDustElement.counter < 10) {
-                currentSpaceDustElement.downLight = true
-            } else if (currentSpaceDustElement.counter >= 125) {
-                currentSpaceDustElement.downLight = false
-            }
-
-            val opacity = spaceViewModel.getSpaceDustOpacity(currentSpaceDustElement.counter)
-            //region мигание синим и ораньжевым цветом
-            paint.color = spaceViewModel.getCurrentSpaceDustColor(
-                opacity,
-                currentSpaceDustElement.counter
-            )
-            //endregion
-            canvas.drawPoint(
-                currentSpaceDustElement.x.toFloat(),
-                currentSpaceDustElement.y.toFloat(),
                 paint
             )
         }
@@ -381,18 +361,7 @@ class SpaceView(
 
     //endregion
     //endregion
-    init {
-        setNewGameStatus(GameStatus.NOT_START)
-        spaceViewModel.startGame(
-            context.applicationContext,
-            screenX,
-            screenY,
-            playerShipType,
-            random,
-            screenSize
-        )
-        setOnTouchListener(onTouchSpeed)
-    }
+
 
     private fun setNewGameStatus(status: GameStatus) {
         spaceViewModel.gameStatus = status
