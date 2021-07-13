@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowMetrics
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -51,7 +52,9 @@ class GameFragment : Fragment() {
                 requireActivity().windowManager.defaultDisplay
             }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            requireActivity().windowManager.currentWindowMetrics
+            val windowMetrics: WindowMetrics = requireActivity().windowManager.currentWindowMetrics
+            point.x = windowMetrics.bounds.width()
+            point.y = windowMetrics.bounds.height()
         } else display?.getSize(
             point
         )

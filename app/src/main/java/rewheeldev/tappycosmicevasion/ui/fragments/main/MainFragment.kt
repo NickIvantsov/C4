@@ -29,6 +29,7 @@ class MainFragment : Fragment() {
     private var bindingImpl: MainFragmentBinding? = null
     private val binding get() = bindingImpl!!
     private val point = Point()
+
     @Inject
     lateinit var viewModel: MainViewModel
 
@@ -114,16 +115,22 @@ class MainFragment : Fragment() {
             } else {
                 requireActivity().windowManager.defaultDisplay
             }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            requireActivity().windowManager.currentWindowMetrics
-        } else display?.getSize(
-            point
-        )
-        return scaleBitmap(
-            BitmapFactory.decodeResource(requireContext().resources, iconId),
-            3,
-            point.x
-        )
+
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics = requireActivity().windowManager.currentWindowMetrics
+            scaleBitmap(
+                BitmapFactory.decodeResource(requireContext().resources, iconId),
+                3,
+                windowMetrics.bounds.width()
+            )
+        } else {
+            display?.getSize(point)
+            scaleBitmap(
+                BitmapFactory.decodeResource(requireContext().resources, iconId),
+                3,
+                point.x
+            )
+        }
     }
 
 
