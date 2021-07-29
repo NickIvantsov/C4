@@ -4,8 +4,8 @@ import com.example.repository.*
 import com.example.repository.impl.*
 import dagger.Binds
 import dagger.Module
-import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.repository.MeteoriteRepositoryInMemoryImpl
+import com.example.feature_game.repository.IMeteoriteRepository
+import com.example.feature_game.repository.MeteoriteRepositoryInMemoryImpl
 import rewheeldev.tappycosmicevasion.repository.UserRecordRepositoryImpl
 import javax.inject.Singleton
 
@@ -21,7 +21,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun meteoriteRepositoryInMemoryRepository(repo: MeteoriteRepositoryInMemoryImpl): IMeteoriteRepository
+    abstract fun meteoriteRepositoryInMemoryRepository(repo: com.example.feature_game.repository.MeteoriteRepositoryInMemoryImpl): com.example.feature_game.repository.IMeteoriteRepository
 
     @Binds
     @Singleton

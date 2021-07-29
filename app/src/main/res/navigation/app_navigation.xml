@@ -12,10 +12,13 @@
         <action
             android:id="@+id/action_mainFragment_to_gameFragment"
             app:destination="@id/gameFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/gameFragment"
-        android:name="rewheeldev.tappycosmicevasion.ui.fragments.game.GameFragment"
+        android:name="com.example.feature_game.GameFragment"
         android:label="game_fragment"
         tools:layout="@layout/game_fragment" >
         <argument
@@ -23,4 +26,8 @@
             app:argType="integer"
             android:defaultValue="0" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.feature_settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

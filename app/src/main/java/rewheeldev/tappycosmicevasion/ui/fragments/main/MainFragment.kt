@@ -63,6 +63,9 @@ class MainFragment : Fragment() {
         pressedRightBtn()
         pressedShipIcon()
         pressedStartBtn()
+        binding.btnSettings.setOnClickListener {
+            findNavController().navigate(R.id.settingsFragment)
+        }
     }
 
     private fun subscribeUserRecords() {

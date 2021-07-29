@@ -6,8 +6,8 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import rewheeldev.tappycosmicevasion.ui.customView.SpaceViewModel
-import rewheeldev.tappycosmicevasion.ui.fragments.game.GameViewModel
+import com.example.feature_game.tmp.SpaceViewModel
+import com.example.feature_game.GameViewModel
 import rewheeldev.tappycosmicevasion.ui.fragments.main.MainViewModel
 import javax.inject.Inject
 import javax.inject.Provider
@@ -58,13 +58,13 @@ abstract class ViewModelBuilderModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GameViewModel::class)
-    protected abstract fun gameViewModel(mainViewModel: GameViewModel): ViewModel
+    @ViewModelKey(com.example.feature_game.GameViewModel::class)
+    protected abstract fun gameViewModel(mainViewModel: com.example.feature_game.GameViewModel): ViewModel
 
     @Binds
     @IntoMap
-    @ViewModelKey(SpaceViewModel::class)
-    protected abstract fun spaceViewModel(spaceViewModel: SpaceViewModel): ViewModel
+    @ViewModelKey(com.example.feature_game.tmp.SpaceViewModel::class)
+    protected abstract fun spaceViewModel(spaceViewModel: com.example.feature_game.tmp.SpaceViewModel): ViewModel
 }
 
 @Target(

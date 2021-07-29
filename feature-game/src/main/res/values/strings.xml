@@ -1,0 +1,7 @@
+<resources>
+    <string name="km">KM</string>
+    <string name="game_ower">Game Over</string>
+    <string name="time">Time:</string>
+    <string name="tap_to_replay_msg">Tap to replay!</string>
+    <string name="distance_remaining_msg">Distance remaining:</string>
+</resources>

@@ -1,7 +1,8 @@
 plugins {
-    Plugins.plugins.forEach {
-        id(it)
-    }
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -47,6 +48,8 @@ dependencies {
     implementation(project(":model"))
     implementation(project(":db"))
     implementation(project(":repository"))
+    implementation(project(":feature-settings"))
+    implementation(project(":feature-game"))
     Libs.implementations.forEach {
         implementation(it)
     }
