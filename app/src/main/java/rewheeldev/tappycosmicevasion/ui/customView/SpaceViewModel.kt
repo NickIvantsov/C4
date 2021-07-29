@@ -13,10 +13,10 @@ import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
-import rewheeldev.tappycosmicevasion.util.FIRST_LEVEL
-import rewheeldev.tappycosmicevasion.util.GameStatus
-import rewheeldev.tappycosmicevasion.util.NEW_LEVEL
-import rewheeldev.tappycosmicevasion.util.SoundName
+import com.example.core_utils.util.logging.FIRST_LEVEL
+import com.example.core_utils.util.logging.GameStatus
+import com.example.core_utils.util.logging.NEW_LEVEL
+import com.example.core_utils.util.logging.SoundName
 import java.util.*
 import javax.inject.Inject
 
@@ -27,8 +27,8 @@ class SpaceViewModel @Inject constructor(
     private val spaceDustRepository: ISpaceDustRepository,
     private val playSoundManager: IPlaySoundManager
 ) : ViewModel() {
-    var gameStatus: GameStatus = GameStatus.NOT_START
-    var level: Int = FIRST_LEVEL
+    var gameStatus: com.example.core_utils.util.logging.GameStatus = com.example.core_utils.util.logging.GameStatus.NOT_START
+    var level: Int = com.example.core_utils.util.logging.FIRST_LEVEL
 
     lateinit var player: PlayerShip
 
@@ -38,7 +38,7 @@ class SpaceViewModel @Inject constructor(
         playerMapper.mapPlayerShipInPlayerShipDrawInfo(player)
 
     private fun upNewLevel(): Int {
-        level += NEW_LEVEL
+        level += com.example.core_utils.util.logging.NEW_LEVEL
         return level
     }
 
@@ -71,7 +71,7 @@ class SpaceViewModel @Inject constructor(
         SpaceView.distance = 0f
         SpaceView.timeTaken = 0
         timeStarted = System.currentTimeMillis()
-        gameStatus = GameStatus.PLAYING
+        gameStatus = com.example.core_utils.util.logging.GameStatus.PLAYING
     }
 
     fun reStartGame(
@@ -81,10 +81,10 @@ class SpaceViewModel @Inject constructor(
         screenSize: Point,
     ) {
         SpaceView.distance = 0f
-        level = FIRST_LEVEL
+        level = com.example.core_utils.util.logging.FIRST_LEVEL
         SpaceView.timeTaken = 0
         timeStarted = System.currentTimeMillis()
-        gameStatus = GameStatus.PLAYING
+        gameStatus = com.example.core_utils.util.logging.GameStatus.PLAYING
         player.reInit()
         meteoriteRepository.deleteAllMeteorite()
         val meteorite = createNewMeteorite(
@@ -132,7 +132,7 @@ class SpaceViewModel @Inject constructor(
         )
     }
 
-    suspend fun playSound(soundName: SoundName) {
+    suspend fun playSound(soundName: com.example.core_utils.util.logging.SoundName) {
         playSoundManager.play(soundName)
     }
 

@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.repository.ISoundRepository
-import rewheeldev.tappycosmicevasion.util.SoundName
-import rewheeldev.tappycosmicevasion.util.SoundName.*
+import com.example.core_utils.util.logging.SoundName
+import com.example.core_utils.util.logging.SoundName.*
 import javax.inject.Inject
 
 class SoundRepositoryImpl @Inject constructor(
@@ -18,7 +18,7 @@ class SoundRepositoryImpl @Inject constructor(
 ) : ISoundRepository {
     private val soundCashMap = HashMap<String, Int>()
 
-    override fun getAssetFileDescriptorAsync(soundName: SoundName): Deferred<Int?> {
+    override fun getAssetFileDescriptorAsync(soundName: com.example.core_utils.util.logging.SoundName): Deferred<Int?> {
         return CoroutineScope(Dispatchers.IO).async {
             val fileName = getFileName(soundName)
             if (soundCashMap.containsKey(fileName)) {
@@ -35,7 +35,7 @@ class SoundRepositoryImpl @Inject constructor(
         soundCashMap[fileName] = soundPool.load(assetManager.openFd(fileName), 0)
     }
 
-    private fun getFileName(soundName: SoundName): String {
+    private fun getFileName(soundName: com.example.core_utils.util.logging.SoundName): String {
         return when (soundName) {
             START -> START.fileName
             BUMP -> BUMP.fileName

@@ -16,7 +16,7 @@ import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceViewModel
-import rewheeldev.tappycosmicevasion.util.hideSystemUI
+import com.example.core_utils.util.logging.hideSystemUI
 import java.util.*
 import javax.inject.Inject
 
@@ -95,7 +95,7 @@ class GameFragment : Fragment() {
     }
 
     public override fun onResume() {
-        hideSystemUI(requireActivity().window, gameView!!)
+        com.example.core_utils.util.logging.hideSystemUI(requireActivity().window, gameView!!)
         super.onResume()
         gameView!!.resume()
     }

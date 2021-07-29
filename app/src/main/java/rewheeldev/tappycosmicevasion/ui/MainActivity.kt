@@ -6,7 +6,7 @@ import dagger.android.AndroidInjection
 import rewheeldev.tappycosmicevasion.databinding.ActivityMainBinding
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.logging.logE
-import rewheeldev.tappycosmicevasion.util.hideSystemUI
+import com.example.core_utils.util.logging.hideSystemUI
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }*/
 
     override fun onResume() {
-        hideSystemUI(window, binding.mainConteiner)
+        com.example.core_utils.util.logging.hideSystemUI(window, binding.mainConteiner)
         super.onResume()
     }
 

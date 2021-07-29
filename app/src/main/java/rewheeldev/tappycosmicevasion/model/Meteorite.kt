@@ -7,7 +7,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.util.scaleBitmap
+import com.example.core_utils.util.logging.scaleBitmap
 import java.util.*
 
 class Meteorite(
@@ -33,7 +33,11 @@ class Meteorite(
         val whichBitmap = random.nextInt(6)
         size = whichBitmap + 1
         speed = 24 - size * 3
-        bitmap = scaleBitmap(meteoriteRepository.getMeteoriteBitmap(0), size * 2, screenSize.x)
+        bitmap = com.example.core_utils.util.logging.scaleBitmap(
+            meteoriteRepository.getMeteoriteBitmap(0),
+            size * 2,
+            screenSize.x
+        )
         hitBox = Rect(x + 10, y + 10, bitmap.width - 10, bitmap.height - 10)
         y = random.nextInt(maxY) - bitmap.height
         x = maxX + 100
@@ -64,7 +68,7 @@ class Meteorite(
             if (bitmapIndex2 % 3 == 0) {
                 bitmapIndex++
                 val index = bitmapIndex % meteoriteRepository.getSizeOfMeteoriteBitmaps()
-                bitmap = scaleBitmap(
+                bitmap = com.example.core_utils.util.logging.scaleBitmap(
                     meteoriteRepository.getMeteoriteBitmap(index),
                     size * 2,
                     screenSize.x

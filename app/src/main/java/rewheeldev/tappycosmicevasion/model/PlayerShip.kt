@@ -7,7 +7,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.joyStick.Joystick
-import rewheeldev.tappycosmicevasion.util.scaleBitmap
+import com.example.core_utils.util.logging.scaleBitmap
 
 class PlayerShip(
     private val context: Context,
@@ -94,7 +94,7 @@ class PlayerShip(
         y = 250f
         speed(1f)
         shipInitialization()
-        shipImg = scaleBitmap(shipImg, 3, screenSize.x)
+        shipImg = com.example.core_utils.util.logging.scaleBitmap(shipImg, 3, screenSize.x)
         isReduceShieldStrength = 0
         maxY = screenSize.y - shipImg.height
         minY = 0
@@ -187,15 +187,15 @@ class PlayerShip(
         }
         val udm = (screenSize.x / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = scaleBitmap(returned, 5, screenSize.x)
+            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 5, screenSize.x)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = scaleBitmap(returned, 4, screenSize.x)
+            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 4, screenSize.x)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = scaleBitmap(returned, 3, screenSize.x)
+            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 3, screenSize.x)
             fireX = -(6 * udm)
             fireY = udm
         }

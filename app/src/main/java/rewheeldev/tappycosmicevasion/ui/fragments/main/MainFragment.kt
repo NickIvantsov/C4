@@ -19,9 +19,9 @@ import rewheeldev.tappycosmicevasion.di.modules.SAVED_TEXT
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.User
 import rewheeldev.tappycosmicevasion.ui.adapters.UserRecordsAdapter
-import rewheeldev.tappycosmicevasion.util.NICK_NAME_KEY
-import rewheeldev.tappycosmicevasion.util.scaleBitmap
-import rewheeldev.tappycosmicevasion.util.toEditable
+import com.example.core_utils.util.logging.NICK_NAME_KEY
+import com.example.core_utils.util.logging.scaleBitmap
+import com.example.core_utils.util.logging.toEditable
 import javax.inject.Inject
 
 class MainFragment : Fragment() {
@@ -118,14 +118,14 @@ class MainFragment : Fragment() {
 
         return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val windowMetrics = requireActivity().windowManager.currentWindowMetrics
-            scaleBitmap(
+            com.example.core_utils.util.logging.scaleBitmap(
                 BitmapFactory.decodeResource(requireContext().resources, iconId),
                 3,
                 windowMetrics.bounds.width()
             )
         } else {
             display?.getSize(point)
-            scaleBitmap(
+            com.example.core_utils.util.logging.scaleBitmap(
                 BitmapFactory.decodeResource(requireContext().resources, iconId),
                 3,
                 point.x
@@ -148,7 +148,7 @@ class MainFragment : Fragment() {
     }
 
     private fun saveNickname() {
-        viewModel.saveUserData(NICK_NAME_KEY, User(getNickName()))
+        viewModel.saveUserData(com.example.core_utils.util.logging.NICK_NAME_KEY, User(getNickName()))
     }
 
     private fun getNickName(): String {

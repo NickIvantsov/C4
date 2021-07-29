@@ -18,8 +18,8 @@ import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.util.GameStatus
-import rewheeldev.tappycosmicevasion.util.SoundName
+import com.example.core_utils.util.logging.GameStatus
+import com.example.core_utils.util.logging.SoundName
 import java.util.*
 
 class SpaceView(
@@ -93,7 +93,7 @@ class SpaceView(
             baseRadius = (Math.min(width, height) / 6).toFloat()
             hatRadius = (Math.min(width, height) / 10).toFloat()
 
-            if (getGameStatus() == GameStatus.ENDED) {
+            if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) {
                 spaceViewModel.reStartGame(screenX, screenY, random, screenSize)
                 return@OnTouchListener false
             }
@@ -111,7 +111,7 @@ class SpaceView(
     }
 
     init {
-        setNewGameStatus(GameStatus.NOT_START)
+        setNewGameStatus(com.example.core_utils.util.logging.GameStatus.NOT_START)
         spaceViewModel.startGame(
             context.applicationContext,
             screenX,
@@ -150,7 +150,7 @@ class SpaceView(
     }
 
     private fun update() {
-        if (getGameStatus() == GameStatus.ENDED) return
+        if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) return
         joystick.update()
         var hitDetected = false
 
@@ -163,15 +163,15 @@ class SpaceView(
         }
         if (hitDetected) {
             CoroutineScope(Dispatchers.IO).launch {
-                spaceViewModel.playSound(SoundName.BUMP)
+                spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.BUMP)
             }
 
             spaceViewModel.player.minusLives()
             if (spaceViewModel.player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
                 hitDetected = false
-                setNewGameStatus(GameStatus.ENDED)
+                setNewGameStatus(com.example.core_utils.util.logging.GameStatus.ENDED)
                 CoroutineScope(Dispatchers.IO).launch {
-                    spaceViewModel.playSound(SoundName.DESTROYED)
+                    spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.DESTROYED)
                 }
                 val currentTimeStr =
                     DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
@@ -192,7 +192,7 @@ class SpaceView(
             meteoriteRepository.getMeteoriteByIndex(i)
                 .update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
         }
-        if (getGameStatus() == GameStatus.PLAYING) {
+        if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
             distance += (spaceViewModel.player.speed / 1000.0).toFloat()
             timeTaken = System.currentTimeMillis() - spaceViewModel.timeStarted
         }
@@ -208,7 +208,7 @@ class SpaceView(
             background.draw(canvas)
 
             paint.color = Color.WHITE
-            if (getGameStatus() == GameStatus.PLAYING) {
+            if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
                 gameProcess()
             } else {
                 gameOverProcess()
@@ -363,11 +363,11 @@ class SpaceView(
     //endregion
 
 
-    private fun setNewGameStatus(status: GameStatus) {
+    private fun setNewGameStatus(status: com.example.core_utils.util.logging.GameStatus) {
         spaceViewModel.gameStatus = status
     }
 
-    private fun getGameStatus(): GameStatus {
+    private fun getGameStatus(): com.example.core_utils.util.logging.GameStatus {
         return spaceViewModel.gameStatus
     }
 

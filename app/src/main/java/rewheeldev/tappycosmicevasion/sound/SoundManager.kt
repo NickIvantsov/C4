@@ -2,7 +2,7 @@ package rewheeldev.tappycosmicevasion.sound
 
 import android.media.SoundPool
 import rewheeldev.tappycosmicevasion.repository.ISoundRepository
-import rewheeldev.tappycosmicevasion.util.SoundName
+import com.example.core_utils.util.logging.SoundName
 import javax.inject.Inject
 
 class SoundManager @Inject constructor(
@@ -29,7 +29,7 @@ class SoundManager @Inject constructor(
 
 
     override suspend fun play(
-        soundName: SoundName,
+        soundName: com.example.core_utils.util.logging.SoundName,
         leftVolume: Float,
         rightVolume: Float,
         priority: Int,
@@ -40,7 +40,7 @@ class SoundManager @Inject constructor(
     }
 
     private suspend fun playImpl(
-        soundName: SoundName,
+        soundName: com.example.core_utils.util.logging.SoundName,
         leftVolume: Float,
         rightVolume: Float,
         priority: Int,

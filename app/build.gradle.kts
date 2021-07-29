@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-utils"))
     Libs.implementations.forEach {
         implementation(it)
     }
