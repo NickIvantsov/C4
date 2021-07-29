@@ -1,6 +1,7 @@
 package rewheeldev.tappycosmicevasion.di.components
 
 import android.app.Application
+import com.example.db.di.RoomModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule

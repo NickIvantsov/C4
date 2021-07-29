@@ -1,11 +1,11 @@
-package rewheeldev.tappycosmicevasion.di.modules
+package com.example.db.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.db.TappyCosmicEvasionDatabase
 import dagger.Module
 import dagger.Provides
-import rewheeldev.tappycosmicevasion.db.TappyCosmicEvasionDatabase
-import rewheeldev.tappycosmicevasion.db.userRecords.IUserRecordsDao
+import com.example.db.dao.IUserRecordsDao
 import javax.inject.Singleton
 
 

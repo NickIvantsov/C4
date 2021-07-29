@@ -1,9 +1,8 @@
-package rewheeldev.tappycosmicevasion.db
+package com.example.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import rewheeldev.tappycosmicevasion.db.userRecords.IUserRecordsDao
-import com.example.model.UserRecordEntity
+import com.example.db.dao.IUserRecordsDao
 
 @Database(
     entities = [com.example.model.UserRecordEntity::class],
