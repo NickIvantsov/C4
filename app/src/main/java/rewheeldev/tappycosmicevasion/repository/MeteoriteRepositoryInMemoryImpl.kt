@@ -1,9 +1,8 @@
-package rewheeldev.tappycosmicevasion.repository.impl
+package rewheeldev.tappycosmicevasion.repository
 
 import android.graphics.Bitmap
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.model.Meteorite
-import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import java.util.*
 import javax.inject.Inject
 

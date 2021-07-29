@@ -12,12 +12,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rewheeldev.tappycosmicevasion.R
-import com.example.model.UserRecordEntity
 import rewheeldev.tappycosmicevasion.joyStick.Joystick
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
+import com.example.repository.ISpaceDustRepository
+import com.example.repository.IUserRecordRepository
 import java.util.*
 
 class SpaceView(

@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.repository.impl
+package com.example.repository.impl
 
 import android.content.res.AssetManager
 import android.media.SoundPool
@@ -6,10 +6,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import rewheeldev.tappycosmicevasion.logging.logD
-import rewheeldev.tappycosmicevasion.repository.ISoundRepository
-import com.example.core_utils.util.logging.SoundName
 import com.example.core_utils.util.logging.SoundName.*
+import com.example.core_utils.util.logging.extensions.logD
+import com.example.repository.ISoundRepository
 import javax.inject.Inject
 
 class SoundRepositoryImpl @Inject constructor(

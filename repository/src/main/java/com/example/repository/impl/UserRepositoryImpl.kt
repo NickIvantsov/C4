@@ -1,9 +1,9 @@
-package rewheeldev.tappycosmicevasion.repository.impl
+package com.example.repository.impl
 
 import android.content.SharedPreferences
 import kotlinx.coroutines.*
 import com.example.model.User
-import rewheeldev.tappycosmicevasion.repository.IUserRepository
+import com.example.repository.IUserRepository
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(

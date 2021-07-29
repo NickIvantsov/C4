@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.repository
+package com.example.repository
 
 import kotlinx.coroutines.Deferred
 import com.example.core_utils.util.logging.SoundName

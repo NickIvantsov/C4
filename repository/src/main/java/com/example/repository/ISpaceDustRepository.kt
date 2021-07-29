@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.repository
+package com.example.repository
 
 import com.example.model.SpaceDust
 

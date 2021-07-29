@@ -1,8 +1,8 @@
-package rewheeldev.tappycosmicevasion.repository.impl
+package rewheeldev.tappycosmicevasion.repository
 
 import kotlinx.coroutines.flow.Flow
 import com.example.db.dao.IUserRecordsDao
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
+import com.example.repository.IUserRecordRepository
 import javax.inject.Inject
 
 class UserRecordRepositoryImpl @Inject constructor(

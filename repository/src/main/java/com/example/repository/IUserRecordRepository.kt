@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.repository
+package com.example.repository
 
 import kotlinx.coroutines.flow.Flow
 import com.example.model.UserRecordEntity

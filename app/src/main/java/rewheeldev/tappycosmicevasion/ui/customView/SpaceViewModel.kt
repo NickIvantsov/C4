@@ -10,8 +10,8 @@ import rewheeldev.tappycosmicevasion.model.PlayerShip
 import com.example.model.PlayerShipDrawInfo
 import com.example.model.SpaceDust
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
+import com.example.repository.ISpaceDustRepository
+import com.example.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
 import java.util.*
 import javax.inject.Inject

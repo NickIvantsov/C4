@@ -12,11 +12,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
+import com.example.repository.ISpaceDustRepository
+import com.example.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceView
 import rewheeldev.tappycosmicevasion.ui.customView.SpaceViewModel
-import com.example.core_utils.util.logging.hideSystemUI
 import java.util.*
 import javax.inject.Inject
 

@@ -3,7 +3,7 @@ package rewheeldev.tappycosmicevasion.ui.customView
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
+import com.example.repository.ISpaceDustRepository
 
 class SpaceDustManager(
     private val spaceDustRepository: ISpaceDustRepository,

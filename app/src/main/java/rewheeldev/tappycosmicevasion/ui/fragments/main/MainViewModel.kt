@@ -6,8 +6,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rewheeldev.tappycosmicevasion.R
 import com.example.model.User
-import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import rewheeldev.tappycosmicevasion.repository.IUserRepository
+import com.example.repository.IUserRecordRepository
+import com.example.repository.IUserRepository
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(

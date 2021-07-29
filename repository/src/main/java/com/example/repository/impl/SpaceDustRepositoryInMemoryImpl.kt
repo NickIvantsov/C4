@@ -1,7 +1,7 @@
-package rewheeldev.tappycosmicevasion.repository.impl
+package com.example.repository.impl
 
 import com.example.model.SpaceDust
-import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
+import com.example.repository.ISpaceDustRepository
 import java.util.*
 import javax.inject.Inject
 

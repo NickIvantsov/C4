@@ -1,8 +1,7 @@
 package rewheeldev.tappycosmicevasion.sound
 
 import android.media.SoundPool
-import rewheeldev.tappycosmicevasion.repository.ISoundRepository
-import com.example.core_utils.util.logging.SoundName
+import com.example.repository.ISoundRepository
 import javax.inject.Inject
 
 class SoundManager @Inject constructor(
