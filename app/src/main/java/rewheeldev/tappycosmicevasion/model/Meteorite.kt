@@ -7,7 +7,6 @@ import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
-import com.example.core_utils.util.logging.scaleBitmap
 import java.util.*
 
 class Meteorite(

@@ -5,17 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import rewheeldev.tappycosmicevasion.R
-import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
+import com.example.model.UserRecordEntity
 import rewheeldev.tappycosmicevasion.ui.adapters.viewHolders.UserRecordsViewHolder
 import javax.inject.Inject
 
 class UserRecordsAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var records: List<UserRecordEntity> = ArrayList()
+    private var records: List<com.example.model.UserRecordEntity> = ArrayList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return onCreateViewHolderImpl(parent, viewType)
     }
 
-    fun addRecords(records: List<UserRecordEntity>) {
+    fun addRecords(records: List<com.example.model.UserRecordEntity>) {
         this.records = records
         notifyDataSetChanged()
     }

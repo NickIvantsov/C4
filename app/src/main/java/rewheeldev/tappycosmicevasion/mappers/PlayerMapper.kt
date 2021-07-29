@@ -1,7 +1,7 @@
 package rewheeldev.tappycosmicevasion.mappers
 
 import rewheeldev.tappycosmicevasion.model.PlayerShip
-import rewheeldev.tappycosmicevasion.model.PlayerShipDrawInfo
+import com.example.model.PlayerShipDrawInfo
 import javax.inject.Inject
 
 class PlayerMapper @Inject constructor() {

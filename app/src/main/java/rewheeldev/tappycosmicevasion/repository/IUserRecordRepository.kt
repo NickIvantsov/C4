@@ -1,12 +1,12 @@
 package rewheeldev.tappycosmicevasion.repository
 
 import kotlinx.coroutines.flow.Flow
-import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
+import com.example.model.UserRecordEntity
 
 interface IUserRecordRepository {
-    val plantsFlow: Flow<List<UserRecordEntity>>
+    val plantsFlow: Flow<List<com.example.model.UserRecordEntity>>
 
-    fun insert(record: UserRecordEntity)
+    fun insert(record: com.example.model.UserRecordEntity)
 
-    fun delete(record: UserRecordEntity)
+    fun delete(record: com.example.model.UserRecordEntity)
 }

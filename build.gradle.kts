@@ -7,9 +7,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        TopLevelDependencies.dependencies.forEach{
-            classpath (it)
-        }
+        classpath("com.android.tools.build:gradle:${Versions.gradle}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${PluginVersions.kotlin}")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:${PluginVersions.navigationSafeArgsGradlePlugin}")
     }
 }
 

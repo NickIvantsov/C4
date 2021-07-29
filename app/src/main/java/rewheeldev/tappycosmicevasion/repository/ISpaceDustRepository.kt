@@ -1,6 +1,6 @@
 package rewheeldev.tappycosmicevasion.repository
 
-import rewheeldev.tappycosmicevasion.model.SpaceDust
+import com.example.model.SpaceDust
 
 interface ISpaceDustRepository {
     fun add(spaceDust: SpaceDust)

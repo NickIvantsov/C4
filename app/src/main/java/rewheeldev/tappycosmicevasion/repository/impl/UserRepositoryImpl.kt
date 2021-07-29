@@ -2,7 +2,7 @@ package rewheeldev.tappycosmicevasion.repository.impl
 
 import android.content.SharedPreferences
 import kotlinx.coroutines.*
-import rewheeldev.tappycosmicevasion.model.User
+import com.example.model.User
 import rewheeldev.tappycosmicevasion.repository.IUserRepository
 import javax.inject.Inject
 

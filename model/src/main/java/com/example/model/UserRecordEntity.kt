@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.db.userRecords
+package com.example.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

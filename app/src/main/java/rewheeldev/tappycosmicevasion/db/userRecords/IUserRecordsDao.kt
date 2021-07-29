@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface IUserRecordsDao {
     @Query("SELECT * FROM user_records")
-    fun getAllFlow(): Flow<List<UserRecordEntity>>
+    fun getAllFlow(): Flow<List<com.example.model.UserRecordEntity>>
 
     @Insert
-    fun insert(location: UserRecordEntity)
+    fun insert(location: com.example.model.UserRecordEntity)
 
     @Delete
-    fun delete(location: UserRecordEntity)
+    fun delete(location: com.example.model.UserRecordEntity)
 }

@@ -14,13 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.databinding.MainFragmentBinding
-import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
 import rewheeldev.tappycosmicevasion.di.modules.SAVED_TEXT
 import rewheeldev.tappycosmicevasion.logging.logD
-import rewheeldev.tappycosmicevasion.model.User
+import com.example.model.User
 import rewheeldev.tappycosmicevasion.ui.adapters.UserRecordsAdapter
-import com.example.core_utils.util.logging.NICK_NAME_KEY
-import com.example.core_utils.util.logging.scaleBitmap
 import com.example.core_utils.util.logging.toEditable
 import javax.inject.Inject
 
@@ -42,7 +39,7 @@ class MainFragment : Fragment() {
             setUserNickName(name)
         }
     }
-    private val userRecordsObserver = Observer<List<UserRecordEntity>> { userRecords ->
+    private val userRecordsObserver = Observer<List<com.example.model.UserRecordEntity>> { userRecords ->
         userRecordsAdapter.addRecords(userRecords)
     }
 

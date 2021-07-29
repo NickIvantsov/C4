@@ -7,7 +7,6 @@ import android.graphics.Point
 import android.graphics.Rect
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.joyStick.Joystick
-import com.example.core_utils.util.logging.scaleBitmap
 
 class PlayerShip(
     private val context: Context,

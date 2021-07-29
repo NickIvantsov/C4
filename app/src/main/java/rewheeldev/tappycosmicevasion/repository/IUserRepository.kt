@@ -1,7 +1,7 @@
 package rewheeldev.tappycosmicevasion.repository
 
 import kotlinx.coroutines.Deferred
-import rewheeldev.tappycosmicevasion.model.User
+import com.example.model.User
 
 interface IUserRepository {
     fun save(key: String, user: User)

@@ -12,14 +12,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rewheeldev.tappycosmicevasion.R
-import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
+import com.example.model.UserRecordEntity
 import rewheeldev.tappycosmicevasion.joyStick.Joystick
 import rewheeldev.tappycosmicevasion.logging.logD
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
-import com.example.core_utils.util.logging.GameStatus
-import com.example.core_utils.util.logging.SoundName
 import java.util.*
 
 class SpaceView(
@@ -176,7 +174,7 @@ class SpaceView(
                 val currentTimeStr =
                     DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
                 userRecordRepository.insert(
-                    UserRecordEntity(
+                    com.example.model.UserRecordEntity(
                         currentTimeStr.toString(),
                         distance,
                         timeTaken

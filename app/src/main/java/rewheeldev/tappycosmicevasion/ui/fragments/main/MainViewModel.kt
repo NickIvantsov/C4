@@ -5,8 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rewheeldev.tappycosmicevasion.R
-import rewheeldev.tappycosmicevasion.db.userRecords.UserRecordEntity
-import rewheeldev.tappycosmicevasion.model.User
+import com.example.model.User
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRepository
 import javax.inject.Inject
@@ -19,7 +18,7 @@ class MainViewModel @Inject constructor(
     var currentPayerShipIndex = 0
         private set
 
-    val userRecordsFlow: LiveData<List<UserRecordEntity>> =
+    val userRecordsFlow: LiveData<List<com.example.model.UserRecordEntity>> =
         userRecordRepository.plantsFlow.asLiveData()
 
     private fun incrementIconPosition() {

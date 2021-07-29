@@ -7,16 +7,12 @@ import androidx.lifecycle.ViewModel
 import rewheeldev.tappycosmicevasion.mappers.PlayerMapper
 import rewheeldev.tappycosmicevasion.model.Meteorite
 import rewheeldev.tappycosmicevasion.model.PlayerShip
-import rewheeldev.tappycosmicevasion.model.PlayerShipDrawInfo
-import rewheeldev.tappycosmicevasion.model.SpaceDust
+import com.example.model.PlayerShipDrawInfo
+import com.example.model.SpaceDust
 import rewheeldev.tappycosmicevasion.repository.IMeteoriteRepository
 import rewheeldev.tappycosmicevasion.repository.ISpaceDustRepository
 import rewheeldev.tappycosmicevasion.repository.IUserRecordRepository
 import rewheeldev.tappycosmicevasion.sound.IPlaySoundManager
-import com.example.core_utils.util.logging.FIRST_LEVEL
-import com.example.core_utils.util.logging.GameStatus
-import com.example.core_utils.util.logging.NEW_LEVEL
-import com.example.core_utils.util.logging.SoundName
 import java.util.*
 import javax.inject.Inject
 

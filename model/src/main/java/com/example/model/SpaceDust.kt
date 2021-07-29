@@ -1,4 +1,4 @@
-package rewheeldev.tappycosmicevasion.model
+package com.example.model
 
 import java.util.*
 

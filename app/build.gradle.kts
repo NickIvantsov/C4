@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(project(":core-utils"))
+    implementation(project(":model"))
     Libs.implementations.forEach {
         implementation(it)
     }
