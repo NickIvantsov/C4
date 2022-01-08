@@ -2,13 +2,14 @@ package com.example.repository.impl
 
 import android.content.res.AssetManager
 import android.media.SoundPool
+import com.example.core_utils.util.logging.SoundName
+import com.example.core_utils.util.logging.SoundName.*
+import com.example.core_utils.util.logging.extensions.logD
+import com.example.repository.ISoundRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import com.example.core_utils.util.logging.SoundName.*
-import com.example.core_utils.util.logging.extensions.logD
-import com.example.repository.ISoundRepository
 import javax.inject.Inject
 
 class SoundRepositoryImpl @Inject constructor(
@@ -17,7 +18,7 @@ class SoundRepositoryImpl @Inject constructor(
 ) : ISoundRepository {
     private val soundCashMap = HashMap<String, Int>()
 
-    override fun getAssetFileDescriptorAsync(soundName: com.example.core_utils.util.logging.SoundName): Deferred<Int?> {
+    override fun getAssetFileDescriptorAsync(soundName: SoundName): Deferred<Int?> {
         return CoroutineScope(Dispatchers.IO).async {
             val fileName = getFileName(soundName)
             if (soundCashMap.containsKey(fileName)) {
@@ -34,7 +35,7 @@ class SoundRepositoryImpl @Inject constructor(
         soundCashMap[fileName] = soundPool.load(assetManager.openFd(fileName), 0)
     }
 
-    private fun getFileName(soundName: com.example.core_utils.util.logging.SoundName): String {
+    private fun getFileName(soundName: SoundName): String {
         return when (soundName) {
             START -> START.fileName
             BUMP -> BUMP.fileName

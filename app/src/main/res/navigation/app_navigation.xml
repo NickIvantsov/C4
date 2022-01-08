@@ -4,6 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigation"
     app:startDestination="@id/mainFragment">
+    <include app:graph="@navigation/game_navigation" >
+        <fragment
+            android:id="@+id/gameFragment"
+            android:name="com.example.feature_game.GameFragment"
+            android:label="game_fragment"
+            tools:layout="@layout/game_fragment">
+            <argument
+                android:name="type_ship"
+                android:defaultValue="0"
+                app:argType="integer" />
+        </fragment>
+    </include>
     <fragment
         android:id="@+id/mainFragment"
         android:name="rewheeldev.tappycosmicevasion.ui.fragments.main.MainFragment"
@@ -11,20 +23,14 @@
         tools:layout="@layout/main_fragment" >
         <action
             android:id="@+id/action_mainFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
+            app:destination="@id/game_navigation" >
+            <argument
+                android:name="type_ship"
+                android:defaultValue="0" />
+        </action>
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/gameFragment"
-        android:name="com.example.feature_game.GameFragment"
-        android:label="game_fragment"
-        tools:layout="@layout/game_fragment" >
-        <argument
-            android:name="type_ship"
-            app:argType="integer"
-            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"

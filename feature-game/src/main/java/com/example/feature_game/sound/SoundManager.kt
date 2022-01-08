@@ -1,24 +1,25 @@
 package com.example.feature_game.sound
 
 import android.media.SoundPool
-import com.example.repository.ISoundRepository
+import com.example.core.interactor.SoundUseCase
+import com.example.core_utils.util.logging.SoundName
 import javax.inject.Inject
 
 class SoundManager @Inject constructor(
-    private val soundRepository: ISoundRepository,
+    private val soundUseCase: SoundUseCase,
     private val soundPool: SoundPool
 ) : IPlaySoundManager {
 
 
     private fun playSound(
-        it: Int,
+        soundID: Int,
         leftVolume: Float,
         rightVolume: Float,
         priority: Int,
         loop: Int,
         rate: Float
     ) = soundPool.play(
-        it,
+        soundID,
         leftVolume,
         rightVolume,
         priority,
@@ -28,7 +29,7 @@ class SoundManager @Inject constructor(
 
 
     override suspend fun play(
-        soundName: com.example.core_utils.util.logging.SoundName,
+        soundName: SoundName,
         leftVolume: Float,
         rightVolume: Float,
         priority: Int,
@@ -39,15 +40,15 @@ class SoundManager @Inject constructor(
     }
 
     private suspend fun playImpl(
-        soundName: com.example.core_utils.util.logging.SoundName,
+        soundName: SoundName,
         leftVolume: Float,
         rightVolume: Float,
         priority: Int,
         loop: Int,
         rate: Float
     ) {
-        soundRepository.getAssetFileDescriptorAsync(soundName).await()?.let {
-            var streamID = -1
+        soundUseCase.getAssetFileDescriptorAsync(soundName).await()?.let {
+            var streamID: Int
             do {
                 streamID = playSound(it, leftVolume, rightVolume, priority, loop, rate)
             } while (streamID == 0)

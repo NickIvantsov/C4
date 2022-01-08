@@ -8,15 +8,15 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
+import com.example.core.interactor.SpaceDustUseCase
 import com.example.core_utils.util.logging.extensions.logD
 import com.example.feature_game.R
-import com.example.feature_game.joyStick.Joystick
 import com.example.feature_game.repository.IMeteoriteRepository
+import com.example.repository.IUserRecordRepository
+import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.example.repository.ISpaceDustRepository
-import com.example.repository.IUserRecordRepository
 import java.util.*
 
 class SpaceView(
@@ -27,7 +27,7 @@ class SpaceView(
     private val screenSize: Point,
     private val playerShipType: Int,
     private val meteoriteRepository: IMeteoriteRepository,
-    private val spaceDustRepository: ISpaceDustRepository,
+    private val spaceDustInteractor: SpaceDustUseCase,
     private val spaceViewModel: SpaceViewModel,
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
@@ -135,7 +135,7 @@ class SpaceView(
     private val shipManager: ShipManager = ShipManager(spaceViewModel)
     private val meteoritesManager: MeteoritesManager = MeteoritesManager(meteoriteRepository)
     private val spaceDustManager: SpaceDustManager =
-        SpaceDustManager(spaceDustRepository, spaceViewModel)
+        SpaceDustManager(spaceDustInteractor, spaceViewModel)
 
 
     override fun run() {
@@ -181,7 +181,7 @@ class SpaceView(
                 )
             }
         }
-        for (spaceDust in spaceDustRepository.getAll()) {
+        for (spaceDust in spaceDustInteractor.getAll()) {
             spaceDust.update(spaceViewModel.player.speed)
         }
         spaceViewModel.player.update(joystick)

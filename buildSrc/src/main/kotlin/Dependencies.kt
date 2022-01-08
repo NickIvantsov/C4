@@ -1,23 +1,26 @@
+import org.gradle.api.JavaVersion
+
 object PluginVersions {
     const val kotlin = "1.5.10"
     const val navigationSafeArgsGradlePlugin = "2.3.5"
 }
 
 object AppConfig {
-    const val compileSdk = 30
-    const val minSdk = 21
-    const val targetSdk = 30
-    const val versionCode = 3
-    const val versionName = "1.1.1"
+    const val compileSdkVer = 31
+    const val minSdkVer = 21
+    const val targetSdkVer = 31
+    const val versionCodeVer = 3
+    const val versionNameVer = "1.1.1"
 
     const val androidTestInstrumentation = "androidx.test.runner.AndroidJUnitRunner"
-    const val applicationId =  "rewheeldev.tappycosmicevasion"
+    const val applicationId = "rewheeldev.tappycosmicevasion"
 }
 
 object Versions {
 
-    const val gradle = "4.2.2"
+    const val gradle = "7.0.4"
     const val coroutines = "1.5.0-native-mt"
+    const val kotlinxCoroutinesAndroid = "1.6.0"
     const val appcompat = "1.3.0"
     const val constraintLayout = "2.0.4"
     const val gson = "2.8.7"
@@ -41,8 +44,11 @@ object Versions {
     const val navigation = "2.3.5"
     const val roomVersion = "2.3.0"
     const val multidex = "2.0.1"
+    const val CORE_KTX = "1.7.0"
+    const val ANDROID_MATERIAL = "1.4.0"
 
-    const val jvmTarget = "1.8"
+    const val jvmTarget = "11"
+    val javaVersion = JavaVersion.VERSION_11
 
 }
 
@@ -50,68 +56,130 @@ object Libs {
     val plugins = listOf(
         "org.jetbrains.kotlin.jvm" to PluginVersions.kotlin
     )
+    const val APPCOMPAT = "androidx.appcompat:appcompat:${Versions.appcompat}"
+    const val CONSTRAINT_LAYOUT =
+        "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+    const val gson = "com.google.code.gson:gson:${Versions.gson}"
+    const val GOOGLE_HTTP_CLIENT_ANDROID =
+        "com.google.http-client:google-http-client-android:${Versions.googleHttpClientAndroid}"
+    const val GOOGLE_API_CLIENT_ANDROID =
+        "com.google.api-client:google-api-client-android:${Versions.googleApiClientAndroid}"
+    const val GOOGLE_API_CLIENT_GSON =
+        "com.google.api-client:google-api-client-gson:${Versions.googleApiClientGson}"
+    const val KOTLIN_STDLIB = "org.jetbrains.kotlin:kotlin-stdlib:${PluginVersions.kotlin}"
+    const val LEGACY_SUPPORT_V_4 = "androidx.legacy:legacy-support-v4:${Versions.legacySupportV4}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
+
+    const val ANDROID_MATERIAL = "com.google.android.material:material:${Versions.ANDROID_MATERIAL}"
+
+    //retrofit
+    const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    const val RETROFIT_2_ADAPTER_RXJAVA_2 =
+        "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
+    const val RETROFIT_2_CONVERTER_GSON =
+        "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+
+    //okhttp
+    const val okhttp = "com.squareup.okhttp3:okhttp:${Versions.okhttp3}"
+    const val LOGGING_INTERCEPTOR = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp3}"
+
+    //DI
+    const val DAGGER = "com.google.dagger:dagger:${Versions.dagger}"
+    const val DAGGER_ANDROID_SUPPORT = "com.google.dagger:dagger-android-support:${Versions.dagger}"
+    const val DAGGER_ANDROID_PROCESSOR = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
+    const val DAGGER_COMPILER = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+
+
+    //KTX
+    const val CORE_KTX = "androidx.core:core-ktx:${Versions.CORE_KTX}"
+
+    //coroutines for asynchronous calls (and Deferred’s adapter)
+    const val KOTLINX_COROUTINES_CORE =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
+    const val KOTLINX_COROUTINES_ANDROID =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutinesAndroid}"
+
+    // lifecycle
+    const val LIFECYCLE_COMMON_JAVA_8 =
+        "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycleCommonJava8}"
+    const val LIFECYCLE_EXTENSIONS =
+        "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}"
+    const val LIFECYCLE_VIEWMODEL_KTX =
+        "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycleViewModelKtx}"
+    const val LIFECYCLE_LIVEDATA_KTX =
+        "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycleLivedataKtx}"
+    const val LIFECYCLE_RUNTIME_KTX =
+        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleRuntimeKtx}"
+
+    //WorkerManager Kotlin + coroutines
+    const val WORK_RUNTIME_KTX = "androidx.work:work-runtime-ktx:${Versions.workRuntimeKtx}"
+
+    //Navigation
+    const val NAVIGATION_FRAGMENT_KTX =
+        "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
+    const val NAVIGATION_UI_KTX = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
+    const val ROOM_RUNTIME = "androidx.room:room-runtime:${Versions.roomVersion}"
+
+    //Room
+    const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.roomVersion}"
+    const val ROOM_KTX = "androidx.room:room-ktx:${Versions.roomVersion}"
+    const val ROOM_TESTING = "androidx.room:room-testing:${Versions.roomVersion}"
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    const val MULTIDEX = "androidx.multidex:multidex:${Versions.multidex}"
+
+    //JUnit
+    const val JUNIT = "junit:junit:${Versions.junit}"
+    const val ANDROIDX_JUNIT = "androidx.test.ext:junit:${Versions.androidxJunit}"
+    const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.androidxEspressoCore}"
+
+
     val implementations = listOf(
-        "androidx.appcompat:appcompat:${Versions.appcompat}",
-        "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}",
-        "com.google.code.gson:gson:${Versions.gson}",
-        "com.google.http-client:google-http-client-android:${Versions.googleHttpClientAndroid}",
-        "com.google.api-client:google-api-client-android:${Versions.googleApiClientAndroid}",
-        "com.google.api-client:google-api-client-gson:${Versions.googleApiClientGson}",
-        "org.jetbrains.kotlin:kotlin-stdlib:${PluginVersions.kotlin}",
-        "androidx.legacy:legacy-support-v4:${Versions.legacySupportV4}",
-        "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycleLivedataKtx}",
-        "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycleViewModelKtx}",
-        "com.jakewharton.timber:timber:${Versions.timber}",
-        //retrofit
-        "com.squareup.retrofit2:retrofit:${Versions.retrofit}",
-        "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}",
-        "com.squareup.retrofit2:converter-gson:${Versions.retrofit}",
-        //okhttp
-        "com.squareup.okhttp3:okhttp:${Versions.okhttp3}",
-        "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp3}",
-        //DI
-        "com.google.dagger:dagger:${Versions.dagger}",
-        "com.google.dagger:dagger-android-support:${Versions.dagger}",
-
-// Coroutines for asynchronous calls (and Deferred’s adapter)
-        "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}",
-        // lifecycle
-        "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycleCommonJava8}",
-        "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}",
-        "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycleViewModelKtx}",
-        "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycleLivedataKtx}",
-        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleRuntimeKtx}",
-        //WorkerManager Kotlin + coroutines
-        "androidx.work:work-runtime-ktx:${Versions.workRuntimeKtx}",
-//Navigation
-        "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
-        "androidx.navigation:navigation-ui-ktx:${Versions.navigation}",
-        "androidx.room:room-runtime:${Versions.roomVersion}",
-        // optional - Kotlin Extensions and Coroutines support for Room
-        "androidx.room:room-ktx:${Versions.roomVersion}",
-        "androidx.multidex:multidex:${Versions.multidex}"
-        )
-
-    val kapt = listOf(
-        "com.google.dagger:dagger-android-processor:${Versions.dagger}",
-        "com.google.dagger:dagger-compiler:${Versions.dagger}",
-        "androidx.room:room-compiler:${Versions.roomVersion}"
+        APPCOMPAT,
+        CONSTRAINT_LAYOUT,
+        gson,
+        GOOGLE_HTTP_CLIENT_ANDROID,
+        GOOGLE_API_CLIENT_ANDROID,
+        GOOGLE_API_CLIENT_GSON,
+        KOTLIN_STDLIB,
+        LEGACY_SUPPORT_V_4,
+        LIFECYCLE_LIVEDATA_KTX,
+        timber,
+        retrofit,
+        RETROFIT_2_ADAPTER_RXJAVA_2,
+        RETROFIT_2_CONVERTER_GSON,
+        okhttp,
+        LOGGING_INTERCEPTOR,
+        KOTLINX_COROUTINES_CORE,
+        KOTLINX_COROUTINES_ANDROID,
+        LIFECYCLE_COMMON_JAVA_8,
+        LIFECYCLE_EXTENSIONS,
+        LIFECYCLE_VIEWMODEL_KTX,
+        LIFECYCLE_LIVEDATA_KTX,
+        LIFECYCLE_RUNTIME_KTX,
+        WORK_RUNTIME_KTX,
+        NAVIGATION_FRAGMENT_KTX,
+        NAVIGATION_UI_KTX,
+        ROOM_RUNTIME,
+        ROOM_KTX,
+        MULTIDEX
     )
+
     val testImplementations = listOf(
-        "junit:junit:${Versions.junit}",
-        "androidx.room:room-testing:${Versions.roomVersion}"
+        JUNIT,
+        ROOM_TESTING
     )
     val androidTestImplementation = listOf(
-        "androidx.test.ext:junit:${Versions.androidxJunit}",
-        "androidx.test.espresso:espresso-core:${Versions.androidxEspressoCore}"
+        ANDROIDX_JUNIT,
+        ESPRESSO_CORE
     )
-   val atomicfuCommon =  mapOf(
-    "group" to "org.jetbrains.kotlinx",
-    "module" to "atomicfu-common"
+    val atomicfuCommon = mapOf(
+        "group" to "org.jetbrains.kotlinx",
+        "module" to "atomicfu-common"
     )
 }
-object Plugins{
+
+object Plugins {
     val plugins = listOf(
         "com.android.application",
         "kotlin-android",
@@ -119,7 +187,8 @@ object Plugins{
         "androidx.navigation.safeargs.kotlin"
     )
 }
-object PackagingOptions{
+
+object PackagingOptions {
     val excludeList = listOf(
         "META-INF/DEPENDENCIES",
         "META-INF/LICENSE",
@@ -132,7 +201,7 @@ object PackagingOptions{
     )
 }
 
-object TopLevelDependencies{
+object TopLevelDependencies {
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files
     val dependencies = listOf(

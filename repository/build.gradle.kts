@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion( 30)
+    compileSdk = AppConfig.compileSdkVer
 
     defaultConfig {
-        minSdkVersion (21)
-        targetSdkVersion (30)
-        versionCode (1)
-        versionName ("1.0")
+        minSdk = AppConfig.minSdkVer
+        targetSdk = AppConfig.targetSdkVer
+//        versionCode (1)
+//        versionName ("1.0")
 
-        testInstrumentationRunner ("androidx.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner = ("androidx.test.runner.AndroidJUnitRunner")
         consumerProguardFiles ("consumer-rules.pro")
     }
 
@@ -28,8 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = Versions.javaVersion
+        targetCompatibility = Versions.javaVersion
     }
     kotlinOptions {
         jvmTarget = Versions.jvmTarget
@@ -40,7 +40,7 @@ dependencies {
     api (project(":model"))
     implementation (project(":core-utils"))
 
-    implementation ("androidx.core:core-ktx:1.6.0")
+    implementation ("androidx.core:core-ktx:1.7.0")
     testImplementation ("junit:junit:4.+")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")

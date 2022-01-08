@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import androidx.lifecycle.ViewModel
+import com.example.core.interactor.SpaceDustUseCase
 import com.example.feature_game.mapper.PlayerMapper
 import com.example.feature_game.model.Meteorite
 import com.example.feature_game.model.PlayerShip
@@ -11,16 +12,13 @@ import com.example.feature_game.repository.IMeteoriteRepository
 import com.example.feature_game.sound.IPlaySoundManager
 import com.example.model.PlayerShipDrawInfo
 import com.example.model.SpaceDust
-import com.example.repository.ISpaceDustRepository
-import com.example.repository.IUserRecordRepository
 import java.util.*
 import javax.inject.Inject
 
 class SpaceViewModel @Inject constructor(
     private val playerMapper: PlayerMapper,
-    private val userRecordRepository: IUserRecordRepository,
     private val meteoriteRepository: IMeteoriteRepository,
-    private val spaceDustRepository: ISpaceDustRepository,
+    private val spaceDustUseCase: SpaceDustUseCase,
     private val playSoundManager: IPlaySoundManager
 ) : ViewModel() {
     var gameStatus: com.example.core_utils.util.logging.GameStatus =
@@ -60,10 +58,10 @@ class SpaceViewModel @Inject constructor(
         meteoriteRepository.addMeteorite(meteorite)
         //soundPool.play(start,1,1,0,10,1);
         val numSpecs: Short = 100
-        spaceDustRepository.deleteAll()
+        spaceDustUseCase.deleteAll()
         for (i in 0 until numSpecs) {
             val spec = SpaceDust(screenX, screenY, random)
-            spaceDustRepository.add(spec)
+            spaceDustUseCase.add(spec)
         }
         SpaceView.distance = 0f
         SpaceView.timeTaken = 0

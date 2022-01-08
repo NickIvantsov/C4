@@ -1,20 +1,19 @@
 plugins {
     id("com.android.library")
     id ("kotlin-android")
-    id ("kotlin-android-extensions")
     id ("kotlin-kapt")
 }
 
 android {
-    compileSdkVersion( 30)
+    compileSdk = AppConfig.compileSdkVer
 
     defaultConfig {
-        minSdkVersion (21)
-        targetSdkVersion (30)
-        versionCode (1)
-        versionName ("1.0")
+        minSdk = AppConfig.minSdkVer
+        targetSdk = AppConfig.targetSdkVer
+//        versionCode = AppConfig.versionCodeVer
+//        versionName =  AppConfig.versionNameVer
 
-        testInstrumentationRunner ("androidx.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner = AppConfig.androidTestInstrumentation
         consumerProguardFiles ("consumer-rules.pro")
     }
 
@@ -28,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = Versions.javaVersion
+        targetCompatibility = Versions.javaVersion
     }
     kotlinOptions {
         jvmTarget = Versions.jvmTarget

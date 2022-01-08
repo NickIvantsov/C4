@@ -1,21 +1,24 @@
-plugins {
+plugins{
     id("com.android.library")
     id ("kotlin-android")
     id ("kotlin-android-extensions")
     id ("kotlin-kapt")
-    id ("androidx.navigation.safeargs")
+//    id ("androidx.navigation.safeargs")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
-    compileSdkVersion( 30)
-
+    compileSdk = AppConfig.compileSdkVer
+    sourceSets {
+        getByName("main").java.srcDirs("build/generated/source/navigation-args")
+    }
     defaultConfig {
-        minSdkVersion (21)
-        targetSdkVersion (30)
-        versionCode (1)
-        versionName ("1.0")
+        minSdk = AppConfig.minSdkVer
+        targetSdk = AppConfig.targetSdkVer
+//        versionCode (1)
+//        versionName ("1.0")
 
-        testInstrumentationRunner ("androidx.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner = ("androidx.test.runner.AndroidJUnitRunner")
         consumerProguardFiles ("consumer-rules.pro")
     }
 
@@ -32,8 +35,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = Versions.javaVersion
+        targetCompatibility = Versions.javaVersion
     }
     kotlinOptions {
         jvmTarget = Versions.jvmTarget
@@ -43,23 +46,31 @@ android {
 dependencies {
 
     implementation (project(":repository"))
+    implementation (project(":core"))
     implementation (project(":core-utils"))
+    implementation (project(":rewheeldevsdk"))
 
-    implementation ("androidx.core:core-ktx:1.6.0")
-    implementation ("androidx.appcompat:appcompat:1.3.1")
-    implementation ("com.google.android.material:material:1.4.0")
-    implementation ("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
-    testImplementation ("junit:junit:4.+")
-    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    implementation (Libs.APPCOMPAT)
+    implementation (Libs.ANDROID_MATERIAL)
+    implementation (Libs.LEGACY_SUPPORT_V_4)
+    implementation (Libs.LIFECYCLE_LIVEDATA_KTX)
+    implementation (Libs.LIFECYCLE_VIEWMODEL_KTX)
+    testImplementation (Libs.JUNIT)
+    androidTestImplementation (Libs.ANDROIDX_JUNIT)
+    androidTestImplementation (Libs.ESPRESSO_CORE)
 
-    implementation ("com.google.dagger:dagger:${Versions.dagger}")
-    implementation ("com.google.dagger:dagger-android-support:${Versions.dagger}")
-    kapt ("com.google.dagger:dagger-compiler:${Versions.dagger}")
+    implementation (Libs.DAGGER)
+    implementation (Libs.DAGGER_ANDROID_SUPPORT)
+    kapt (Libs.DAGGER_COMPILER)
 
-    implementation ("androidx.navigation:navigation-fragment-ktx:${Versions.navigation}")
-    implementation ("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
+    kapt("com.google.dagger:dagger-android-processor:${Versions.dagger}")
+
+    implementation (Libs.NAVIGATION_FRAGMENT_KTX)
+    implementation (Libs.NAVIGATION_UI_KTX)
+
+    implementation(Libs.CORE_KTX)
+    implementation (Libs.KOTLINX_COROUTINES_CORE)
+    runtimeOnly (Libs.KOTLINX_COROUTINES_ANDROID)
+//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
 }

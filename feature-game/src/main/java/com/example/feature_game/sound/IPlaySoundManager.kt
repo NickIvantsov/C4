@@ -1,8 +1,10 @@
 package com.example.feature_game.sound
 
+import com.example.core_utils.util.logging.SoundName
+
 interface IPlaySoundManager {
     suspend fun play(
-        soundName: com.example.core_utils.util.logging.SoundName,
+        soundName: SoundName,
         leftVolume: Float = SoundManager.LEFT_VOLUME,
         rightVolume: Float = SoundManager.RIGHT_VOLUME,
         priority: Int = SoundManager.SOUND_PRIORITY,

@@ -11,14 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.core_utils.util.logging.toEditable
+import com.example.model.User
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.R
 import rewheeldev.tappycosmicevasion.databinding.MainFragmentBinding
 import rewheeldev.tappycosmicevasion.di.modules.SAVED_TEXT
 import rewheeldev.tappycosmicevasion.logging.logD
-import com.example.model.User
 import rewheeldev.tappycosmicevasion.ui.adapters.UserRecordsAdapter
-import com.example.core_utils.util.logging.toEditable
 import javax.inject.Inject
 
 class MainFragment : Fragment() {
@@ -39,9 +39,10 @@ class MainFragment : Fragment() {
             setUserNickName(name)
         }
     }
-    private val userRecordsObserver = Observer<List<com.example.model.UserRecordEntity>> { userRecords ->
-        userRecordsAdapter.addRecords(userRecords)
-    }
+    private val userRecordsObserver =
+        Observer<List<com.example.model.UserRecordEntity>> { userRecords ->
+            userRecordsAdapter.addRecords(userRecords)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
@@ -148,7 +149,10 @@ class MainFragment : Fragment() {
     }
 
     private fun saveNickname() {
-        viewModel.saveUserData(com.example.core_utils.util.logging.NICK_NAME_KEY, User(getNickName()))
+        viewModel.saveUserData(
+            com.example.core_utils.util.logging.NICK_NAME_KEY,
+            User(getNickName())
+        )
     }
 
     private fun getNickName(): String {

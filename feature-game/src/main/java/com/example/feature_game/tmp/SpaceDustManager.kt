@@ -3,10 +3,10 @@ package com.example.feature_game.tmp
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.example.repository.ISpaceDustRepository
+import com.example.core.interactor.SpaceDustUseCase
 
 class SpaceDustManager(
-    private val spaceDustRepository: ISpaceDustRepository,
+    private val spaceDustUseCase: SpaceDustUseCase,
     private val spaceViewModel: SpaceViewModel
 ) {
     private val paint = Paint()
@@ -18,9 +18,9 @@ class SpaceDustManager(
     fun drawSpaceDust(
         canvas: Canvas
     ) {
-        for (spaceDustElementIndex in 0 until spaceDustRepository.getSize()) {
+        for (spaceDustElementIndex in 0 until spaceDustUseCase.getSize()) {
 
-            val currentSpaceDustElement = spaceDustRepository.getByIndex(spaceDustElementIndex)
+            val currentSpaceDustElement = spaceDustUseCase.getByIndex(spaceDustElementIndex)
 
             if (currentSpaceDustElement.downLight) currentSpaceDustElement.counter++ else currentSpaceDustElement.counter--
 

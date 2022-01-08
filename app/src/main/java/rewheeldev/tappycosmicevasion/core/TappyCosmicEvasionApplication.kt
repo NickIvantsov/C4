@@ -1,16 +1,15 @@
 package rewheeldev.tappycosmicevasion.core
 
 import android.app.Application
+import com.example.feature_game.model.Meteorite
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import timber.log.Timber
-import timber.log.Timber.DebugTree
 import rewheeldev.tappycosmicevasion.BuildConfig
 import rewheeldev.tappycosmicevasion.di.components.DaggerAppComponent
 import rewheeldev.tappycosmicevasion.logging.CrashReportingTree
-import com.example.feature_game.model.Meteorite
-import com.example.feature_game.repository.IMeteoriteRepository
+import timber.log.Timber
+import timber.log.Timber.DebugTree
 import javax.inject.Inject
 
 
@@ -18,6 +17,7 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
 
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
     @Inject
     lateinit var meteoriteRepository: com.example.feature_game.repository.IMeteoriteRepository
 
@@ -30,7 +30,7 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
             .build()
             .inject(this)
 
-        Meteorite.initBitmap(this,meteoriteRepository)
+        Meteorite.initBitmap(this, meteoriteRepository)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())

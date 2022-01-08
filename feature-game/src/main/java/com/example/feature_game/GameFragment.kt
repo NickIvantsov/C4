@@ -10,10 +10,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.core.interactor.SpaceDustUseCase
 import com.example.feature_game.repository.IMeteoriteRepository
 import com.example.feature_game.tmp.SpaceView
 import com.example.feature_game.tmp.SpaceViewModel
-import com.example.repository.ISpaceDustRepository
 import com.example.repository.IUserRecordRepository
 import dagger.android.support.AndroidSupportInjection
 import java.util.*
@@ -34,7 +34,7 @@ class GameFragment : Fragment() {
     lateinit var meteoriteRepository: IMeteoriteRepository
 
     @Inject
-    lateinit var spaceDustRepository: ISpaceDustRepository
+    lateinit var spaceDustUseCase: SpaceDustUseCase
 
     @Inject
     lateinit var spaceViewModel: SpaceViewModel
@@ -58,15 +58,15 @@ class GameFragment : Fragment() {
             point
         )
 
-      //  val args: GameFragmentArgs by navArgs() //todo разобраться почему не работает
+        val args: GameFragmentArgs by navArgs()
         gameView = SpaceView(
             requireContext(),
             userRecordRepository,
             random,
             point,
-            0,//todo нужно как-то получить данные
+            args.typeShip,
             meteoriteRepository,
-            spaceDustRepository,
+            spaceDustUseCase,
             spaceViewModel
         )
     }
@@ -88,12 +88,12 @@ class GameFragment : Fragment() {
         })
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         gameView!!.pause()
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         com.example.core_utils.util.logging.hideSystemUI(requireActivity().window, gameView!!)
         super.onResume()
         gameView!!.resume()

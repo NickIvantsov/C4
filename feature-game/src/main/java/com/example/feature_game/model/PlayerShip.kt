@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
 import com.example.feature_game.R
-import com.example.feature_game.joyStick.Joystick
+import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 
 class PlayerShip(
     private val context: Context,
@@ -50,7 +50,7 @@ class PlayerShip(
          } else y += dist*/
         //endregion
         val velocityY = joystick.actuatorY.toFloat() * 20
-        val velocityX= joystick.actuatorX.toFloat()* 20
+        val velocityX = joystick.actuatorX.toFloat() * 20
         y += velocityY
         x += velocityX
         //region проверка макс и мин
