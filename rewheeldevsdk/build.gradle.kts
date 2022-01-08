@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
 }
 
 android {
@@ -9,19 +9,17 @@ android {
     defaultConfig {
         minSdk = AppConfig.minSdkVer
         targetSdk = AppConfig.targetSdkVer
-//        versionCode 1
-//        versionName "1.0"
 
-        testInstrumentationRunner = ("androidx.test.runner.AndroidJUnitRunner")
-        consumerProguardFiles("consumer-rules.pro")
+        testInstrumentationRunner = (AppConfig.androidTestInstrumentation)
+        consumerProguardFiles(AppConfig.consumerRulesPro)
     }
 
     buildTypes {
-        getByName("release") {
+        getByName(BuildTypes.release) {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile(BuildTypes.proguardAndroid), BuildTypes.proguardRules)
         }
-        getByName("debug") {
+        getByName(BuildTypes.debug) {
             isMinifyEnabled = false
         }
     }

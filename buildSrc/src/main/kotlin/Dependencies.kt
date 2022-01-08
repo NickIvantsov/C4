@@ -13,7 +13,15 @@ object AppConfig {
     const val versionNameVer = "1.1.1"
 
     const val androidTestInstrumentation = "androidx.test.runner.AndroidJUnitRunner"
+    const val consumerRulesPro = "consumer-rules.pro"
     const val applicationId = "rewheeldev.tappycosmicevasion"
+}
+
+object BuildTypes{
+    const val release = "release"
+    const val debug = "debug"
+    const val proguardAndroid = "proguard-android.txt"
+    const val proguardRules = "proguard-rules.pro"
 }
 
 object Versions {
@@ -180,12 +188,11 @@ object Libs {
 }
 
 object Plugins {
-    val plugins = listOf(
-        "com.android.application",
-        "kotlin-android",
-        "kotlin-kapt",
-        "androidx.navigation.safeargs.kotlin"
-    )
+    const val androidApplication = "com.android.application"
+    const val kotlinAndroid = "kotlin-android"
+    const val kotlinKapt = "kotlin-kapt"
+    const val androidxNavigation = "androidx.navigation.safeargs.kotlin"
+    const val androidLibrary = "com.android.library"
 }
 
 object PackagingOptions {
