@@ -26,7 +26,7 @@ object BuildTypes{
 
 object Versions {
 
-    const val gradle = "7.0.4"
+    const val gradle = "7.2.2"
     const val coroutines = "1.5.0-native-mt"
     const val kotlinxCoroutinesAndroid = "1.6.0"
     const val appcompat = "1.3.0"
