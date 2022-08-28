@@ -28,12 +28,12 @@ class ShipManager(
             paint
         )
 
-//        paint2.style = Paint.Style.STROKE
-//        paint2.color = Color.RED
-//        canvas.drawRect(
-//            playerShipDrawInfo.shipHitBot,
-//            paint2
-//        )
+        paint2.style = Paint.Style.STROKE
+        paint2.color = Color.RED
+        canvas.drawRect(
+            playerShipDrawInfo.shipHitBot,
+            paint2
+        )
     }
 
 }

@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.math.MathUtils.clamp
 import com.gmail.rewheeldevsdk.api.collision.ICollision
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -24,23 +25,30 @@ fun hitBoxDetection(imageOne: ICollision, imageTwo: ICollision): Boolean {
     if (!result) {
         return false
     }
-    val must = mutableListOf<Future<Boolean>>()
+
     isActive = false
-    for (localY in (detectedCollisionRect.top) until detectedCollisionRect.bottom) { //Y координата
-        val future: Future<Boolean> = threadFactory.submit<Boolean> {
-            return@submit checkDetectCollisionInRow(
-                detectedCollisionRect,
-                imageOne,
-                localY,
-                imageTwo
-            )
+    val mainJob = threadFactory.submit<Boolean> {
+        val must = mutableListOf<Future<Boolean>>()
+        for (localY in (detectedCollisionRect.top) until detectedCollisionRect.bottom) { //Y координата
+            val future: Future<Boolean> = threadFactory.submit<Boolean> {
+                return@submit checkDetectCollisionInRow(
+                    detectedCollisionRect,
+                    imageOne,
+                    localY,
+                    imageTwo
+                )
+            }
+            must.add(future)
         }
-        must.add(future)
+        must.forEach {
+            if (it.get()) {
+                return@submit true
+            }
+        }
+        return@submit false
     }
-    must.forEach {
-        if (it.get()) {
-            return true
-        }
+    if (mainJob.get()) {
+        return true
     }
     return false
 }
@@ -132,4 +140,57 @@ private fun checkDetectCollisionInRow(
         }
     }
     return false
+}
+
+fun hitCircleBoxDetection(rectImageOne: ICollision, circleImageTwo: ICollision): Boolean {
+
+    // Find the closest point to the circle within the rectangle
+    val closestX = clamp(
+        circleImageTwo.getFrameHitBox().left + ((circleImageTwo.getCurrentFrame().width) / 2),
+        rectImageOne.getFrameHitBox().left,
+        rectImageOne.getFrameHitBox().right
+    )
+    val closestY = clamp(
+        circleImageTwo.getFrameHitBox().top + ((circleImageTwo.getCurrentFrame().height) / 2),
+        rectImageOne.getFrameHitBox().top,
+        rectImageOne.getFrameHitBox().bottom
+    )
+
+
+    // Calculate the distance between the circle's center and this closest point
+    val distanceX =
+        circleImageTwo.getFrameHitBox().left + ((circleImageTwo.getCurrentFrame().width) / 2) - closestX
+    val distanceY =
+        circleImageTwo.getFrameHitBox().top + ((circleImageTwo.getCurrentFrame().height) / 2) - closestY
+
+
+    val imageTwoRadius = ((circleImageTwo.getCurrentFrame().width - 100) / 2)
+
+    // If the distance is less than the circle's radius, an intersection occurs
+    val distanceSquared = (distanceX * distanceX + distanceY * distanceY).toFloat()
+    val result = distanceSquared < imageTwoRadius * imageTwoRadius
+    if (result) {
+        Log.d(
+            "TAG_9",
+            "closestX: $closestX, circleImageTwo.getFrameHitBox().left: ${circleImageTwo.getFrameHitBox().left}, rectImageOne.getFrameHitBox().left: ${rectImageOne.getFrameHitBox().left}, rectImageOne.getFrameHitBox().right: ${rectImageOne.getFrameHitBox().right}"
+        )
+        Log.d(
+            "TAG_9",
+            "closestY: $closestY, circleImageTwo.getFrameHitBox().left: ${circleImageTwo.getFrameHitBox().top}, rectImageOne.getFrameHitBox().top: ${rectImageOne.getFrameHitBox().top}, rectImageOne.getFrameHitBox().bottom: ${rectImageOne.getFrameHitBox().bottom}"
+        )
+        Log.d(
+            "TAG_9",
+            "circleImageTwo.getFrameHitBox().left + ((circleImageTwo.getCurrentFrame().width) / 2): ${circleImageTwo.getFrameHitBox().left + ((circleImageTwo.getCurrentFrame().width) / 2)} - closestX: $closestX = distanceX: $distanceX"
+        )
+        Log.d(
+            "TAG_9",
+            "circleImageTwo.getFrameHitBox().top + ((circleImageTwo.getCurrentFrame().height) / 2): ${circleImageTwo.getFrameHitBox().top + ((circleImageTwo.getCurrentFrame().height) / 2)} - closestX: $closestX = distanceX: $distanceX"
+        )
+        Log.d(
+            "TAG_9",
+            "distanceSquared: $distanceSquared = distanceX: $distanceX * distanceX: $distanceX + distanceY: $distanceY * distanceY: $distanceY"
+        )
+
+    }
+    return result
 }

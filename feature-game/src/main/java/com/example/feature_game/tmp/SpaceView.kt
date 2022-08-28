@@ -20,11 +20,10 @@ import com.example.feature_game.ui.screens.GameOverScreen
 import com.example.feature_game.ui.screens.GameScreen
 import com.example.repository.IUserRecordRepository
 import com.gmail.rewheeldevsdk.api.util.hitBoxDetection
+import com.gmail.rewheeldevsdk.api.util.hitCircleBoxDetection
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -37,9 +36,8 @@ class SpaceView(
     private val playerShipType: Int,
     private val meteoriteRepository: IMeteoriteRepository,
     private val spaceDustInteractor: SpaceDustUseCase,
-    private val spaceViewModel: SpaceViewModel,
-    attrs: AttributeSet? = null,
-) : SurfaceView(context, attrs), Runnable {
+    private val spaceViewModel: SpaceViewModel
+) : SurfaceView(context), Runnable {
     // This variable tracks the game frame rate
     var fps: Long = 0
 
@@ -80,7 +78,6 @@ class SpaceView(
         val actionMask = motionEvent.actionMasked
 
         spaceViewModel.player.touchY = motionEvent.y
-        Log.d("SCREEN_SIZE", "screenX: ${screenX}, screenY: ${screenY}")
         val startSpeedX = screenX - screenX / 8
 
         if (actionMask == MotionEvent.ACTION_MOVE) {
@@ -158,7 +155,12 @@ class SpaceView(
 
     private val background: Background = Background()
     private val shipManager: ShipManager = ShipManager(spaceViewModel)
-    private val meteoritesManager: MeteoritesManager = MeteoritesManager(meteoriteRepository)
+    private val meteoritesManager: MeteoritesManager by lazy {
+        MeteoritesManager(
+            meteoriteRepository,
+            canvas
+        )
+    }
     private val spaceDustManager: SpaceDustManager =
         SpaceDustManager(spaceDustInteractor, spaceViewModel)
 
@@ -183,64 +185,64 @@ class SpaceView(
     val handler = CoroutineExceptionHandler { _, exception ->
         Log.e("TAG_6", "CoroutineExceptionHandler got $exception", exception)
     }
-
+val scope  = CoroutineScope(Dispatchers.IO)
     private fun update() {
-        if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) return
-        joystick.update()
-        var hitDetected = false
+        scope.launch {
+            if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) return@launch
 
-        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
-            val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
+            joystick.update()
+            var hitDetected = false
 
-            val startTime = System.currentTimeMillis()
-            if (hitBoxDetection(spaceViewModel.player, meteorite)) {
-                hitDetected = true
+            for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
+                val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
+                if (meteorite.x < 0 || meteorite.y > screenY) continue
+                val startTime = System.currentTimeMillis()
+//                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
+                if (hitCircleBoxDetection(spaceViewModel.player, meteorite)) {
+                    hitDetected = true
 //                перемещение метеорита с которым столкнулись в отрицательные координаты по оси X за пределы экрана
 //                для определения алгоритмом что метеорт долетел до кронца экрана и должен быдет перерисоваться
-                meteorite.x = -350
-            }
-
-            val timeCost = System.currentTimeMillis() - startTime
-            if (timeCost > 35)
-                Log.d("TAG_6", "time cost: $timeCost")
-        }
-        if (hitDetected) {
-            CoroutineScope(Dispatchers.IO).launch {
-                spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.BUMP)
-            }
-
-            spaceViewModel.player.minusLives()
-            if (spaceViewModel.player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
-                hitDetected = false
-                setNewGameStatus(com.example.core_utils.util.logging.GameStatus.ENDED)
-                CoroutineScope(Dispatchers.IO).launch {
-                    spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.DESTROYED)
+                    meteorite.x = -350
                 }
-                val currentTimeStr =
-                    DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
-                userRecordRepository.insert(
-                    com.example.model.UserRecordEntity(
-                        currentTimeStr.toString(),
-                        distance,
-                        timeTaken
-                    )
-                )
+
+                val timeCost = System.currentTimeMillis() - startTime
+                if (timeCost > 35)
+                    Log.d("TAG_6", "time cost: $timeCost")
             }
-        }
-        for (spaceDust in spaceDustInteractor.getAll()) {
-            spaceDust.update(spaceViewModel.player.speed)
-        }
-        spaceViewModel.player.update(joystick)
-        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
-            meteoriteRepository.getMeteoriteByIndex(i)
-                .update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
-        }
-        if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
-            distance += (spaceViewModel.player.speed / 1000.0).toFloat()
-            timeTaken = System.currentTimeMillis() - spaceViewModel.timeStarted
-        }
-        if (distance >= getLevel() * 5) {
-            spaceViewModel.startNextLevel(screenX, screenY, random, screenSize)
+            if (hitDetected) {
+                spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.BUMP)
+
+                spaceViewModel.player.minusLives()
+                if (spaceViewModel.player.lives <= 0) /*количество жизней меньше либо равно нулю */ {
+                    hitDetected = false
+                    setNewGameStatus(com.example.core_utils.util.logging.GameStatus.ENDED)
+                    spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.DESTROYED)
+                    val currentTimeStr =
+                        DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
+                    userRecordRepository.insert(
+                        com.example.model.UserRecordEntity(
+                            currentTimeStr.toString(),
+                            distance,
+                            timeTaken
+                        )
+                    )
+                }
+            }
+            for (spaceDust in spaceDustInteractor.getAll()) {
+                spaceDust.update(spaceViewModel.player.speed)
+            }
+            spaceViewModel.player.update(joystick)
+            for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
+                meteoriteRepository.getMeteoriteByIndex(i)
+                    .update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
+            }
+            if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
+                distance += (spaceViewModel.player.speed / 1000.0).toFloat()
+                timeTaken = System.currentTimeMillis() - spaceViewModel.timeStarted
+            }
+            if (distance >= getLevel() * 5) {
+                spaceViewModel.startNextLevel(screenX, screenY, random, screenSize)
+            }
         }
     }
 
@@ -264,7 +266,7 @@ class SpaceView(
                     changReduceShieldStrength = { spaceViewModel.player.isReduceShieldStrength-- },
                     drawSpaceDust = { spaceDustManager.drawSpaceDust(canvas) },
                     drawShip = { shipManager.draw(canvas) },
-                    drawMeteorites = { meteoritesManager.draw(canvas) },
+                    drawMeteorites = { meteoritesManager.draw() },
                     drawJoystick = { joystick.draw(canvas) }
                 )
             } else {
@@ -272,7 +274,7 @@ class SpaceView(
             }
 
 
-            if (fps<10){
+            if (fps < 10) {
                 // Make the text a bit bigger
                 paint.textSize = 65F
                 // Choose the brush color for drawing
@@ -281,7 +283,7 @@ class SpaceView(
                 canvas.drawText("FPS:$fps", 120F, 60F, paint)
 
 
-            }else{
+            } else {
                 // Make the text a bit bigger
                 paint.textSize = 45F
                 // Choose the brush color for drawing
