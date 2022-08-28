@@ -1,11 +1,9 @@
 package com.example.feature_game.tmp
 
 import android.graphics.Canvas
-import android.graphics.Color
+import com.example.feature_game.ui.colors.backgroundColor
 
 class Background {
-
-    private val backgroundColor = Color.argb(255, 0, 0, 0)
     fun draw(canvas: Canvas) {
         canvas.drawColor(backgroundColor)
     }

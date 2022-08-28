@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.example.feature_game.tmp.Background
+import com.example.feature_game.ui.colors.WHITE
 import rewheeldev.tappycosmicevasion.R
 
 
@@ -238,7 +239,7 @@ class MainView(context: Context, private val screenSize: Point, attrs: Attribute
         if (ourHolder.surface.isValid) {
             canvas = ourHolder.lockCanvas()
             background.draw(canvas)
-            paint.color = Color.WHITE
+            paint.color = WHITE
             // Choose the brush color for drawing
             paint.setColor(Color.argb(255, 249, 129, 0))
 

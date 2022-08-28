@@ -14,8 +14,10 @@ import android.view.SurfaceView
 import android.view.View.OnTouchListener
 import com.example.core.interactor.SpaceDustUseCase
 import com.example.core_utils.util.logging.extensions.logD
-import com.example.feature_game.R
 import com.example.feature_game.repository.IMeteoriteRepository
+import com.example.feature_game.ui.colors.WHITE
+import com.example.feature_game.ui.screens.GameOverScreen
+import com.example.feature_game.ui.screens.GameScreen
 import com.example.repository.IUserRecordRepository
 import com.gmail.rewheeldevsdk.api.util.hitBoxDetection
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
@@ -45,6 +47,7 @@ class SpaceView(
     private var timeThisFrame: Long = 0
 
     //endregion
+
     //region flags
 
     @Volatile
@@ -66,7 +69,8 @@ class SpaceView(
     private lateinit var canvas: Canvas
     private val ourHolder: SurfaceHolder = holder
     private var gameThread: Thread? = null
-
+    private val gameOverScreen by lazy { GameOverScreen(context, canvas) }
+    private val gameScreen by lazy { GameScreen(canvas) }
     private var onTouchSpeed: OnTouchListener = OnTouchListener { view, motionEvent ->
 
 
@@ -246,142 +250,47 @@ class SpaceView(
 
             background.draw(canvas)
 
-
-            // Choose the brush color for drawing
-            paint.color = Color.argb(255, 249, 129, 0)
-
-            // Make the text a bit bigger
-            paint.textSize = 45F
-            // Display the current fps on the screen
-            canvas.drawText("FPS:$fps", 120F, 40F, paint)
-
-            paint.color = Color.WHITE
+            paint.color = WHITE
 
             if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
-                gameProcess()
+                gameScreen.showGameScreen(
+                    screenX = screenX,
+                    screenY = screenY,
+                    speed = (spaceViewModel.player.speed * 60).toInt().toShort(),
+                    isReduceShieldStrength = spaceViewModel.player.isReduceShieldStrength,
+                    level = getLevel(),
+                    lives = spaceViewModel.player.lives,
+                    isTouch = spaceViewModel.player.isTouch,
+                    changReduceShieldStrength = { spaceViewModel.player.isReduceShieldStrength-- },
+                    drawSpaceDust = { spaceDustManager.drawSpaceDust(canvas) },
+                    drawShip = { shipManager.draw(canvas) },
+                    drawMeteorites = { meteoritesManager.draw(canvas) },
+                    drawJoystick = { joystick.draw(canvas) }
+                )
             } else {
-                gameOverProcess()
+                gameOverScreen.showGameOverScreen(screenX)
+            }
+
+
+            if (fps<10){
+                // Make the text a bit bigger
+                paint.textSize = 65F
+                // Choose the brush color for drawing
+                paint.color = Color.argb(255, 255, 0, 0)
+                // Display the current fps on the screen
+                canvas.drawText("FPS:$fps", 120F, 60F, paint)
+
+
+            }else{
+                // Make the text a bit bigger
+                paint.textSize = 45F
+                // Choose the brush color for drawing
+                paint.color = Color.argb(255, 249, 129, 0)
+                // Display the current fps on the screen
+                canvas.drawText("FPS:$fps", 120F, 40F, paint)
+
             }
             ourHolder.unlockCanvasAndPost(canvas)
-        }
-    }
-
-    private fun gameOverProcess() {
-        paint.textSize = 80f
-        paint.textAlign = Paint.Align.CENTER
-        val gameOverStr = getResString(R.string.game_ower)
-
-        canvas.drawText(gameOverStr, (screenX / 2).toFloat(), 100f, paint)
-
-        paint.textSize = 25f
-        //canvas.drawText("Level" + fastestTime + "s", screenX / 2, 160, paint);
-        val timeStr = getResString(R.string.time) + timeTaken / 1000 + "s"
-        canvas.drawText(
-            timeStr,
-            (screenX / 2).toFloat(),
-            200f,
-            paint
-        )
-        val result =
-            "${getResString(R.string.distance_remaining_msg)}  ${distance.toInt()} ${
-                getResString(R.string.km)
-            }"
-        canvas.drawText(
-            result,
-            (screenX / 2).toFloat(),
-            240f,
-            paint
-        )
-        paint.textSize = 80f
-
-        canvas.drawText(
-            context.getString(R.string.tap_to_replay_msg),
-            (screenX / 2).toFloat(),
-            350f,
-            paint
-        )
-    }
-
-    private fun gameProcess() {
-        spaceDustManager.drawSpaceDust(canvas)
-        shipManager.draw(canvas)
-        meteoritesManager.draw(canvas)
-
-        if (spaceViewModel.player.isTouch) {
-            joystick.draw(canvas)
-        }
-
-
-        paint.textAlign = Paint.Align.LEFT
-        paint.color = Color.argb(255, 255, 255, 255)
-        paint.textSize = 25f
-        canvas.drawText("Level${getLevel()}", 20f, 30f, paint)
-        canvas.drawText(
-            "Time:" + timeTaken / 1000 + "s",
-            (screenX / 2).toFloat(),
-            20f,
-            paint
-        )
-        canvas.drawText(
-            "Distance:" + distance.toInt().toShort() + "KM",
-            (screenX / 3).toFloat(),
-            (screenY - 20).toFloat(),
-            paint
-        )
-        canvas.drawText(
-            "Speed:" + (spaceViewModel.player.speed * 60).toInt().toShort() + " KMh",
-            (screenX / 3 * 2).toFloat(),
-            (screenY - 20).toFloat(),
-            paint
-        )
-        if (spaceViewModel.player.isReduceShieldStrength <= 0) {
-            paint.textSize = 25f
-        } else {
-            if (spaceViewModel.player.isReduceShieldStrength % 10 > 5) {
-                paint.color = Color.argb(255, 255, 0, 0)
-            } else {
-                paint.color = Color.argb(255, 255, 255, 255)
-            }
-            paint.textSize = (25 + spaceViewModel.player.isReduceShieldStrength).toFloat()
-            spaceViewModel.player.isReduceShieldStrength--
-        }
-        canvas.drawText(
-            "Shield:" + spaceViewModel.player.lives,
-            10f,
-            (screenY - 20).toFloat(),
-            paint
-        )
-        /*if (spaceViewModel.player.isTouchSpeed) {
-            if (spaceDustRepository.getByIndex(0).counter % 14 >= 7) paint.color =
-                Color.argb(255, 0, 255, 0) else paint.color = Color.argb(255, 255, 255, 255)
-        } else paint.color = Color.argb(100, 255, 255, 255)
-        paint.textSize = 60f
-        for (i in 1 until screenY / 100) canvas.drawText(
-            ">>>",
-            (screenX - screenX / 8).toFloat(),
-            (i * 100).toFloat(),
-            paint
-        )*/
-    }
-
-    private fun getResString(id: Int): String {
-        return context.getString(id)
-    }
-
-    private fun drawMeteorites(
-        meteoriteRepository: IMeteoriteRepository,
-        canvas: Canvas,
-        paint: Paint
-    ) {
-        for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
-            val meteorite =
-                meteoriteRepository.getMeteoriteByIndex(i) //IndexOutOfBoundsException при рестарте игры (1 раз)
-            canvas.drawBitmap(
-                meteorite.bitmap, //todo occasionally get IndexOfBounds Exception (3 times)
-                meteorite.x.toFloat(),
-                meteorite.y.toFloat(),
-                paint
-            )
         }
     }
 
