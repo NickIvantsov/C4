@@ -5,18 +5,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.Rect
+import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
+import com.example.feature_game.tmp.ICollisionController
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
+import kotlin.properties.Delegates
 
 class PlayerShip(
     private val context: Context,
     private val screenSize: Point,
     private val playerShipType: Int
-) {
+) : ICollisionController {
     lateinit var shipImg: Bitmap
 
     lateinit var fireImg: Bitmap
-    var x = 0f
+    var x =0f
     var y = 0f
     var fireX = 0f
     var fireY = 0f
@@ -89,11 +92,11 @@ class PlayerShip(
     }
 
     fun reInit() {
-        x = 70f //!!! 50;
+        x = 270f //!!! 50;
         y = 250f
         speed(1f)
         shipInitialization()
-        shipImg = com.example.core_utils.util.logging.scaleBitmap(shipImg, 3, screenSize.x)
+        shipImg = scaleBitmap(shipImg, 3, screenSize.x)
         isReduceShieldStrength = 0
         maxY = screenSize.y - shipImg.height
         minY = 0
@@ -186,15 +189,15 @@ class PlayerShip(
         }
         val udm = (screenSize.x / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 5, screenSize.x)
+            fireImg = scaleBitmap(returned, 5, screenSize.x)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 4, screenSize.x)
+            fireImg = scaleBitmap(returned, 4, screenSize.x)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = com.example.core_utils.util.logging.scaleBitmap(returned, 3, screenSize.x)
+            fireImg = scaleBitmap(returned, 3, screenSize.x)
             fireX = -(6 * udm)
             fireY = udm
         }
@@ -215,4 +218,9 @@ class PlayerShip(
     init {
         reInit()
     }
+
+    override fun getCurrentFrame(): Bitmap = shipImg
+
+    override fun getCoordinates(): Point = Point(x.toInt(), y.toInt())
+    override fun getFrameHitBox(): Rect = hitBox
 }

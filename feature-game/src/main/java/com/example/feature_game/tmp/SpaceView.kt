@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.format.DateFormat
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -14,9 +15,8 @@ import com.example.feature_game.R
 import com.example.feature_game.repository.IMeteoriteRepository
 import com.example.repository.IUserRecordRepository
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.*
 
 class SpaceView(
@@ -140,10 +140,16 @@ class SpaceView(
 
     override fun run() {
         while (playing) {
+
             update()
             draw()
             control()
+
         }
+    }
+
+    val handler = CoroutineExceptionHandler { _, exception ->
+        Log.e("TAG_6", "CoroutineExceptionHandler got $exception", exception)
     }
 
     private fun update() {
@@ -153,10 +159,26 @@ class SpaceView(
 
         for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
             val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
-            if (Rect.intersects(spaceViewModel.player.hitBox, meteorite.hitBox)) {
-                hitDetected = true
-                meteorite.x = -350
-            }
+
+            val startTime = System.currentTimeMillis()
+//            if (Rect.intersects(spaceViewModel.player.hitBox, meteorite.hitBox)) {
+//            CoroutineScope(Dispatchers.Unconfined).launch {
+//
+//            }
+
+//                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
+                if (hitBoxDetectionV3(spaceViewModel.player, meteorite)) {
+//            hitBoxDetectionV2(spaceViewModel.player, meteorite) {
+//                if (it) {
+//                if (Rect.intersects(spaceViewModel.player.hitBox, meteorite.hitBox)) {
+                    hitDetected = true
+//                перемещение метеорита с которым столкнулись в отрицательные координаты по оси X за пределы экрана
+//                для определения алгоритмом что метеорт долетел до кронца экрана и должен быдет перерисоваться
+                    meteorite.x = -350
+                }
+
+
+            Log.d("TAG_6", "time cost: ${System.currentTimeMillis() - startTime}")
         }
         if (hitDetected) {
             CoroutineScope(Dispatchers.IO).launch {

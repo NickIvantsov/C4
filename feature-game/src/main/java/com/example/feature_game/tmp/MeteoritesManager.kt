@@ -3,6 +3,7 @@ package com.example.feature_game.tmp
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
 import com.example.feature_game.repository.IMeteoriteRepository
 
 class MeteoritesManager(
@@ -10,6 +11,7 @@ class MeteoritesManager(
 ) {
     private val paint: Paint = Paint()
 
+    private val paint2 = Paint()
     init {
         paint.color = Color.WHITE
     }
@@ -24,6 +26,13 @@ class MeteoritesManager(
                     meteorite.x.toFloat(),
                     meteorite.y.toFloat(),
                     paint
+                )
+                paint2.style = Paint.Style.STROKE
+                paint2.color = Color.RED
+
+                canvas.drawRect (
+                    meteorite.hitBox, //todo occasionally get IndexOfBounds Exception (3 times)
+                    paint2
                 )
             } catch (ex: Exception) {
                 ex.printStackTrace()

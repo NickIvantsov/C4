@@ -1,4 +1,4 @@
-package com.example.core_utils.util.logging
+package com.example.core_utils.util
 
 import android.graphics.Bitmap
 

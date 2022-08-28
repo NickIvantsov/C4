@@ -12,7 +12,8 @@ class PlayerMapper @Inject constructor() {
             player.y,
             player.fireImg,
             player.fireX,
-            player.fireY
+            player.fireY,
+            player.hitBox
         )
     }
 }

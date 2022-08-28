@@ -7,11 +7,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowMetrics
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.core_utils.util.logging.toEditable
+import com.example.core_utils.util.scaleBitmap
 import com.example.model.User
 import dagger.android.support.AndroidSupportInjection
 import rewheeldev.tappycosmicevasion.R
@@ -43,18 +45,36 @@ class MainFragment : Fragment() {
         Observer<List<com.example.model.UserRecordEntity>> { userRecords ->
             userRecordsAdapter.addRecords(userRecords)
         }
+    var mainView:MainView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
+        val point = Point()
+        val display =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                requireActivity().display
+            } else {
+                requireActivity().windowManager.defaultDisplay
+            }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics: WindowMetrics = requireActivity().windowManager.currentWindowMetrics
+            point.x = windowMetrics.bounds.width()
+            point.y = windowMetrics.bounds.height()
+        } else display?.getSize(
+            point
+        )
+        mainView = MainView(requireContext(),point)
         super.onCreate(savedInstanceState)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         bindingImpl = MainFragmentBinding.inflate(inflater, container, false)
         return binding.root
+//        return mainView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -119,14 +139,14 @@ class MainFragment : Fragment() {
 
         return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val windowMetrics = requireActivity().windowManager.currentWindowMetrics
-            com.example.core_utils.util.logging.scaleBitmap(
+            scaleBitmap(
                 BitmapFactory.decodeResource(requireContext().resources, iconId),
                 3,
                 windowMetrics.bounds.width()
             )
         } else {
             display?.getSize(point)
-            com.example.core_utils.util.logging.scaleBitmap(
+            scaleBitmap(
                 BitmapFactory.decodeResource(requireContext().resources, iconId),
                 3,
                 point.x
@@ -144,8 +164,14 @@ class MainFragment : Fragment() {
     }
 
     override fun onPause() {
-        saveNickname()
+//        saveNickname()
+        mainView?.pause()
         super.onPause()
+    }
+
+    override fun onResume() {
+        mainView?.resume()
+        super.onResume()
     }
 
     private fun saveNickname() {
