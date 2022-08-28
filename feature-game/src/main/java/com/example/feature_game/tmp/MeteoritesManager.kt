@@ -27,13 +27,13 @@ class MeteoritesManager(
                     meteorite.y.toFloat(),
                     paint
                 )
-                paint2.style = Paint.Style.STROKE
-                paint2.color = Color.RED
-
-                canvas.drawRect (
-                    meteorite.hitBox, //todo occasionally get IndexOfBounds Exception (3 times)
-                    paint2
-                )
+//                paint2.style = Paint.Style.STROKE
+//                paint2.color = Color.RED
+//
+//                canvas.drawRect (
+//                    meteorite.hitBox, //todo occasionally get IndexOfBounds Exception (3 times)
+//                    paint2
+//                )
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

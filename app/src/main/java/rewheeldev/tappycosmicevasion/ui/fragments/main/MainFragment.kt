@@ -45,7 +45,7 @@ class MainFragment : Fragment() {
         Observer<List<com.example.model.UserRecordEntity>> { userRecords ->
             userRecordsAdapter.addRecords(userRecords)
         }
-    var mainView:MainView? = null
+    var mainView: MainView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
@@ -63,7 +63,7 @@ class MainFragment : Fragment() {
         } else display?.getSize(
             point
         )
-        mainView = MainView(requireContext(),point)
+//        mainView = MainView(requireContext(),point)
         super.onCreate(savedInstanceState)
     }
 

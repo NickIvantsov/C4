@@ -1,7 +1,10 @@
 package com.example.feature_game.tmp
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Point
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.util.Log
@@ -14,9 +17,12 @@ import com.example.core_utils.util.logging.extensions.logD
 import com.example.feature_game.R
 import com.example.feature_game.repository.IMeteoriteRepository
 import com.example.repository.IUserRecordRepository
+import com.gmail.rewheeldevsdk.api.util.hitBoxDetection
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
-import kotlinx.coroutines.*
-import java.lang.Runnable
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class SpaceView(
@@ -161,24 +167,16 @@ class SpaceView(
             val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
 
             val startTime = System.currentTimeMillis()
-//            if (Rect.intersects(spaceViewModel.player.hitBox, meteorite.hitBox)) {
-//            CoroutineScope(Dispatchers.Unconfined).launch {
-//
-//            }
-
-//                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
-                if (hitBoxDetectionV3(spaceViewModel.player, meteorite)) {
-//            hitBoxDetectionV2(spaceViewModel.player, meteorite) {
-//                if (it) {
-//                if (Rect.intersects(spaceViewModel.player.hitBox, meteorite.hitBox)) {
-                    hitDetected = true
+            if (hitBoxDetection(spaceViewModel.player, meteorite)) {
+                hitDetected = true
 //                перемещение метеорита с которым столкнулись в отрицательные координаты по оси X за пределы экрана
 //                для определения алгоритмом что метеорт долетел до кронца экрана и должен быдет перерисоваться
-                    meteorite.x = -350
-                }
+                meteorite.x = -350
+            }
 
-
-            Log.d("TAG_6", "time cost: ${System.currentTimeMillis() - startTime}")
+            val timeCost = System.currentTimeMillis() - startTime
+            if (timeCost > 35)
+                Log.d("TAG_6", "time cost: $timeCost")
         }
         if (hitDetected) {
             CoroutineScope(Dispatchers.IO).launch {

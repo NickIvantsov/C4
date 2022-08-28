@@ -7,19 +7,24 @@ import android.graphics.Point
 import android.graphics.Rect
 import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
-import com.example.feature_game.tmp.ICollisionController
+import com.gmail.rewheeldevsdk.api.collision.ICollision
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
-import kotlin.properties.Delegates
 
 class PlayerShip(
     private val context: Context,
     private val screenSize: Point,
     private val playerShipType: Int
-) : ICollisionController {
+) : ICollision {
     lateinit var shipImg: Bitmap
 
     lateinit var fireImg: Bitmap
-    var x =0f
+
+    @set: Synchronized
+    @get: Synchronized
+    var x = 0f
+
+    @set: Synchronized
+    @get: Synchronized
     var y = 0f
     var fireX = 0f
     var fireY = 0f
@@ -88,7 +93,7 @@ class PlayerShip(
     }
 
     private fun reInitLives() {
-        lives = 10
+        lives = 10_000
     }
 
     fun reInit() {
@@ -221,6 +226,5 @@ class PlayerShip(
 
     override fun getCurrentFrame(): Bitmap = shipImg
 
-    override fun getCoordinates(): Point = Point(x.toInt(), y.toInt())
     override fun getFrameHitBox(): Rect = hitBox
 }

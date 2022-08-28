@@ -318,15 +318,6 @@ class MainView(context: Context, private val screenSize: Point, attrs: Attribute
             paint.style = Paint.Style.STROKE
             paint.color = Color.RED
 
-            val rect = Rect(569,296,580,404)
-            canvas.drawRect(rect,paint)
-
-//            val rectImageOne = Rect(315, 296 , 580, 404)
-//            canvas.drawRect(rectImageOne,paint)
-//
-//            val rectImageTwo = Rect(569, 210 , 785, 426)
-//            canvas.drawRect(rectImageTwo,paint)
-
             ourHolder.unlockCanvasAndPost(canvas)
         }
     }
@@ -490,18 +481,6 @@ class MainView(context: Context, private val screenSize: Point, attrs: Attribute
     }
 
     init {
-//        val localBitmap =
-//            BitmapFactory.decodeResource(context.resources, R.drawable.sprite_explosion)
-//        bitmapExplosion = localBitmap
-//        // Scale the bitmap to the correct size
-//// We need to do this because Android automatically
-//// scales bitmaps based on screen density
-//        bitmapExplosion = Bitmap.createScaledBitmap(
-//            localBitmap,
-//            frameWidth * frameCount,
-//            frameHeight,
-//            false
-//        )
         initBitmap(context, explosionBitmaps, fireBitmaps, starBitmaps, star2Bitmaps, star3Bitmaps)
     }
 
@@ -530,64 +509,4 @@ class MainView(context: Context, private val screenSize: Point, attrs: Attribute
     }
 
 
-}
-
-class CollisionController {
-
-    fun hitBoxDetection(imageOne: ICollisionController, imageTwo: ICollisionController): Boolean {
-        val imageOneWidth = imageOne.getCurrentFrame().width
-        val imageOneHeight = imageOne.getCurrentFrame().height
-        val imageOneFullSizeWidth = imageOne.getCoordinates().x + imageOneWidth
-        val imageOneFullSizeHeight = imageOne.getCoordinates().y + imageOneHeight
-
-        val imageTwoWidth = imageTwo.getCurrentFrame().width
-        val imageTwoHeight = imageTwo.getCurrentFrame().height
-        val imageTwoFullSizeWidth = imageTwo.getCoordinates().x + imageTwoWidth
-        val imageTwoFullSizeHeight = imageTwo.getCoordinates().y + imageTwoHeight
-
-        val placeWidth =
-            if (imageOneFullSizeWidth <= imageTwoFullSizeWidth) imageTwoFullSizeWidth else imageOneFullSizeWidth
-        val placeHeight =
-            if (imageOneFullSizeHeight <= imageTwoFullSizeHeight) imageTwoFullSizeHeight else imageOneFullSizeHeight
-
-        for (row in 0..placeHeight) {
-            if (row < imageOne.getCoordinates().y) {
-                continue
-            }
-            if (row < imageTwo.getCoordinates().y) {
-                continue
-            }
-            for (column in 0..placeWidth) {
-                if (row < imageOne.getCoordinates().x) {
-                    continue
-                }
-                if (row < imageTwo.getCoordinates().x) {
-                    continue
-                }
-
-                val colorAlphaImageOne = try {
-                    imageOne.getCurrentFrame().getColor(column, row).alpha()
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                    0f
-                }
-                val colorAlphaImageTwo = try {
-                    imageTwo.getCurrentFrame().getColor(column, row).alpha()
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                    0f
-                }
-                if (colorAlphaImageOne > 0 && colorAlphaImageTwo > 0) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-}
-
-interface ICollisionController {
-    fun getCurrentFrame(): Bitmap
-    fun getCoordinates(): Point
 }

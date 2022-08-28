@@ -9,7 +9,7 @@ import android.util.Log
 import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
 import com.example.feature_game.repository.IMeteoriteRepository
-import com.example.feature_game.tmp.ICollisionController
+import com.gmail.rewheeldevsdk.api.collision.ICollision
 import java.util.*
 
 
@@ -19,9 +19,15 @@ class Meteorite(
     private val random: Random,
     private val screenSize: Point,
     private val meteoriteRepository: IMeteoriteRepository
-) : ICollisionController {
+) : ICollision {
     lateinit var bitmap: Bitmap
+
+    @set: Synchronized
+    @get: Synchronized
     var x = 0
+
+    @set: Synchronized
+    @get: Synchronized
     var y = 0
     private var speed = 1
     private var size: Int = 2
@@ -147,6 +153,5 @@ class Meteorite(
 
     override fun getCurrentFrame(): Bitmap = bitmap
 
-    override fun getCoordinates(): Point = Point(x, y)
     override fun getFrameHitBox(): Rect = hitBox
 }
