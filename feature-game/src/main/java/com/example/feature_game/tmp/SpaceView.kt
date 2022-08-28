@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.properties.Delegates
 
 class SpaceView(
     //endregion
@@ -37,6 +38,11 @@ class SpaceView(
     private val spaceViewModel: SpaceViewModel,
     attrs: AttributeSet? = null,
 ) : SurfaceView(context, attrs), Runnable {
+    // This variable tracks the game frame rate
+    var fps: Long = 0
+
+    // This is used to help calculate the fps
+    private var timeThisFrame: Long = 0
 
     //endregion
     //region flags
@@ -44,10 +50,18 @@ class SpaceView(
     @Volatile
     var playing = false
 
+    init {
+        Log.d("SCREEN_SIZE", "screenSize.x: ${screenSize.x}, screenSize.y: ${screenSize.y}")
+    }
+
     //endregion
     //region objects
-    private val screenX: Int = screenSize.x
-    private val screenY: Int = screenSize.y
+    private val screenX by Delegates.observable(screenSize.x) { _, oldValue, newValue ->
+        Log.d("SCREEN_SIZE", "screenX | oldValue: $oldValue, newValue: $newValue")
+    }
+    private val screenY by Delegates.observable(screenSize.y) { _, oldValue, newValue ->
+        Log.d("SCREEN_SIZE", "screenY | oldValue: $oldValue, newValue: $newValue")
+    }
     private val paint: Paint = Paint()
     private lateinit var canvas: Canvas
     private val ourHolder: SurfaceHolder = holder
@@ -62,7 +76,7 @@ class SpaceView(
         val actionMask = motionEvent.actionMasked
 
         spaceViewModel.player.touchY = motionEvent.y
-
+        Log.d("SCREEN_SIZE", "screenX: ${screenX}, screenY: ${screenY}")
         val startSpeedX = screenX - screenX / 8
 
         if (actionMask == MotionEvent.ACTION_MOVE) {
@@ -115,6 +129,7 @@ class SpaceView(
 
     init {
         setNewGameStatus(com.example.core_utils.util.logging.GameStatus.NOT_START)
+        Log.d("SCREEN_SIZE", "screenSize: $screenSize | screenX: $screenX, screenY: $screenY")
         spaceViewModel.startGame(
             context.applicationContext,
             screenX,
@@ -146,11 +161,18 @@ class SpaceView(
 
     override fun run() {
         while (playing) {
-
+            // Capture the current time in milliseconds in startFrameTime
+            val startFrameTime = System.currentTimeMillis()
             update()
             draw()
             control()
-
+            // Calculate the fps this frame
+            // We can then use the result to
+            // time animations and more.
+            timeThisFrame = System.currentTimeMillis() - startFrameTime
+            if (timeThisFrame >= 1) {
+                fps = 1000 / timeThisFrame
+            }
         }
     }
 
@@ -224,7 +246,17 @@ class SpaceView(
 
             background.draw(canvas)
 
+
+            // Choose the brush color for drawing
+            paint.color = Color.argb(255, 249, 129, 0)
+
+            // Make the text a bit bigger
+            paint.textSize = 45F
+            // Display the current fps on the screen
+            canvas.drawText("FPS:$fps", 120F, 40F, paint)
+
             paint.color = Color.WHITE
+
             if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
                 gameProcess()
             } else {
