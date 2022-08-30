@@ -19,7 +19,7 @@ class MeteoritesManager(
     }
 
     private val executor = Executors.newCachedThreadPool()
-    fun draw() {
+    fun draw(debugEnable: Boolean = false) {
         val startTime = System.currentTimeMillis()
         for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
             try {
@@ -31,21 +31,23 @@ class MeteoritesManager(
                     meteorite.y.toFloat(),
                     paint
                 )
+                if (debugEnable){
+                    paint2.style = Paint.Style.STROKE
+                    paint2.color = Color.RED
 
-                paint2.style = Paint.Style.STROKE
-                paint2.color = Color.RED
+                    canvas.drawCircle(
+                        meteorite.x.toFloat() + ((meteorite.bitmap.width) / 2),
+                        meteorite.y.toFloat() +  ((meteorite.bitmap.height ) / 2),
+                        ((meteorite.bitmap.width - meteorite.bitmap.width/3) / 2).toFloat(),
+                        paint2
+                    )
 
-                canvas.drawCircle(
-                    meteorite.x.toFloat() + ((meteorite.bitmap.width) / 2),
-                    meteorite.y.toFloat() +  ((meteorite.bitmap.height ) / 2),
-                    ((meteorite.bitmap.width - 100) / 2).toFloat(),
-                    paint2
-                )
+                    canvas.drawRect (
+                        meteorite.hitBox,
+                        paint2
+                    )
+                }
 
-                canvas.drawRect (
-                    meteorite.hitBox,
-                    paint2
-                )
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

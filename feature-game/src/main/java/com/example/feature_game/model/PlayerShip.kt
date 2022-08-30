@@ -12,7 +12,8 @@ import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 
 class PlayerShip(
     private val context: Context,
-    private val screenSize: Point,
+    private val screenX: Int,
+    private val screenY: Int,
     private val playerShipType: Int
 ) : ICollision {
     lateinit var shipImg: Bitmap
@@ -32,9 +33,9 @@ class PlayerShip(
     var speed = 0f
         private set
     private var gravity = 25
-    private var maxY = 0
+    private var maxY = screenY
     private var minY = 0
-    private var maxX = 0
+    private var maxX = screenX
     private var minX = 0
     private val minSpeed = 2
     private var maxSpeed = 45
@@ -101,11 +102,11 @@ class PlayerShip(
         y = 250f
         speed(1f)
         shipInitialization()
-        shipImg = scaleBitmap(shipImg, 3, screenSize.x)
+        shipImg = scaleBitmap(shipImg, 3, screenX)
         isReduceShieldStrength = 0
-        maxY = screenSize.y - shipImg.height
+        maxY = screenY - shipImg.height
         minY = 0
-        maxX = screenSize.x - shipImg.width
+        maxX = screenX - shipImg.width
         minX = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg.width, shipImg.height)
         reInitLives()
@@ -192,17 +193,17 @@ class PlayerShip(
                 BitmapFactory.decodeResource(context.resources, R.drawable.fire5)
             }
         }
-        val udm = (screenSize.x / 70 / 2).toFloat()
+        val udm = (screenX / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = scaleBitmap(returned, 5, screenSize.x)
+            fireImg = scaleBitmap(returned, 5, screenX)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = scaleBitmap(returned, 4, screenSize.x)
+            fireImg = scaleBitmap(returned, 4, screenX)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = scaleBitmap(returned, 3, screenSize.x)
+            fireImg = scaleBitmap(returned, 3, screenX)
             fireX = -(6 * udm)
             fireY = udm
         }

@@ -42,17 +42,15 @@ class SpaceViewModel @Inject constructor(
         screenX: Int,
         screenY: Int,
         playerShipType: Int,
-        random: Random,
-        screenSize: Point,
+        random: Random
     ) {
 
-        player = PlayerShip(context.applicationContext, screenSize, playerShipType)
+        player = PlayerShip(context.applicationContext, screenX,screenY, playerShipType)
         meteoriteRepository.deleteAllMeteorite()
         val meteorite = createNewMeteorite(
             screenX,
             screenY,
             random,
-            screenSize,
             meteoriteRepository
         )
         meteoriteRepository.addMeteorite(meteorite)
@@ -73,7 +71,6 @@ class SpaceViewModel @Inject constructor(
         screenX: Int,
         screenY: Int,
         random: Random,
-        screenSize: Point,
     ) {
         SpaceView.distance = 0f
         level = com.example.core_utils.util.logging.FIRST_LEVEL
@@ -86,7 +83,6 @@ class SpaceViewModel @Inject constructor(
             screenX,
             screenY,
             random,
-            screenSize,
             meteoriteRepository
         )
         meteoriteRepository.addMeteorite(meteorite)
@@ -96,7 +92,6 @@ class SpaceViewModel @Inject constructor(
         screenX: Int,
         screenY: Int,
         random: Random,
-        screenSize: Point,
     ) {
         upNewLevel()
 
@@ -105,7 +100,6 @@ class SpaceViewModel @Inject constructor(
                 screenX,
                 screenY,
                 random,
-                screenSize,
                 meteoriteRepository
             )
         )
@@ -115,14 +109,12 @@ class SpaceViewModel @Inject constructor(
         maxX: Int,
         maxY: Int,
         random: Random,
-        screenSize: Point,
         meteoriteRepository: IMeteoriteRepository
     ): Meteorite {
         return Meteorite.createNewMeteorite(
             maxX,
             maxY,
             random,
-            screenSize,
             meteoriteRepository
         )
     }

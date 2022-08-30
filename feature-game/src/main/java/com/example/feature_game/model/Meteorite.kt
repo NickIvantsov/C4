@@ -3,7 +3,6 @@ package com.example.feature_game.model
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Point
 import android.graphics.Rect
 import android.util.Log
 import com.example.core_utils.util.scaleBitmap
@@ -17,7 +16,6 @@ class Meteorite(
     private val maxX: Int,
     private val maxY: Int,
     private val random: Random,
-    private val screenSize: Point,
     private val meteoriteRepository: IMeteoriteRepository
 ) : ICollision {
     lateinit var bitmap: Bitmap
@@ -49,7 +47,7 @@ class Meteorite(
         bitmap = scaleBitmap(
             meteoriteRepository.getMeteoriteBitmap(0),
             size * 2,
-            screenSize.x
+            maxX
         )
 
         y = random.nextInt(maxY) - bitmap.height
@@ -100,7 +98,7 @@ class Meteorite(
             bitmap = scaleBitmap(
                 nextBitmap,
                 size * 2,
-                screenSize.x
+                maxX
             )
         }
     }
@@ -140,10 +138,9 @@ class Meteorite(
             maxX: Int,
             maxY: Int,
             random: Random,
-            screenSize: Point,
             meteoriteRepository: IMeteoriteRepository
         ): Meteorite {
-            return Meteorite(maxX, maxY, random, screenSize, meteoriteRepository)
+            return Meteorite(maxX, maxY, random, meteoriteRepository)
         }
     }
 

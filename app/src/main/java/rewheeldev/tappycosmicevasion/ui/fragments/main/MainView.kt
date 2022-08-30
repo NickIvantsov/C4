@@ -12,8 +12,8 @@ import com.example.feature_game.ui.colors.WHITE
 import rewheeldev.tappycosmicevasion.R
 
 
-class MainView(context: Context, private val screenSize: Point, attrs: AttributeSet? = null) :
-    SurfaceView(context, attrs),
+class MainView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
+    SurfaceView(context, attrs, defStyle),
     SurfaceHolder.Callback, Runnable {
     @Volatile
     var playing = false
@@ -502,6 +502,7 @@ class MainView(context: Context, private val screenSize: Point, attrs: Attribute
             ex.printStackTrace()
         }
     }
+
 
     fun resume() {
         playing = true

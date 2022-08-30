@@ -164,7 +164,8 @@ fun hitCircleBoxDetection(rectImageOne: ICollision, circleImageTwo: ICollision):
         circleImageTwo.getFrameHitBox().top + ((circleImageTwo.getCurrentFrame().height) / 2) - closestY
 
 
-    val imageTwoRadius = ((circleImageTwo.getCurrentFrame().width - 100) / 2)
+    val imageTwoRadius =
+        ((circleImageTwo.getCurrentFrame().width - circleImageTwo.getCurrentFrame().width / 3) / 2)
 
     // If the distance is less than the circle's radius, an intersection occurs
     val distanceSquared = (distanceX * distanceX + distanceY * distanceY).toFloat()
