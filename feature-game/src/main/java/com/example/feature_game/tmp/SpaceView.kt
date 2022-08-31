@@ -19,16 +19,16 @@ import com.example.feature_game.ui.colors.WHITE
 import com.example.feature_game.ui.screens.GameOverScreen
 import com.example.feature_game.ui.screens.GameScreen
 import com.example.repository.IUserRecordRepository
-import com.gmail.rewheeldevsdk.api.util.hitBoxDetection
-import com.gmail.rewheeldevsdk.api.util.hitCircleBoxDetection
+import com.gmail.rewheeldevsdk.api.util.hitBoxDetection2
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.properties.Delegates
 
-class SpaceView @JvmOverloads constructor(
+class SpaceView(
     //endregion
     context: Context,
     private val userRecordRepository: IUserRecordRepository,
@@ -56,6 +56,9 @@ class SpaceView @JvmOverloads constructor(
     @Volatile
     var playing = false
 
+    init {
+        Log.d("SCREEN_SIZE", "screenSize.x: ${screenSize.x}, screenSize.y: ${screenSize.y}")
+    }
 
     //endregion
     //region objects
@@ -204,7 +207,14 @@ class SpaceView @JvmOverloads constructor(
                 if (meteorite.x < 0 || meteorite.y > screenY) continue
                 val startTime = System.currentTimeMillis()
 //                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
-                if (hitCircleBoxDetection(spaceViewModel.player, meteorite)) {
+//                if (hitCircleBoxDetection(spaceViewModel.player, meteorite)) {
+                if (hitBoxDetection2(
+                        spaceViewModel.player,
+                        meteorite,
+                        spaceViewModel.player.shipImg.width,
+                        meteorite.bitmap.width
+                    )
+                ) {
                     hitDetected = true
 //                перемещение метеорита с которым столкнулись в отрицательные координаты по оси X за пределы экрана
 //                для определения алгоритмом что метеорт долетел до кронца экрана и должен быдет перерисоваться
@@ -212,7 +222,7 @@ class SpaceView @JvmOverloads constructor(
                 }
 
                 val timeCost = System.currentTimeMillis() - startTime
-                if (timeCost > 35)
+                if (timeCost > 5)
                     Log.d("TAG_6", "time cost: $timeCost")
             }
             if (hitDetected) {

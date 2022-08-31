@@ -3,7 +3,6 @@ package com.example.feature_game.repository
 import android.graphics.Bitmap
 import com.example.core_utils.util.logging.extensions.logD
 import com.example.feature_game.model.Meteorite
-import java.util.*
 import javax.inject.Inject
 
 class MeteoriteRepositoryInMemoryImpl @Inject constructor() : IMeteoriteRepository {
@@ -21,6 +20,10 @@ class MeteoriteRepositoryInMemoryImpl @Inject constructor() : IMeteoriteReposito
 
     override fun getSizeOfMeteoriteBitmaps(): Int {
         return animateImgArray.size
+    }
+
+    override fun getAllMeteoriteBitmaps(): List<Bitmap> {
+        return animateImgArray
     }
 
     override fun addMeteorite(meteorite: Meteorite) {
@@ -42,7 +45,8 @@ class MeteoriteRepositoryInMemoryImpl @Inject constructor() : IMeteoriteReposito
     override fun deleteAllMeteorite() {
         meteoriteList.clear()
     }
-    private fun log(msg:String){
+
+    private fun log(msg: String) {
         logD(msg)
     }
 }

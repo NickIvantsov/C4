@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.math.MathUtils.clamp
 import com.gmail.rewheeldevsdk.api.collision.ICollision
+import com.gmail.rewheeldevsdk.api.collision.ICollision2
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -51,6 +52,30 @@ fun hitBoxDetection(imageOne: ICollision, imageTwo: ICollision): Boolean {
         return true
     }
     return false
+}
+
+@RequiresApi(Build.VERSION_CODES.Q)
+fun hitBoxDetection2(
+    imageOne: ICollision2,
+    imageTwo: ICollision2,
+    widthScaleThisImagePx: Int,
+    widthScaleSecondImagePx: Int
+): Boolean {
+    val detectedCollisionRect = Rect(imageOne.getFrameHitBox())
+    val isDetectCollision =
+        detectedCollisionRect.setIntersect(imageOne.getFrameHitBox(), imageTwo.getFrameHitBox())
+    if (!isDetectCollision) {
+        return false
+    }
+
+    return imageOne.getCurrentFrame().checkCollision(
+        detectedCollisionRect,
+        imageOne.getFrameHitBox(),
+        imageTwo.getFrameHitBox(),
+        imageTwo.getCurrentFrame(),
+        widthScaleThisImagePx,
+        widthScaleSecondImagePx
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)

@@ -503,7 +503,6 @@ class MainView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         }
     }
 
-
     fun resume() {
         playing = true
         gameThread = Thread(this)

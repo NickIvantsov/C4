@@ -16,15 +16,17 @@ import com.example.core.interactor.SpaceDustUseCase
 import com.example.feature_game.databinding.GameFragmentBinding
 import com.example.feature_game.model.GameViewParams
 import com.example.feature_game.repository.IMeteoriteRepository
+import com.example.feature_game.tmp.SpaceView
 import com.example.feature_game.tmp.SpaceViewModel
 import com.example.repository.IUserRecordRepository
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.game_fragment.*
 import java.util.*
 import javax.inject.Inject
 
-
 class GameFragment : Fragment() {
+
+
+    private var gameView: SpaceView? = null
 
     @Inject
     lateinit var userRecordRepository: IUserRecordRepository
@@ -50,8 +52,32 @@ class GameFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
+        val point = Point()
+        val display =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                requireActivity().display
+            } else {
+                requireActivity().windowManager.defaultDisplay
+            }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics: WindowMetrics = requireActivity().windowManager.currentWindowMetrics
+            point.x = windowMetrics.bounds.width()
+            point.y = windowMetrics.bounds.height()
+        } else display?.getSize(
+            point
+        )
 
-
+        val args: GameFragmentArgs by navArgs()
+        gameView = SpaceView(
+            requireContext(),
+            userRecordRepository,
+            random,
+            point,
+            args.typeShip,
+            meteoriteRepository,
+            spaceDustUseCase,
+            spaceViewModel
+        )
     }
 
     override fun onCreateView(
@@ -61,7 +87,6 @@ class GameFragment : Fragment() {
         bindingImpl = GameFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,13 +122,17 @@ class GameFragment : Fragment() {
                 spaceViewModel
             )
         )
-
         binding.swDebug.setOnCheckedChangeListener() { _, isChecked ->
             binding.gameView.debugEnable = isChecked
         }
 
-        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        binding.seekBar.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
                 binding.tvFps.text = "FPS: ${seekBar?.progress}"
                 binding.gameView.setFPSDivider(seekBar?.progress ?: 0)
             }
@@ -121,13 +150,13 @@ class GameFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        game_view.pause()
+        binding.gameView.pause()
     }
 
     override fun onResume() {
-        com.example.core_utils.util.logging.hideSystemUI(requireActivity().window, game_view)
+        com.example.core_utils.util.logging.hideSystemUI(requireActivity().window, binding.gameView)
         super.onResume()
-        game_view.resume()
+        binding.gameView.resume()
     }
 
 

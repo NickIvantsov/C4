@@ -7,7 +7,9 @@ import android.graphics.Point
 import android.graphics.Rect
 import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
-import com.gmail.rewheeldevsdk.api.collision.ICollision
+import com.example.feature_game.tmp.CacheValidationImages
+import com.gmail.rewheeldevsdk.api.collision.ICollision2
+import com.gmail.rewheeldevsdk.api.models.CollisionInfo
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 
 class PlayerShip(
@@ -15,7 +17,7 @@ class PlayerShip(
     private val screenX: Int,
     private val screenY: Int,
     private val playerShipType: Int
-) : ICollision {
+) : ICollision2 {
     lateinit var shipImg: Bitmap
 
     lateinit var fireImg: Bitmap
@@ -223,9 +225,11 @@ class PlayerShip(
 
     init {
         reInit()
+        CacheValidationImages.playerShip = CollisionInfo(shipImg)
+        CacheValidationImages.playerShip.initializeImageBlocks()
     }
 
-    override fun getCurrentFrame(): Bitmap = shipImg
+    override fun getCurrentFrame(): CollisionInfo = CacheValidationImages.playerShip
 
     override fun getFrameHitBox(): Rect = hitBox
 }

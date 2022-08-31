@@ -8,7 +8,9 @@ import android.util.Log
 import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
 import com.example.feature_game.repository.IMeteoriteRepository
-import com.gmail.rewheeldevsdk.api.collision.ICollision
+import com.example.feature_game.tmp.CacheValidationImages
+import com.gmail.rewheeldevsdk.api.collision.ICollision2
+import com.gmail.rewheeldevsdk.api.models.CollisionInfo
 import java.util.*
 
 
@@ -17,8 +19,9 @@ class Meteorite(
     private val maxY: Int,
     private val random: Random,
     private val meteoriteRepository: IMeteoriteRepository
-) : ICollision {
+) : ICollision2 {
     lateinit var bitmap: Bitmap
+    private var infoBitmapIndex = 0
 
     @set: Synchronized
     @get: Synchronized
@@ -93,8 +96,8 @@ class Meteorite(
         if (frameCount % 3 == 0) { //TODO: 3 это надо заменить на вариативное значение которое будет просчитыватся в зависимости от производительности (FPS)
             bitmapIndex++
             //получение изображения для отрисовки
-            val index = bitmapIndex % meteoriteRepositorySize
-            val nextBitmap = meteoriteRepository.getMeteoriteBitmap(index)
+            infoBitmapIndex = bitmapIndex % meteoriteRepositorySize
+            val nextBitmap = meteoriteRepository.getMeteoriteBitmap(infoBitmapIndex)
             bitmap = scaleBitmap(
                 nextBitmap,
                 size * 2,
@@ -148,7 +151,8 @@ class Meteorite(
         reInit()
     }
 
-    override fun getCurrentFrame(): Bitmap = bitmap
+    override fun getCurrentFrame(): CollisionInfo =
+        CacheValidationImages.meteorites[infoBitmapIndex]
 
     override fun getFrameHitBox(): Rect = hitBox
 }
