@@ -7,15 +7,16 @@ import android.graphics.Point
 import android.graphics.Rect
 import com.example.core_utils.util.scaleBitmap
 import com.example.feature_game.R
-import com.gmail.rewheeldevsdk.api.collision.ICollision
+import com.example.feature_game.tmp.CacheValidationImages
+import com.gmail.rewheeldevsdk.api.collision.ICollision2
+import com.gmail.rewheeldevsdk.api.models.CollisionInfo
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 
 class PlayerShip(
     private val context: Context,
-    private val screenX: Int,
-    private val screenY: Int,
+    private val screenSize: Point,
     private val playerShipType: Int
-) : ICollision {
+) : ICollision2 {
     lateinit var shipImg: Bitmap
 
     lateinit var fireImg: Bitmap
@@ -33,9 +34,9 @@ class PlayerShip(
     var speed = 0f
         private set
     private var gravity = 25
-    private var maxY = screenY
+    private var maxY = 0
     private var minY = 0
-    private var maxX = screenX
+    private var maxX = 0
     private var minX = 0
     private val minSpeed = 2
     private var maxSpeed = 45
@@ -102,11 +103,11 @@ class PlayerShip(
         y = 250f
         speed(1f)
         shipInitialization()
-        shipImg = scaleBitmap(shipImg, 3, screenX)
+        shipImg = scaleBitmap(shipImg, 3, screenSize.x)
         isReduceShieldStrength = 0
-        maxY = screenY - shipImg.height
+        maxY = screenSize.y - shipImg.height
         minY = 0
-        maxX = screenX - shipImg.width
+        maxX = screenSize.x - shipImg.width
         minX = 0
         hitBox = Rect(x.toInt(), y.toInt(), shipImg.width, shipImg.height)
         reInitLives()
@@ -193,17 +194,17 @@ class PlayerShip(
                 BitmapFactory.decodeResource(context.resources, R.drawable.fire5)
             }
         }
-        val udm = (screenX / 70 / 2).toFloat()
+        val udm = (screenSize.x / 70 / 2).toFloat()
         if (speed > 30) {
-            fireImg = scaleBitmap(returned, 5, screenX)
+            fireImg = scaleBitmap(returned, 5, screenSize.x)
             fireX = -(6 * udm) - udm * 4
             fireY = udm - udm * 2 // код психапата
         } else if (speed > 15) {
-            fireImg = scaleBitmap(returned, 4, screenX)
+            fireImg = scaleBitmap(returned, 4, screenSize.x)
             fireX = -(6 * udm) - udm * 2
             fireY = udm - udm
         } else {
-            fireImg = scaleBitmap(returned, 3, screenX)
+            fireImg = scaleBitmap(returned, 3, screenSize.x)
             fireX = -(6 * udm)
             fireY = udm
         }
@@ -223,9 +224,11 @@ class PlayerShip(
 
     init {
         reInit()
+        CacheValidationImages.playerShip = CollisionInfo(shipImg)
+        CacheValidationImages.playerShip.initializeImageBlocks()
     }
 
-    override fun getCurrentFrame(): Bitmap = shipImg
+    override fun getCurrentFrame(): CollisionInfo = CacheValidationImages.playerShip
 
     override fun getFrameHitBox(): Rect = hitBox
 }

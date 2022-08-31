@@ -2,6 +2,8 @@ package rewheeldev.tappycosmicevasion.core
 
 import android.app.Application
 import com.example.feature_game.model.Meteorite
+import com.example.feature_game.tmp.CacheValidationImages
+import com.gmail.rewheeldevsdk.api.models.CollisionInfo
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -31,6 +33,7 @@ class TappyCosmicEvasionApplication : Application(), HasAndroidInjector {
             .inject(this)
 
         Meteorite.initBitmap(this, meteoriteRepository)
+        CacheValidationImages.init(meteoriteRepository.getAllMeteoriteBitmaps())
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())

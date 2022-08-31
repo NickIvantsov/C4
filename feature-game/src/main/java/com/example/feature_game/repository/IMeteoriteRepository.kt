@@ -9,6 +9,8 @@ interface IMeteoriteRepository {
     fun getMeteoriteBitmap(index: Int): Bitmap
     fun getSizeOfMeteoriteBitmaps(): Int
 
+    fun getAllMeteoriteBitmaps(): List<Bitmap>
+
     fun addMeteorite(meteorite: Meteorite)
     fun getMeteoriteByIndex(index: Int): Meteorite
     fun getSizeMeteoriteList(): Int

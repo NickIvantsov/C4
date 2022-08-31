@@ -9,15 +9,10 @@ class ShipManager(
 ) {
     private val paint = Paint()
     private val paint2 = Paint()
-
     init {
         paint.color = Color.argb(255, 255, 255, 255)
     }
-
-    fun draw(
-        canvas: Canvas,
-        debugEnable: Boolean = false
-    ) {
+    fun draw(canvas: Canvas) {
         val playerShipDrawInfo = spaceViewModel.getPlayerShipDrawInfo()
         canvas.drawBitmap(
             playerShipDrawInfo.ship,
@@ -32,14 +27,13 @@ class ShipManager(
             playerShipDrawInfo.shipY + playerShipDrawInfo.fireY,
             paint
         )
-        if (debugEnable) {
-            paint2.style = Paint.Style.STROKE
-            paint2.color = Color.RED
-            canvas.drawRect(
-                playerShipDrawInfo.shipHitBot,
-                paint2
-            )
-        }
+
+        paint2.style = Paint.Style.STROKE
+        paint2.color = Color.RED
+        canvas.drawRect(
+            playerShipDrawInfo.shipHitBot,
+            paint2
+        )
     }
 
 }

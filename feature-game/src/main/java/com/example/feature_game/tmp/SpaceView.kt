@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.text.format.DateFormat
-import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -19,16 +18,16 @@ import com.example.feature_game.ui.colors.WHITE
 import com.example.feature_game.ui.screens.GameOverScreen
 import com.example.feature_game.ui.screens.GameScreen
 import com.example.repository.IUserRecordRepository
-import com.gmail.rewheeldevsdk.api.util.hitBoxDetection
-import com.gmail.rewheeldevsdk.api.util.hitCircleBoxDetection
+import com.gmail.rewheeldevsdk.api.util.hitBoxDetection2
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.properties.Delegates
 
-class SpaceView @JvmOverloads constructor(
+class SpaceView(
     //endregion
     context: Context,
     private val userRecordRepository: IUserRecordRepository,
@@ -37,15 +36,11 @@ class SpaceView @JvmOverloads constructor(
     private val playerShipType: Int,
     private val meteoriteRepository: IMeteoriteRepository,
     private val spaceDustInteractor: SpaceDustUseCase,
-    private val spaceViewModel: SpaceViewModel,
-    attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
-) : SurfaceView(context, attributeSet, defStyle), Runnable {
-    var debugEnable: Boolean = false
-
+    private val spaceViewModel: SpaceViewModel
+) : SurfaceView(context), Runnable {
     // This variable tracks the game frame rate
-    private var fps: Long = 0
-    var fpsDivider = 20L
+    var fps: Long = 0
+
     // This is used to help calculate the fps
     private var timeThisFrame: Long = 0
 
@@ -56,20 +51,18 @@ class SpaceView @JvmOverloads constructor(
     @Volatile
     var playing = false
 
+    init {
+        Log.d("SCREEN_SIZE", "screenSize.x: ${screenSize.x}, screenSize.y: ${screenSize.y}")
+    }
 
     //endregion
     //region objects
-    private var screenX = screenSize.x
-
-    fun setScreenX(screenX: Int) {
-        this.screenX = screenX
+    private val screenX by Delegates.observable(screenSize.x) { _, oldValue, newValue ->
+        Log.d("SCREEN_SIZE", "screenX | oldValue: $oldValue, newValue: $newValue")
     }
-
-    private var screenY = screenSize.y
-    fun setScreenY(screenY: Int) {
-        this.screenY = screenY
+    private val screenY by Delegates.observable(screenSize.y) { _, oldValue, newValue ->
+        Log.d("SCREEN_SIZE", "screenY | oldValue: $oldValue, newValue: $newValue")
     }
-
     private val paint: Paint = Paint()
     private lateinit var canvas: Canvas
     private val ourHolder: SurfaceHolder = holder
@@ -119,7 +112,7 @@ class SpaceView @JvmOverloads constructor(
             hatRadius = (Math.min(width, height) / 10).toFloat()
 
             if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) {
-                spaceViewModel.reStartGame(screenX, screenY, random)
+                spaceViewModel.reStartGame(screenX, screenY, random, screenSize)
                 return@OnTouchListener false
             }
             spaceViewModel.player.isTouchSpeed = motionEvent.x > startSpeedX
@@ -137,13 +130,14 @@ class SpaceView @JvmOverloads constructor(
 
     init {
         setNewGameStatus(com.example.core_utils.util.logging.GameStatus.NOT_START)
-//        Log.d("SCREEN_SIZE", "screenSize: $screenSize | screenX: $screenX, screenY: $screenY")
+        Log.d("SCREEN_SIZE", "screenSize: $screenSize | screenX: $screenX, screenY: $screenY")
         spaceViewModel.startGame(
             context.applicationContext,
             screenX,
             screenY,
             playerShipType,
-            random
+            random,
+            screenSize
         )
         setOnTouchListener(onTouchSpeed)
     }
@@ -204,7 +198,14 @@ class SpaceView @JvmOverloads constructor(
                 if (meteorite.x < 0 || meteorite.y > screenY) continue
                 val startTime = System.currentTimeMillis()
 //                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
-                if (hitCircleBoxDetection(spaceViewModel.player, meteorite)) {
+//                if (hitCircleBoxDetection(spaceViewModel.player, meteorite)) {
+                if (hitBoxDetection2(
+                        spaceViewModel.player,
+                        meteorite,
+                        spaceViewModel.player.shipImg.width,
+                        meteorite.bitmap.width
+                    )
+                ) {
                     hitDetected = true
 //                перемещение метеорита с которым столкнулись в отрицательные координаты по оси X за пределы экрана
 //                для определения алгоритмом что метеорт долетел до кронца экрана и должен быдет перерисоваться
@@ -212,7 +213,7 @@ class SpaceView @JvmOverloads constructor(
                 }
 
                 val timeCost = System.currentTimeMillis() - startTime
-                if (timeCost > 35)
+                if (timeCost > 5)
                     Log.d("TAG_6", "time cost: $timeCost")
             }
             if (hitDetected) {
@@ -247,7 +248,7 @@ class SpaceView @JvmOverloads constructor(
                 timeTaken = System.currentTimeMillis() - spaceViewModel.timeStarted
             }
             if (distance >= getLevel() * 5) {
-                spaceViewModel.startNextLevel(screenX, screenY, random)
+                spaceViewModel.startNextLevel(screenX, screenY, random, screenSize)
             }
         }
     }
@@ -271,42 +272,40 @@ class SpaceView @JvmOverloads constructor(
                     isTouch = spaceViewModel.player.isTouch,
                     changReduceShieldStrength = { spaceViewModel.player.isReduceShieldStrength-- },
                     drawSpaceDust = { spaceDustManager.drawSpaceDust(canvas) },
-                    drawShip = { shipManager.draw(canvas, debugEnable) },
-                    drawMeteorites = { meteoritesManager.draw(debugEnable) },
+                    drawShip = { shipManager.draw(canvas) },
+                    drawMeteorites = { meteoritesManager.draw() },
                     drawJoystick = { joystick.draw(canvas) }
                 )
             } else {
                 gameOverScreen.showGameOverScreen(screenX)
             }
 
-            if (debugEnable) {
-                if (fps < 10) {
-                    // Make the text a bit bigger
-                    paint.textSize = 65F
-                    // Choose the brush color for drawing
-                    paint.color = Color.argb(255, 255, 0, 0)
-                    // Display the current fps on the screen
-                    canvas.drawText("FPS:$fps", 120F, 60F, paint)
+
+            if (fps < 10) {
+                // Make the text a bit bigger
+                paint.textSize = 65F
+                // Choose the brush color for drawing
+                paint.color = Color.argb(255, 255, 0, 0)
+                // Display the current fps on the screen
+                canvas.drawText("FPS:$fps", 120F, 60F, paint)
 
 
-                } else {
-                    // Make the text a bit bigger
-                    paint.textSize = 45F
-                    // Choose the brush color for drawing
-                    paint.color = Color.argb(255, 249, 129, 0)
-                    // Display the current fps on the screen
-                    canvas.drawText("FPS:$fps", 120F, 40F, paint)
+            } else {
+                // Make the text a bit bigger
+                paint.textSize = 45F
+                // Choose the brush color for drawing
+                paint.color = Color.argb(255, 249, 129, 0)
+                // Display the current fps on the screen
+                canvas.drawText("FPS:$fps", 120F, 40F, paint)
 
-                }
             }
-
             ourHolder.unlockCanvasAndPost(canvas)
         }
     }
 
     private fun control() {
         try {
-            Thread.sleep(fpsDivider)
+            Thread.sleep(20)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
