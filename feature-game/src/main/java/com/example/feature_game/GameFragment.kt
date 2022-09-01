@@ -16,17 +16,12 @@ import com.example.core.interactor.SpaceDustUseCase
 import com.example.feature_game.databinding.GameFragmentBinding
 import com.example.feature_game.model.GameViewParams
 import com.example.feature_game.repository.IMeteoriteRepository
-import com.example.feature_game.tmp.SpaceView
 import com.example.feature_game.tmp.SpaceViewModel
 import com.example.repository.IUserRecordRepository
 import dagger.android.support.AndroidSupportInjection
-import java.util.*
 import javax.inject.Inject
 
 class GameFragment : Fragment() {
-
-
-    private var gameView: SpaceView? = null
 
     @Inject
     lateinit var userRecordRepository: IUserRecordRepository
@@ -47,37 +42,10 @@ class GameFragment : Fragment() {
     private var bindingImpl: GameFragmentBinding? = null
     private val binding get() = bindingImpl!!
 
-    private val random = Random()
-    val point = Point()
+    private val point = Point()
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
-        val point = Point()
-        val display =
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                requireActivity().display
-            } else {
-                requireActivity().windowManager.defaultDisplay
-            }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            val windowMetrics: WindowMetrics = requireActivity().windowManager.currentWindowMetrics
-            point.x = windowMetrics.bounds.width()
-            point.y = windowMetrics.bounds.height()
-        } else display?.getSize(
-            point
-        )
-
-        val args: GameFragmentArgs by navArgs()
-        gameView = SpaceView(
-            requireContext(),
-            userRecordRepository,
-            random,
-            point,
-            args.typeShip,
-            meteoriteRepository,
-            spaceDustUseCase,
-            spaceViewModel
-        )
     }
 
     override fun onCreateView(
@@ -114,7 +82,6 @@ class GameFragment : Fragment() {
         binding.gameView.initialize(
             GameViewParams(
                 userRecordRepository,
-                random,
                 point,
                 args.typeShip,
                 meteoriteRepository,

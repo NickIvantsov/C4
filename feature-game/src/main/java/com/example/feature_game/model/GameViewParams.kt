@@ -5,7 +5,6 @@ import com.example.core.interactor.SpaceDustUseCase
 import com.example.feature_game.repository.IMeteoriteRepository
 import com.example.feature_game.tmp.SpaceViewModel
 import com.example.repository.IUserRecordRepository
-import java.util.*
 
 /**
  * It's a data class that holds all the parameters needed to create a GameView.
@@ -25,11 +24,10 @@ import java.util.*
  * @since 31 August 2022
  */
 data class GameViewParams(
-     val userRecordRepository: IUserRecordRepository,
-     val random: Random,
-     val screenSize: Point,
-     val playerShipType: Int,
-     val meteoriteRepository: IMeteoriteRepository,
-     val spaceDustInteractor: SpaceDustUseCase,
-     val spaceViewModel: SpaceViewModel,
+    val userRecordRepository: IUserRecordRepository,
+    val screenSize: Point,
+    val playerShipType: Int,
+    val meteoriteRepository: IMeteoriteRepository,
+    val spaceDustInteractor: SpaceDustUseCase,
+    val spaceViewModel: SpaceViewModel,
 )

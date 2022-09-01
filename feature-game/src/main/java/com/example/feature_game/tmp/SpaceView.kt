@@ -13,12 +13,11 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View.OnTouchListener
 import com.example.core.interactor.SpaceDustUseCase
-import com.example.core_utils.util.logging.extensions.logD
-import com.example.feature_game.repository.IMeteoriteRepository
+import com.example.feature_game.model.Meteorite
 import com.example.feature_game.ui.colors.WHITE
 import com.example.feature_game.ui.screens.GameOverScreen
 import com.example.feature_game.ui.screens.GameScreen
-import com.example.repository.IUserRecordRepository
+import com.example.model.SpaceDust
 import com.gmail.rewheeldevsdk.api.util.hitBoxDetection2
 import com.gmail.rewheeldevsdk.internal.joyStick.Joystick
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -26,26 +25,28 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.properties.Delegates
 
 class SpaceView(
     //endregion
     context: Context,
-    private val userRecordRepository: IUserRecordRepository,
-    private val random: Random,
     private val screenSize: Point,
     private val playerShipType: Int,
-    private val meteoriteRepository: IMeteoriteRepository,
     private val spaceDustInteractor: SpaceDustUseCase,
     private val spaceViewModel: SpaceViewModel,
     attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
+    private val insertRecord: (currentTime: String, dist: Float, time: Long) -> Unit = { _, _, _ -> },
+    private val meteorites: List<Meteorite> = emptyList(),
+    private val spaceDustList: List<SpaceDust> = emptyList(),
+    private val spaceDustColor: (SpaceDust) -> Int = { 0 }
 ) : SurfaceView(context, attributeSet, defStyle), Runnable {
+    private val random: Random = Random()
     var debugEnable: Boolean = false
 
     // This variable tracks the game frame rate
     private var fps: Long = 0
     var fpsDivider = 20L
+
     // This is used to help calculate the fps
     private var timeThisFrame: Long = 0
 
@@ -164,15 +165,6 @@ class SpaceView(
 
     private val background: Background = Background()
     private val shipManager: ShipManager = ShipManager(spaceViewModel)
-    private val meteoritesManager: MeteoritesManager by lazy {
-        MeteoritesManager(
-            meteoriteRepository,
-            canvas
-        )
-    }
-    private val spaceDustManager: SpaceDustManager =
-        SpaceDustManager(spaceDustInteractor, spaceViewModel)
-
 
     override fun run() {
         while (playing) {
@@ -194,7 +186,7 @@ class SpaceView(
     val handler = CoroutineExceptionHandler { _, exception ->
         Log.e("TAG_6", "CoroutineExceptionHandler got $exception", exception)
     }
-    val scope = CoroutineScope(Dispatchers.IO)
+    val scope = CoroutineScope(Dispatchers.IO + handler)
     private fun update() {
         scope.launch {
             if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.ENDED) return@launch
@@ -202,8 +194,7 @@ class SpaceView(
             joystick.update()
             var hitDetected = false
 
-            for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
-                val meteorite = meteoriteRepository.getMeteoriteByIndex(i)
+            for (meteorite in meteorites) {
                 if (meteorite.x < 0 || meteorite.y > screenY) continue
                 val startTime = System.currentTimeMillis()
 //                if (hitBoxDetection(spaceViewModel.player, meteorite)) {
@@ -235,22 +226,15 @@ class SpaceView(
                     spaceViewModel.playSound(com.example.core_utils.util.logging.SoundName.DESTROYED)
                     val currentTimeStr =
                         DateFormat.format("dd.MM hh:mm", Date(System.currentTimeMillis()))
-                    userRecordRepository.insert(
-                        com.example.model.UserRecordEntity(
-                            currentTimeStr.toString(),
-                            distance,
-                            timeTaken
-                        )
-                    )
+                    insertRecord(currentTimeStr.toString(), distance, timeTaken)
                 }
             }
             for (spaceDust in spaceDustInteractor.getAll()) {
                 spaceDust.update(spaceViewModel.player.speed)
             }
             spaceViewModel.player.update(joystick)
-            for (i in 0 until meteoriteRepository.getSizeMeteoriteList()) {
-                meteoriteRepository.getMeteoriteByIndex(i)
-                    .update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
+            for (meteorite in meteorites) {
+                meteorite.update(spaceViewModel.player.speed) //IndexOutOfBoundsException после перезапуска игры (1 раз)
             }
             if (getGameStatus() == com.example.core_utils.util.logging.GameStatus.PLAYING) {
                 distance += (spaceViewModel.player.speed / 1000.0).toFloat()
@@ -280,9 +264,60 @@ class SpaceView(
                     lives = spaceViewModel.player.lives,
                     isTouch = spaceViewModel.player.isTouch,
                     changReduceShieldStrength = { spaceViewModel.player.isReduceShieldStrength-- },
-                    drawSpaceDust = { spaceDustManager.drawSpaceDust(canvas) },
+                    drawSpaceDust = {
+                        paint.color = Color.WHITE
+                        for (spaceDust in spaceDustList) {
+
+                            if (spaceDust.downLight) spaceDust.counter++ else spaceDust.counter--
+
+                            if (spaceDust.counter < 10) {
+                                spaceDust.downLight = true
+                            } else if (spaceDust.counter >= 125) {
+                                spaceDust.downLight = false
+                            }
+                            //region мигание синим и ораньжевым цветом
+                            paint.color = spaceDustColor(spaceDust)
+                            //endregion
+                            canvas.drawPoint(
+                                spaceDust.x.toFloat(),
+                                spaceDust.y.toFloat(),
+                                paint
+                            )
+                        }
+                    },
                     drawShip = { shipManager.draw(canvas, debugEnable) },
-                    drawMeteorites = { meteoritesManager.draw(debugEnable) },
+                    drawMeteorites = {
+                        for (meteorite in meteorites) {
+                            try {
+                                paint.color = Color.WHITE
+                                canvas.drawBitmap(
+                                    meteorite.bitmap,
+                                    meteorite.x.toFloat(),
+                                    meteorite.y.toFloat(),
+                                    paint
+                                )
+                                if (debugEnable) {
+                                    paint.style = Paint.Style.STROKE
+                                    paint.color = Color.RED
+
+                                    canvas.drawCircle(
+                                        meteorite.x.toFloat() + ((meteorite.bitmap.width) / 2),
+                                        meteorite.y.toFloat() + ((meteorite.bitmap.height) / 2),
+                                        ((meteorite.bitmap.width - meteorite.bitmap.width / 3) / 2).toFloat(),
+                                        paint
+                                    )
+
+                                    canvas.drawRect(
+                                        meteorite.hitBox,
+                                        paint
+                                    )
+                                }
+
+                            } catch (ex: Exception) {
+                                ex.printStackTrace()
+                            }
+                        }
+                    },
                     drawJoystick = { joystick.draw(canvas) }
                 )
             } else {
@@ -351,10 +386,6 @@ class SpaceView(
 
     private fun getLevel(): Int {
         return spaceViewModel.level
-    }
-
-    private fun log(msg: String) {
-        logD(msg)
     }
 
     companion object {

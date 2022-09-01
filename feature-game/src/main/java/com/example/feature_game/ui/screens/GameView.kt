@@ -18,6 +18,7 @@ class GameView @JvmOverloads constructor(
 ) :
     LinearLayout(context, attrs, defStyle) {
     private lateinit var spaceView: SpaceView
+
     /* A property that is used to set the debug mode for the `SpaceView` class. */
     var debugEnable: Boolean = false
         set(value) {
@@ -40,13 +41,21 @@ class GameView @JvmOverloads constructor(
         with(gameViewParams) {
             spaceView = SpaceView(
                 context,
-                userRecordRepository = userRecordRepository,
-                random = random,
                 screenSize = screenSize,
                 playerShipType = playerShipType,
-                meteoriteRepository = meteoriteRepository,
                 spaceDustInteractor = spaceDustInteractor,
-                spaceViewModel = spaceViewModel
+                spaceViewModel = spaceViewModel,
+                insertRecord = { currentTime, dist, time ->
+                    com.example.model.UserRecordEntity(currentTime, dist, time)
+                },
+                meteorites = meteoriteRepository.getAllMeteorite(),
+                spaceDustList = spaceDustInteractor.getAll(),
+                spaceDustColor = { spaceDust ->
+                    spaceViewModel.getCurrentSpaceDustColor(
+                        spaceViewModel.getSpaceDustOpacity(spaceDust.counter),
+                        spaceDust.counter
+                    )
+                }
             )
         }
         addView(spaceView)
